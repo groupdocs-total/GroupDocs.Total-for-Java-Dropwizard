@@ -1,0 +1,61 @@
+package com.groupdocs.ui.total;
+
+import com.groupdocs.ui.total.health.TemplateHealthCheck;
+import com.groupdocs.ui.total.config.TotalConfig;
+import com.groupdocs.ui.total.resources.TotalResources;
+import com.groupdocs.ui.total.resources.ViewerResources;
+import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.setup.Bootstrap;
+import io.dropwizard.setup.Environment;
+import io.dropwizard.views.ViewBundle;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import java.util.EnumSet;
+
+/**
+ * Main class
+ * Where all the magic starts
+ *
+ * @author Aspose Pty Ltd
+ */
+
+public class MainService extends Application<TotalConfig> {
+    
+    public static void main( String[] args ) throws Exception{
+        new MainService().run(args);
+    }
+
+    @Override
+    public void initialize(Bootstrap<TotalConfig> bootstrap) {
+        // add assets bundle in order to get resources from assets directory
+        bootstrap.addBundle(new AssetsBundle());
+        // init view bundle
+        bootstrap.addBundle(new ViewBundle());
+    }
+
+    @Override
+    public void run(TotalConfig config, Environment environment) throws Exception {
+        // Enable CORS headers
+        final FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+
+        // Configure CORS parameters
+        cors.setInitParameter("allowedOrigins", "*");
+        cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
+        cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+
+        // Add URL mapping
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
+        // Initiate resources (web pages)
+        environment.jersey().register(new ViewerResources(config));
+        environment.jersey().register(new TotalResources());
+
+        // Add dummy health check to get rid of console warnings
+        // TODO: implement health check
+        final TemplateHealthCheck healthCheck = new TemplateHealthCheck("");
+        environment.healthChecks().register("HealthCheck", healthCheck);
+    }
+}

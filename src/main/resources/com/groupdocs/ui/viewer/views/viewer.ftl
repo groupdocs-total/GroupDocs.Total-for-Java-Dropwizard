@@ -17,20 +17,20 @@
         <div id="element"></div>
         <script type="text/javascript">
             $('#element').viewer({
-                applicationPath: 'http://${totalConfiguration.server.hostAddress}:${totalConfiguration.server.httpPort?c}/viewer',
-				defaultDocument: '${totalConfiguration.viewer.defaultDocument}',
-				htmlMode: ${totalConfiguration.viewer.htmlMode?c},
-                preloadPageCount: ${totalConfiguration.viewer.preloadPageCount?c},
-				zoom : ${totalConfiguration.viewer.zoom?c},
-				pageSelector: ${totalConfiguration.viewer.pageSelector?c},
-				search: ${totalConfiguration.viewer.search?c},
-				thumbnails: ${totalConfiguration.viewer.thumbnails?c},
-				rotate: ${totalConfiguration.viewer.rotate?c},
-				download: ${totalConfiguration.viewer.download?c},
-                upload: ${totalConfiguration.viewer.upload?c},
-                print: ${totalConfiguration.viewer.print?c},
-                browse: ${totalConfiguration.viewer.browse?c},
-                rewrite: ${totalConfiguration.viewer.rewrite?c}
+                applicationPath: 'http://${globalConfiguration.server.hostAddress}:${globalConfiguration.server.httpPort?c}/viewer',
+				defaultDocument: '${globalConfiguration.viewer.defaultDocument}',
+				htmlMode: ${globalConfiguration.viewer.htmlMode?c},
+                preloadPageCount: ${globalConfiguration.viewer.preloadPageCount?c},
+				zoom : ${globalConfiguration.viewer.zoom?c},
+				pageSelector: ${globalConfiguration.viewer.pageSelector?c},
+				search: ${globalConfiguration.viewer.search?c},
+				thumbnails: ${globalConfiguration.viewer.thumbnails?c},
+				rotate: ${globalConfiguration.viewer.rotate?c},
+				download: ${globalConfiguration.viewer.download?c},
+                upload: ${globalConfiguration.viewer.upload?c},
+                print: ${globalConfiguration.viewer.print?c},
+                browse: ${globalConfiguration.viewer.browse?c},
+                rewrite: ${globalConfiguration.viewer.rewrite?c}
             });
         </script>
     </body>

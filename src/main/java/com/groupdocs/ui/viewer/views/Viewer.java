@@ -1,6 +1,6 @@
 package com.groupdocs.ui.viewer.views;
 
-import com.groupdocs.ui.total.config.TotalConfiguration;
+import com.groupdocs.ui.common.config.GlobalConfiguration;
 import io.dropwizard.views.View;
 import java.nio.charset.Charset;
 
@@ -11,31 +11,31 @@ import java.nio.charset.Charset;
  */
 
 public class Viewer extends View {
-    private TotalConfiguration totalConfiguration;
+    private GlobalConfiguration globalConfiguration;
 
     /**
      * Constructor
-     * @param totalConfiguration total configuration
+     * @param globalConfiguration total configuration
      */
-    public Viewer(TotalConfiguration totalConfiguration){
+    public Viewer(GlobalConfiguration globalConfiguration){
         super("viewer.ftl", Charset.forName("UTF-8"));
-        this.totalConfiguration = totalConfiguration;
+        this.globalConfiguration = globalConfiguration;
     }
 
     /**
      * Get total config
      * @return total config
      */
-    public TotalConfiguration getTotalConfiguration() {
-        return totalConfiguration;
+    public GlobalConfiguration getGlobalConfiguration() {
+        return globalConfiguration;
     }
 
     /**
      * Set total config
-     * @param totalConfiguration total config
+     * @param globalConfiguration total config
      */
-    public void setTotalConfiguration(TotalConfiguration totalConfiguration) {
-        this.totalConfiguration = totalConfiguration;
+    public void setGlobalConfiguration(GlobalConfiguration globalConfiguration) {
+        this.globalConfiguration = globalConfiguration;
     }
 
 }

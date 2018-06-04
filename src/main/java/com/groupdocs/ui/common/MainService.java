@@ -1,6 +1,6 @@
 package com.groupdocs.ui.common;
 
-import com.groupdocs.ui.total.config.TotalConfiguration;
+import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.health.TemplateHealthCheck;
 import com.groupdocs.ui.total.resources.TotalResources;
 import com.groupdocs.ui.viewer.resources.ViewerResources;
@@ -22,14 +22,14 @@ import java.util.EnumSet;
  * @author Aspose Pty Ltd
  */
 
-public class MainService extends Application<TotalConfiguration> {
+public class MainService extends Application<GlobalConfiguration> {
     
     public static void main( String[] args ) throws Exception{
         new MainService().run(args);
     }
 
     @Override
-    public void initialize(Bootstrap<TotalConfiguration> bootstrap) {
+    public void initialize(Bootstrap<GlobalConfiguration> bootstrap) {
         // add assets bundle in order to get resources from assets directory
         bootstrap.addBundle(new AssetsBundle());
         // init view bundle
@@ -37,7 +37,7 @@ public class MainService extends Application<TotalConfiguration> {
     }
 
     @Override
-    public void run(TotalConfiguration config, Environment environment) throws Exception {
+    public void run(GlobalConfiguration config, Environment environment) throws Exception {
         // Enable CORS headers
         final FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
 

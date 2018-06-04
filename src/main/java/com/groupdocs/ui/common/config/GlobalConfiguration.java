@@ -1,4 +1,4 @@
-package com.groupdocs.ui.total.config;
+package com.groupdocs.ui.common.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.groupdocs.ui.common.config.ApplicationConfiguration;
@@ -9,12 +9,12 @@ import io.dropwizard.Configuration;
 import javax.validation.Valid;
 
 /**
- * TotalConfiguration
+ * GlobalConfiguration
  * Object to hold all application's configurations from yml file
  *
  * @author Aspose Pty Ltd
  */
-public class TotalConfiguration extends Configuration{
+public class GlobalConfiguration extends Configuration{
 
     @Valid
     @JsonProperty
@@ -31,7 +31,7 @@ public class TotalConfiguration extends Configuration{
     /**
      * Constructor
      */
-    public TotalConfiguration(){
+    public GlobalConfiguration(){
         server = new ServerConfiguration();
         application = new ApplicationConfiguration();
         viewer = new ViewerConfiguration();

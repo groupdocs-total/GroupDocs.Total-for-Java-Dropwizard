@@ -4,14 +4,14 @@
     <head>
         <title>GroupDocs.Viewer for Java Dropwizard</title>
         <link type="text/css" rel="stylesheet" href="assets/css/font-awesome.min.css"/>
-        <link type="text/css" rel="stylesheet" href="assets/css/viewer.css"/>
-        <link type="text/css" rel="stylesheet" href="assets/css/viewer.mobile.css"/>
-        <link type="text/css" rel="stylesheet" href="assets/css/viewer-dark.css"/>
-		<link type="text/css" rel="stylesheet" href="assets/css/viewer-circle-progress.css"/>
-		<link rel="stylesheet" href="assets/css/swiper.min.css">
-        <script src="assets/js/jquery.min.js"></script>
-		<script src="assets/js/swiper.min.js"></script>
-        <script type="text/javascript" src="assets/js/viewer.js"></script>
+        <link type="text/css" rel="stylesheet" href="assets/css/swiper.min.css">
+        <link type="text/css" rel="stylesheet" href="assets/css/viewer/viewer.css"/>
+        <link type="text/css" rel="stylesheet" href="assets/css/viewer/viewer.mobile.css"/>
+        <link type="text/css" rel="stylesheet" href="assets/css/viewer/viewer-dark.css"/>
+		<link type="text/css" rel="stylesheet" href="assets/css/viewer/viewer-circle-progress.css"/>
+        <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="assets/js/swiper.min.js"></script>
+        <script type="text/javascript" src="assets/js/viewer/viewer.js"></script>
     </head>
     <body>
         <div id="element"></div>

@@ -13,9 +13,10 @@ public class Total extends View {
 
     /**
      * Constructor
+     * @param charset charset
      */
-    public Total() {
-        super("total.ftl", Charset.forName("UTF-8"));
+    public Total(String charset) {
+        super("total.ftl", Charset.forName(charset));
     }
 
 }

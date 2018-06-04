@@ -1,7 +1,11 @@
 package com.groupdocs.ui.common.resources;
 
 import com.google.gson.Gson;
+import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.viewer.resources.ViewerResources;
+import io.dropwizard.jetty.ConnectorFactory;
+import io.dropwizard.jetty.HttpConnectorFactory;
+import io.dropwizard.server.SimpleServerFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,7 +28,24 @@ import java.util.logging.Logger;
  * @author Aspose Pty Ltd
  */
 public abstract class Resources {
-    private final String DEFAULT_CHARSET = "UTF-8";
+    protected final String DEFAULT_CHARSET = "UTF-8";
+    protected final GlobalConfiguration globalConfiguration;
+
+    /**
+     * Constructor
+     * @param globalConfiguration global application configuration
+     * @throws UnknownHostException
+     */
+    public Resources(GlobalConfiguration globalConfiguration) throws UnknownHostException {
+        this.globalConfiguration = globalConfiguration;
+
+        // set HTTP port
+        SimpleServerFactory serverFactory = (SimpleServerFactory) globalConfiguration.getServerFactory();
+        ConnectorFactory connector = serverFactory.getConnector();
+        globalConfiguration.getServer().setHttpPort(((HttpConnectorFactory) connector).getPort());
+        // set host address
+        globalConfiguration.getServer().setHostAddress(InetAddress.getLocalHost().getHostAddress());
+    }
 
     /**
      * Set response content type

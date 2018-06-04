@@ -16,9 +16,10 @@ public class Viewer extends View {
     /**
      * Constructor
      * @param globalConfiguration total configuration
+     * @param charset charset
      */
-    public Viewer(GlobalConfiguration globalConfiguration){
-        super("viewer.ftl", Charset.forName("UTF-8"));
+    public Viewer(GlobalConfiguration globalConfiguration, String charset){
+        super("viewer.ftl", Charset.forName(charset));
         this.globalConfiguration = globalConfiguration;
     }
 

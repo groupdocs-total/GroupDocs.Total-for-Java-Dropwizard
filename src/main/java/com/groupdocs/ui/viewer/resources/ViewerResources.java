@@ -66,22 +66,17 @@ import java.util.Base64;
 
 @Path(value = "/viewer")
 public class ViewerResources extends Resources {
-    private final GlobalConfiguration globalConfiguration;
     private final ViewerHtmlHandler viewerHtmlHandler;
     private final ViewerImageHandler viewerImageHandler;
 
     /**
      * Constructor
-     * @param globalConfiguration config object
+     * @param globalConfiguration global configuration object
+     * @throws UnknownHostException
      */
     public ViewerResources(GlobalConfiguration globalConfiguration) throws UnknownHostException {
-        this.globalConfiguration = globalConfiguration;
-        // set HTTP port
-        SimpleServerFactory serverFactory = (SimpleServerFactory) globalConfiguration.getServerFactory();
-        ConnectorFactory connector = serverFactory.getConnector();
-        globalConfiguration.getServer().setHttpPort(((HttpConnectorFactory) connector).getPort());
-        // set host address
-        globalConfiguration.getServer().setHostAddress(InetAddress.getLocalHost().getHostAddress());
+        super(globalConfiguration);
+
         // create total application configuration
         ViewerConfig config = new ViewerConfig();
         config.setStoragePath(globalConfiguration.getViewer().getFilesDirectory());
@@ -103,7 +98,7 @@ public class ViewerResources extends Resources {
     @GET
     public Viewer getView(){
         // initiate index page
-        return new Viewer(globalConfiguration);
+        return new Viewer(globalConfiguration, DEFAULT_CHARSET);
     }
 
     /**

@@ -37,7 +37,7 @@ public class MainService extends Application<GlobalConfiguration> {
     }
 
     @Override
-    public void run(GlobalConfiguration config, Environment environment) throws Exception {
+    public void run(GlobalConfiguration globalConfiguration, Environment environment) throws Exception {
         // Enable CORS headers
         final FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
 
@@ -50,8 +50,8 @@ public class MainService extends Application<GlobalConfiguration> {
         cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         // Initiate resources (web pages)
-        environment.jersey().register(new ViewerResources(config));
-        environment.jersey().register(new TotalResources());
+        environment.jersey().register(new ViewerResources(globalConfiguration));
+        environment.jersey().register(new TotalResources(globalConfiguration));
 
         // Add dummy health check to get rid of console warnings
         // TODO: implement health check

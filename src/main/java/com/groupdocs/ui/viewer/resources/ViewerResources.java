@@ -1,13 +1,14 @@
-package com.groupdocs.ui.total.resources;
+package com.groupdocs.ui.viewer.resources;
 
-import com.groupdocs.ui.total.config.TotalConfig;
-import com.groupdocs.ui.total.domain.web.MediaType;
-import com.groupdocs.ui.total.domain.wrapper.ExceptionWrapper;
-import com.groupdocs.ui.total.domain.wrapper.viewer.FileDescriptionWrapper;
-import com.groupdocs.ui.total.domain.wrapper.viewer.LoadedPageWrapper;
-import com.groupdocs.ui.total.domain.wrapper.viewer.RotatedPageWrapper;
-import com.groupdocs.ui.total.domain.wrapper.UploadedDocumentWrapper;
-import com.groupdocs.ui.total.views.Viewer;
+import com.groupdocs.ui.total.config.TotalConfiguration;
+import com.groupdocs.ui.viewer.domain.wrapper.FileDescriptionWrapper;
+import com.groupdocs.ui.viewer.domain.wrapper.LoadedPageWrapper;
+import com.groupdocs.ui.viewer.domain.wrapper.RotatedPageWrapper;
+import com.groupdocs.ui.common.domain.web.MediaType;
+import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
+import com.groupdocs.ui.common.resources.Resources;
+import com.groupdocs.ui.common.domain.wrapper.UploadedDocumentWrapper;
+import com.groupdocs.ui.viewer.views.Viewer;
 import com.google.gson.Gson;
 import com.groupdocs.viewer.converter.options.HtmlOptions;
 import com.groupdocs.viewer.converter.options.ImageOptions;
@@ -64,30 +65,30 @@ import java.util.Base64;
 
 @Path(value = "/viewer")
 public class ViewerResources extends Resources {
-    private final TotalConfig totalConfig;
+    private final TotalConfiguration totalConfiguration;
     private final ViewerHtmlHandler viewerHtmlHandler;
     private final ViewerImageHandler viewerImageHandler;
 
     /**
      * Constructor
-     * @param totalConfig config object
+     * @param totalConfiguration config object
      */
-    public ViewerResources(TotalConfig totalConfig) throws UnknownHostException {
-        this.totalConfig = totalConfig;
+    public ViewerResources(TotalConfiguration totalConfiguration) throws UnknownHostException {
+        this.totalConfiguration = totalConfiguration;
         // set HTTP port
-        SimpleServerFactory serverFactory = (SimpleServerFactory) totalConfig.getServerFactory();
+        SimpleServerFactory serverFactory = (SimpleServerFactory) totalConfiguration.getServerFactory();
         ConnectorFactory connector = serverFactory.getConnector();
-        totalConfig.getServer().setHttpPort(((HttpConnectorFactory) connector).getPort());
+        totalConfiguration.getServer().setHttpPort(((HttpConnectorFactory) connector).getPort());
         // set host address
-        totalConfig.getServer().setHostAddress(InetAddress.getLocalHost().getHostAddress());
+        totalConfiguration.getServer().setHostAddress(InetAddress.getLocalHost().getHostAddress());
         // create total application configuration
         com.groupdocs.viewer.config.ViewerConfig config = new com.groupdocs.viewer.config.ViewerConfig();
-        config.setStoragePath(totalConfig.getViewer().getFilesDirectory());
+        config.setStoragePath(totalConfiguration.getViewer().getFilesDirectory());
         config.setUseCache(true);
-        config.getFontDirectories().add(totalConfig.getViewer().getFontsDirectory());
+        config.getFontDirectories().add(totalConfiguration.getViewer().getFontsDirectory());
         // set GroupDocs license
         License license = new License();
-        license.setLicense(totalConfig.getApplication().getLicensePath());
+        license.setLicense(totalConfiguration.getApplication().getLicensePath());
         // initialize total instance for the HTML mode
         viewerHtmlHandler = new ViewerHtmlHandler(config);
         // initialize total instance for the Image mode
@@ -101,7 +102,7 @@ public class ViewerResources extends Resources {
     @GET
     public Viewer getView(){
         // initiate index page
-        return new Viewer(totalConfig);
+        return new Viewer(totalConfiguration);
     }
 
     /**
@@ -178,7 +179,7 @@ public class ViewerResources extends Resources {
             password = getJsonString(requestBody, "password");
             // check if documentGuid contains path or only file name
             if(!Paths.get(documentGuid).isAbsolute()){
-                documentGuid = totalConfig.getViewer().getFilesDirectory() + "/" + documentGuid;
+                documentGuid = totalConfiguration.getViewer().getFilesDirectory() + "/" + documentGuid;
             }
             DocumentInfoContainer documentInfoContainer = new DocumentInfoContainer();
             // get document info options
@@ -421,7 +422,7 @@ public class ViewerResources extends Resources {
                 fileName = FilenameUtils.getName(url.getPath());
             }
             // get documents storage path
-            String documentStoragePath = totalConfig.getViewer().getFilesDirectory();
+            String documentStoragePath = totalConfiguration.getViewer().getFilesDirectory();
             // save the file
             File file = new File(documentStoragePath + "/" + fileName);
             // check rewrite mode

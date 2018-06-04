@@ -1,9 +1,9 @@
-package com.groupdocs.ui.total;
+package com.groupdocs.ui.common;
 
-import com.groupdocs.ui.total.health.TemplateHealthCheck;
-import com.groupdocs.ui.total.config.TotalConfig;
+import com.groupdocs.ui.total.config.TotalConfiguration;
+import com.groupdocs.ui.common.health.TemplateHealthCheck;
 import com.groupdocs.ui.total.resources.TotalResources;
-import com.groupdocs.ui.total.resources.ViewerResources;
+import com.groupdocs.ui.viewer.resources.ViewerResources;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
@@ -22,14 +22,14 @@ import java.util.EnumSet;
  * @author Aspose Pty Ltd
  */
 
-public class MainService extends Application<TotalConfig> {
+public class MainService extends Application<TotalConfiguration> {
     
     public static void main( String[] args ) throws Exception{
         new MainService().run(args);
     }
 
     @Override
-    public void initialize(Bootstrap<TotalConfig> bootstrap) {
+    public void initialize(Bootstrap<TotalConfiguration> bootstrap) {
         // add assets bundle in order to get resources from assets directory
         bootstrap.addBundle(new AssetsBundle());
         // init view bundle
@@ -37,7 +37,7 @@ public class MainService extends Application<TotalConfig> {
     }
 
     @Override
-    public void run(TotalConfig config, Environment environment) throws Exception {
+    public void run(TotalConfiguration config, Environment environment) throws Exception {
         // Enable CORS headers
         final FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
 

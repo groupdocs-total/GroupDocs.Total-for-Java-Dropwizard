@@ -1,4 +1,4 @@
-package com.groupdocs.ui.total.domain.wrapper.viewer;
+package com.groupdocs.ui.viewer.domain.wrapper;
 
 /**
  * RotatedPageWrapper

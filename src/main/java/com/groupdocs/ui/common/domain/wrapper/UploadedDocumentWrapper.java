@@ -1,4 +1,4 @@
-package com.groupdocs.ui.total.domain.wrapper;
+package com.groupdocs.ui.common.domain.wrapper;
 
 /**
  * UploadedDocumentWrapper

@@ -6,7 +6,7 @@
 
     <groupId>com.groupdocs.ui</groupId>
     <artifactId>total</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
 
     <name>GroupDocs.Total Dropwizard</name>
@@ -91,7 +91,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
                 <configuration>
-                    <mainClass>com.groupdocs.ui.total.MainService</mainClass>
+                    <mainClass>com.groupdocs.ui.common.MainService</mainClass>
                     <arguments>
                         <argument>server</argument>
                         <argument>configuration.yml</argument>
@@ -124,7 +124,7 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.groupdocs.ui.total.MainService</mainClass>
+                                    <mainClass>com.groupdocs.ui.common.MainService</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

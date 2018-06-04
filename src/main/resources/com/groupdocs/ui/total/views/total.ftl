@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="com.groupdocs.ui.total.views.Total" -->
+<#-- @ftlvariable name="" type="Total" -->
 <!DOCTYPE html>
 <html>
     <head>

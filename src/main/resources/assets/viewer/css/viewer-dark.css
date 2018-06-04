@@ -2,34 +2,27 @@
 Header, modal header, modal footer buttons
 */
 #gd-header, #gd-nav-search-container, .gd-modal-header, .gd-modal-footer > .btn{
-    background-color: #FFFFFF;
-    border-bottom: #E6E6E6 1px solid;
+    background-color: #3e4e5a;
 }
 /*
 Header logo
 */
 #gd-header-logo{
-	background-image: url('/assets/images/viewer/logo.png');
-	background-color: #F54B51;
+	background-image: url('/assets/viewer/images/logo.png');
+	background-color: #25c2d4;
 }
 /*
 Navigation bar buttons, search buttons, modal close button
 */
 #gd-navbar > li, .gd-nav-search-btn, .gd-modal-close{
-	color: #878A8E;
+	color: #959da5;
 }
 /*
 Hover for:
 Navigation bar buttons, search buttons, modal close button
 */
 #gd-navbar > li:hover, .gd-nav-search-btn:hover, .gd-modal-close:hover, #gd-navbar .open{
-	color: #F54B51;
-}
-/*
-Search
-*/
-#gd-nav-search-container input[type='text']{
-	border: #EAEAEA 1px solid;
+	color: #ffffff;
 }
 /*
 Text color 1
@@ -47,5 +40,5 @@ Text color 2
 Text color 3
 */
 .gd-modal-title, .gd-modal-footer > .btn{
-	color: #333333;
+	color: #ffffff;
 }

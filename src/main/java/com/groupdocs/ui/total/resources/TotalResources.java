@@ -1,5 +1,6 @@
 package com.groupdocs.ui.total.resources;
 
+import com.groupdocs.ui.common.resources.Resources;
 import com.groupdocs.ui.total.views.Total;
 
 import javax.ws.rs.GET;

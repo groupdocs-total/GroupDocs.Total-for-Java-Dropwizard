@@ -1,6 +1,7 @@
-package com.groupdocs.ui.total.resources;
+package com.groupdocs.ui.common.resources;
 
 import com.google.gson.Gson;
+import com.groupdocs.ui.viewer.resources.ViewerResources;
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONException;
 import org.json.JSONObject;

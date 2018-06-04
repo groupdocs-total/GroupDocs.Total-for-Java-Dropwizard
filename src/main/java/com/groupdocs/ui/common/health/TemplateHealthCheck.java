@@ -1,4 +1,4 @@
-package com.groupdocs.ui.total.health;
+package com.groupdocs.ui.common.health;
 
 import com.codahale.metrics.health.HealthCheck;
 

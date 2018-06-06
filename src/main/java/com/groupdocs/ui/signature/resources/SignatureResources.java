@@ -81,11 +81,39 @@ public class SignatureResources extends Resources {
 
         // create total application configuration
         SignatureConfig config = new SignatureConfig();
+        if(!new File(globalConfiguration.getSignature().getFilesDirectory()).isAbsolute()) {
+            globalConfiguration.getSignature().setFilesDirectory(new File("").getAbsolutePath() + globalConfiguration.getSignature().getFilesDirectory());
+        }
+        String signatureDataPath = "";
+        if(globalConfiguration.getSignature().getDataDirectory() == null || globalConfiguration.getSignature().getDataDirectory().isEmpty()){
+            signatureDataPath = globalConfiguration.getSignature().getFilesDirectory() + "SignatureData";
+            if(!Files.exists( new File(signatureDataPath).toPath())) {
+                new File(signatureDataPath).mkdir();
+            }
+            globalConfiguration.getSignature().setDataDirectory(signatureDataPath);
+        } else {
+            signatureDataPath = globalConfiguration.getSignature().getDataDirectory();
+        }
 
+        if(!Files.exists(new File(signatureDataPath + "/Digital").toPath())){
+            new File(signatureDataPath + "/Digital").mkdir();
+        }
+        if(!Files.exists(new File(signatureDataPath + "/Image").toPath())){
+            new File(signatureDataPath + "/Image").mkdir();
+        }
+        if(!Files.exists(new File(signatureDataPath + "/Stamps").toPath())){
+            new File(signatureDataPath + "/Stamps").mkdir();
+            new File(signatureDataPath + "/Stamps/Preview").mkdir();
+            new File(signatureDataPath + "/Stamps/XML").mkdir();
+        }
+        if(globalConfiguration.getSignature().getOutputDirectory() == null || globalConfiguration.getSignature().getOutputDirectory().isEmpty()){
+            globalConfiguration.getSignature().setOutputDirectory(globalConfiguration.getSignature().getFilesDirectory());
+        }
         config.setStoragePath(globalConfiguration.getSignature().getFilesDirectory());
-        config.setCertificatesPath(globalConfiguration.getSignature().getCertificatePath());
-        config.setImagesPath(globalConfiguration.getSignature().getImagePath());
-        config.setOutputPath(globalConfiguration.getSignature().getOutputPath());
+        config.setCertificatesPath(signatureDataPath + "/Digital");
+        config.setImagesPath(signatureDataPath + "/Image");
+        config.setOutputPath(globalConfiguration.getSignature().getOutputDirectory());
+        stampsPath = signatureDataPath + "/Stamps";
         // set GroupDocs license
         License license = new License();
         license.setLicense(globalConfiguration.getApplication().getLicensePath());
@@ -150,7 +178,7 @@ public class SignatureResources extends Resources {
             Collections.sort(filesList, Ordering.from(new FileTypeComparator()).compound(new FileNameComparator()));
             for (File file : filesList) {
                 // check if current file/folder is hidden
-                if(file.isHidden()) {
+                if(file.isHidden() ||  file.toPath().equals(new File(globalConfiguration.getSignature().getDataDirectory()).toPath())) {
                     // ignore current file and skip to next one
                     continue;
                 } else {
@@ -436,7 +464,7 @@ public class SignatureResources extends Resources {
             }
             // prepare sgining options and sign document
             switch (signaturesData[0].getDocumentType()){
-               case "Portable Document Format":
+                case "Portable Document Format":
                     // setup digital signature options
                     PdfSignDigitalOptions pdfSignOptions = new PdfSignDigitalOptions(signatureGuid);
                     pdfSignOptions.setReason(signaturesData[0].getReason());
@@ -445,28 +473,28 @@ public class SignatureResources extends Resources {
                     pdfSignOptions.setPassword(password);
                     pdfSignOptions.setSignAllPages(true);
                     if(signaturesData[0].getDate() != null && !signaturesData[0].getDate().isEmpty()) {
-                       pdfSignOptions.getSignature().setSignTime(formatter.parse(signaturesData[0].getDate()));
+                        pdfSignOptions.getSignature().setSignTime(formatter.parse(signaturesData[0].getDate()));
                     }
                     // sign document
                     signatureHandler.sign(documentGuid, pdfSignOptions, loadOptions, saveOptions);
                     break;
-               case "Microsoft Word":
+                case "Microsoft Word":
                     // setup digital signature options
                     WordsSignDigitalOptions wordsSignOptions = new WordsSignDigitalOptions(signatureGuid);
                     wordsSignOptions.getSignature().setComments(signaturesData[0].getSignatureComment());
                     if(signaturesData[0].getDate() != null && !signaturesData[0].getDate().isEmpty()) {
-                       wordsSignOptions.getSignature().setSignTime(formatter.parse(signaturesData[0].getDate()));
+                        wordsSignOptions.getSignature().setSignTime(formatter.parse(signaturesData[0].getDate()));
                     }
                     wordsSignOptions.setPassword(password);
                     wordsSignOptions.setSignAllPages(true);
                     // sign document
                     signatureHandler.sign(documentGuid, wordsSignOptions, loadOptions, saveOptions);
                     break;
-               case "Microsoft Excel":
+                case "Microsoft Excel":
                     CellsSignDigitalOptions cellsSignOptions = new CellsSignDigitalOptions(signatureGuid);
                     cellsSignOptions.getSignature().setComments(signaturesData[0].getSignatureComment());
                     if(signaturesData[0].getDate() != null && !signaturesData[0].getDate().isEmpty()) {
-                       cellsSignOptions.getSignature().setSignTime(formatter.parse(signaturesData[0].getDate()));
+                        cellsSignOptions.getSignature().setSignTime(formatter.parse(signaturesData[0].getDate()));
                     }
                     cellsSignOptions.setPassword(password);
                     cellsSignOptions.setSignAllPages(true);
@@ -479,7 +507,7 @@ public class SignatureResources extends Resources {
             return objectToJson(signedDocument);
         }catch (Exception ex){
             // set response content type
-           setResponseContentType(response, MediaType.APPLICATION_JSON);
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
             // set exception message
             ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
             if(ex.getMessage().contains("password") && password.isEmpty()) {

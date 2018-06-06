@@ -18,19 +18,11 @@ public class SignatureConfiguration extends Configuration{
 
     @Valid
     @JsonProperty
-    private String outputPath;
+    private String outputDirectory;
 
     @Valid
     @JsonProperty
-    private String outputImagePath;
-
-    @Valid
-    @JsonProperty
-    private String certificatePath;
-
-    @Valid
-    @JsonProperty
-    private String imagePath;
+    private String dataDirectory;
 
     @Valid
     @JsonProperty
@@ -125,8 +117,8 @@ public class SignatureConfiguration extends Configuration{
     }
 
     public void setDownloadSigned(boolean downloadSigned) {
-            this.downloadSigned = downloadSigned;
-        }
+        this.downloadSigned = downloadSigned;
+    }
 
     public String getFilesDirectory() {
         return filesDirectory;
@@ -136,21 +128,11 @@ public class SignatureConfiguration extends Configuration{
         this.filesDirectory = filesDirectory;
     }
 
-    public String getOutputPath() { return outputPath; }
+    public String getDataDirectory() { return dataDirectory; }
 
-    public void setOutputPath(String outputPath) { this.outputPath = outputPath; }
+    public void setDataDirectory(String dataDirectory) { this.dataDirectory = dataDirectory; }
 
-    public String getOutputImagePath() { return outputImagePath; }
+    public String getOutputDirectory() { return outputDirectory; }
 
-    public void setOutputImagePath(String outputImagePath) { this.outputImagePath = outputImagePath; }
-
-    public String getCertificatePath() { return certificatePath; }
-
-    public void setCertificatePath(String certificatePath) { this.certificatePath = certificatePath; }
-
-    public String getImagePath() { return imagePath; }
-
-    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+    public void setOutputDirectory(String outputDirectory) { this.outputDirectory = outputDirectory; }
 }
-
-

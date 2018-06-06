@@ -72,7 +72,9 @@ public class ViewerResources extends Resources {
      */
     public ViewerResources(GlobalConfiguration globalConfiguration) throws UnknownHostException {
         super(globalConfiguration);
-
+        if(!new File(globalConfiguration.getViewer().getFilesDirectory()).isAbsolute()) {
+            globalConfiguration.getViewer().setFilesDirectory(new File("").getAbsolutePath() + globalConfiguration.getViewer().getFilesDirectory());
+        }
         // create total application configuration
         ViewerConfig config = new ViewerConfig();
         config.setStoragePath(globalConfiguration.getViewer().getFilesDirectory());

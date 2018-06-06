@@ -1,5 +1,5 @@
 # GroupDocs.Total for Java Dropwizard Example
-###### version 0.1.2
+###### version 0.2.0
 
 
 ## System Requirements
@@ -39,6 +39,31 @@ Coming soon
 - Preload pages for faster document rendering
 - Multi-language support for displaying errors
 - Display two or more pages side by side (when zooming out)
+- Cross-browser support (Safari, Chrome, Opera, Firefox)
+- Cross-platform support (Windows, Linux, MacOS)
+#### GroupDocs.Signature
+- Clean, modern and intuitive design
+- Easily switchable colour theme (create your own colour theme in 5 minutes)
+- Responsive design
+- Mobile support (open application on any mobile device)
+- Support over 50 documents and image formats
+- Image mode
+- Fully customizable navigation panel
+- Sign password protected documents
+- Download original documents
+- Download signed documents
+- Upload documents
+- Upload signatures
+- Sign document with such signature types: digital certificate, image, stamp, qrCode, barCode.
+- Draw signature image
+- Draw stamp signature
+- Generate bar code signature
+- Generate qr code signature
+- Print document
+- Smooth page navigation
+- Smooth document scrolling
+- Preload pages for faster document rendering
+- Multi-language support for displaying errors
 - Cross-browser support (Safari, Chrome, Opera, Firefox)
 - Cross-platform support (Windows, Linux, MacOS)
 

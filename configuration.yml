@@ -75,16 +75,12 @@ viewer:
 # GroupDocs.Signature configurations
 ################################################
 signature:
- # Directory where all original files are stored
-  filesDirectory: E:/rabota/NewTeam/documents
-  # Directory where all signed documents are stored
-  outputPath: ""
-  # Directory where all signed images are stored
-  outputImagePath: ""
-  # Directory where all certificates used to validate Digital signatures
-  certificatePath: ""
-  # Directory where all image signatures are stored
-  imagePath: ""
+  # Directory where all original files are stored, by default the App_Data folder which is placed in the project root is used
+  filesDirectory: /App_Data/
+  # Directory where all signed documents are stored, if empty - will be created inside the filesDirectory
+  outputDirectory: ''
+  # Directory where all signature data such as digital certificates, images, stamps etc. are stored, if empty - signatureData directory will be created inside the filesDirectory
+  dataDirectory: ''
   # Enable/disable text signature
   textSignature: false
   # Enable/disable image signature

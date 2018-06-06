@@ -30,9 +30,7 @@ var signature = {
     date: "",
     pageNumber: 0,
     angle: 0,
-    documentType: "",
-    columnNumber: 0,
-    rowNumber: 0
+    documentType: ""
 }
 
 $(document).ready(function(){
@@ -94,11 +92,29 @@ $(document).ready(function(){
     });
 
     //////////////////////////////////////////////////
+    // Stamp sign event
+    //////////////////////////////////////////////////
+    $('#gd-stamp-sign').on('click', function(e){
+        // if(typeof documentGuid == "undefined" || documentGuid == ""){
+        //     printMessage("Please open document first");
+        // } else {
+        signature.signatureType = "stamp";
+        toggleModalDialog(true, 'Stamp Signature', getHtmlImageSign());
+        loadSignaturesTree('', openSigningFirstStepModal);
+        // }
+    });
+
+    //////////////////////////////////////////////////
     // Open signatures browse button (digital sign dialog) click
     //////////////////////////////////////////////////
     $('.gd-modal-body').on('click', '#gd-open-signature', function(e){
         $('#modalDialog .gd-modal-title').text("Signing Document");
         $( "#gd-signature-draw-step" ).remove();
+        if( $("#gd-signature-select-step").length == 0){
+            var browseStep = getHtmlSignaturesSelectModal();
+            $(browseStep).insertBefore("#gd-signature-page-select-step");
+            loadSignaturesTree('');
+        }
         // open browse signatures step
         switchSlide(1, 0, "right");
         // set currently active step pagination
@@ -111,17 +127,23 @@ $(document).ready(function(){
     //////////////////////////////////////////////////
     // Open signatures draw button (digital sign dialog) click
     //////////////////////////////////////////////////
-    $('.gd-modal-body').on('click', '#gd-draw-signature', function(e){
+    $('.gd-modal-body').on('click', '#gd-draw-signature', function(e) {
         $('#modalDialog .gd-modal-title').text("Signing Document");
-        $( "#gd-signature-select-step" ).remove();
+        $("#gd-signature-select-step").remove();
+        if( $("#gd-signature-draw-step").length == 0){
+            var drawStep = getHtmlDrawImageModal();
+            $(drawStep).insertBefore("#gd-signature-page-select-step");
+        }
         // open draw signatures step
         switchSlide(1, 0, "right");
         // set currently active step pagination
-        if(!$($(".gd-pagination")[0]).hasClass("gd-pagination-active")){
+        if (!$($(".gd-pagination")[0]).hasClass("gd-pagination-active")) {
             $($(".gd-pagination")[0]).addClass("gd-pagination-active")
         }
         $("#gd-signing-footer").show();
-        $("#gd-draw-image").bcPaint();
+        if ($("#bcPaint-container").length == 0) {
+            $("#gd-draw-image").bcPaint();
+        }
     });
 
     //////////////////////////////////////////////////
@@ -157,7 +179,7 @@ $(document).ready(function(){
     //////////////////////////////////////////////////
     // Upload signature event
     //////////////////////////////////////////////////
-    $(".gd-modal-body").on('change', '#gd-signature-upload-input', function(e){
+    $(".gd-modal-body").on('change', '#gd-signature-upload-input', function(e) {
         var uploadFiles = $(this).get(0).files;
         // upload file one by one
         for (var i = 0; i < uploadFiles.length; i++) {
@@ -165,21 +187,29 @@ $(document).ready(function(){
             uploadSignature(uploadFiles[i], i, "");
         }
         $(".gd-browse-signatures").show();
-        $(".gd-upload-signatures").css("left", "calc(100% - 86%)");
+        if (signature.signatureType == "image") {
+            $(".gd-upload-signatures").css("left", "calc(100% - 87%)");
+            $(".gd-browse-signatures").css("left", "calc(100% - 77%)");
+        } else {
+            $(".gd-upload-signatures").css("left", "calc(100% - 76%)");
+        }
     });
 
     //////////////////////////////////////////////////
     // Signature select event
     //////////////////////////////////////////////////
-    $('.gd-modal-body').on('click', '#gd-signatures label', function(e){
-        var radio = $(this).parent().find(".gd-signature-radio");
+    $('.gd-modal-body').on('click', '.gd-signature', function(e){
         // get selected signature guid
-        signature.signatureGuid = $(this).data("guid");
-        // set styles for selected signature
-        $.each($(".gd-signature"), function (index, elem) {
-            $(elem).css("background-color", "#e5e5e5");
-        });
-        $(this).parent().css("background-color", "#3e4e5a");
+        signature.signatureGuid = $(this).find("label").data("guid");
+        if(signature.signatureType == "digital") {
+            // set styles for selected signature
+            $.each($(".gd-signature"), function (index, elem) {
+                $(elem).css("background-color", "#e5e5e5");
+            });
+            $(this).css("background-color", "#3e4e5a");
+        } else {
+            $(".gd-signature-select").removeClass("gd-signing-disabled");
+        }
     });
 
     //////////////////////////////////////////////////
@@ -302,11 +332,18 @@ function loadSignaturesTree(dir, callback) {
                         '<div class="gd-signature-name" data-guid="' + guid + '">' + name + '</div>'+
                         '</div>';
                 } else {
-                    signatures = signatures + '<div class="gd-signature">'+
-                        '<input id="gd-radio' + index + '" class="gd-signature-radio" name="gd-radio" type="radio">'+
-                        '<label for="gd-radio' + index + '" class="gd-signature-name" data-guid="' + guid + '">' + name + '</label>'+
-                        '</div>';
-
+                    if(signature.signatureType == "image" || signature.signatureType == "stamp"){
+                        signatures = signatures + '<div class="gd-signature gd-signature-thumbnail">' +
+                            '<input id="gd-radio' + index + '" class="gd-signature-radio" name="gd-radio" type="radio">' +
+                            '<label for="gd-radio' + index + '" class="gd-signature-name" data-guid="' + guid + '"></label>' +
+                            '<image class="gd-signature-thumbnail-image" src="data:image/png;base64,' + elem.image + '" alt></image>' +
+                            '</div>';
+                    } else {
+                        signatures = signatures + '<div class="gd-signature">' +
+                            '<input id="gd-radio' + index + '" class="gd-signature-radio" name="gd-radio" type="radio">' +
+                            '<label for="gd-radio' + index + '" class="gd-signature-name" data-guid="' + guid + '">' + name + '</label>' +
+                            '</div>';
+                    }
                 }
 
             });
@@ -501,7 +538,17 @@ function openSigningFirstStepModal(){
     // show or hide the browse button, depends on signature availability in the storage
     if(!browseSignatures){
         $(".gd-browse-signatures").hide();
-        $(".gd-upload-signatures").css("left", "calc(100% - 71%)");
+        switch (signature.signatureType) {
+            case "digital": $(".gd-upload-signatures").css("left", "calc(100% - 60%)");
+                break;
+            case "image": $(".gd-upload-signatures").css("left", "calc(100% - 72%)");
+                break;
+        }
+    } else {
+        if(signature.signatureType == "image") {
+            $(".gd-upload-signatures").css("left", "calc(100% - 87%)");
+            $(".gd-browse-signatures").css("left", "calc(100% - 77%)");
+        }
     }
 }
 
@@ -520,9 +567,7 @@ function getHtmlDigitalSign() {
         '<div id="gd-upload-step" class="gd-slide" data-index="0">'+
         uploadStep+
         '</div>'+
-        '<div id="gd-signature-select-step" class="gd-slide" data-index="1">'+
         signaturesSelectStep+
-        '</div>'+
         '<div id="gd-additional-info-step" class="gd-slide" data-index="2">'+
         signatureInformationStep+
         '</div>'+
@@ -552,12 +597,8 @@ function getHtmlImageSign() {
         '<div id="gd-upload-step" class="gd-slide" data-index="0">'+
         uploadStep+
         '</div>'+
-        '<div id="gd-signature-select-step" class="gd-slide" data-index="1">'+
         signaturesSelectStep+
-        '</div>'+
-        '<div id="gd-signature-draw-step" class="gd-slide" data-index="1">'+
         drawStep+
-        '</div>'+
         '<div id="gd-signature-page-select-step" class="gd-slide" data-index="2" data-last="true">'+
         signaturePageSelectStep+
         '</div>'+
@@ -588,11 +629,13 @@ function getHtmlSignatureUploadModal(){
  * Get HTML content for signature browser modal
  **/
 function getHtmlSignaturesSelectModal(){
-    return '<div class="gd-signing-label">'+
+    return  '<div id="gd-signature-select-step" class="gd-slide" data-index="1">'+
+        '<div class="gd-signing-label">'+
         '<label>1. Signatures <i>Select signature to sign your document</i></label>'+
         '</div>'+
         '<div id="gd-signatures">'+
         //signatures will be here
+        '</div>'+
         '</div>';
 }
 
@@ -624,29 +667,22 @@ function getHtmlPagesSelectModal(){
         '<label for="gd-radio-all" class="gd-all-pages-label">Add for all pages</label>'+
         '</div>'+
         '</div>';
-    var excelCellsSelector = "";
-    // if current document is Excel document add additional inputs for entering column and row number.
-    // this is a temporarily added elements until signature positioning in the Excel documents will be fixed in the GroupDocs.Signature library.
-    if(getDocumentFormat(documentGuid).format.indexOf("Excel") != -1){
-        excelCellsSelector = '<div class="gd-signing-label gd-cells-information">'+
-            '<label>2.1 Cells <i>Set column and row number to add signature image in it</i></label>'+
-            '<div class="gd-cells-inputs">'+
-            '<input id="gd-column" type="text" placeholder="Column number">'+
-            '<input id="gd-row" type="text" placeholder="Row number">'+
-            '</div>'+
-            '</div>';
-    }
-    return stepHeader + pageSelector + excelCellsSelector;
+
+    return stepHeader + pageSelector;
 }
 
 /**
  * Get HTML content for draw image step
  **/
 function getHtmlDrawImageModal() {
-    return '<div class="gd-signing-label">'+
+    return  '<div id="gd-signature-draw-step" class="gd-slide" data-index="1">'+
+        '<div class="gd-signing-label">'+
         '<label>1. Draw image <i>Draw your signature</i></label>'+
         '</div>'+
-        '<div id="gd-draw-image"></div>';
+        '<div id="gd-draw-image">' +
+        // draw area will be here
+        '</div>'+
+        '</div>';
 }
 /**
  * Get HTML content for signature information modal
@@ -744,8 +780,6 @@ function switchToNextSlide(){
             case "image":
                 // get signature positioning info
                 signature.pageNumber = $(".gd-signature-information-review i").html();
-                signature.columnNumber = $("#gd-column").val();
-                signature.rowNumber = $("#gd-row").val();
                 if(signature.pageNumber == ""){
                     $(".gd-signature-information-review i").html("Please select page first");
                 } else {

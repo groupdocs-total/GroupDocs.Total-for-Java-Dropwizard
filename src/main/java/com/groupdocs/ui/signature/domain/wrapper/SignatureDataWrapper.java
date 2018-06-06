@@ -1,0 +1,130 @@
+package com.groupdocs.ui.signature.domain.wrapper;
+
+public class SignatureDataWrapper {
+    private String reason;
+    private String  contact;
+    private String  address;
+    private String  date;
+    private String  signaturePassword;
+    private String  signatureComment;
+    private String documentType;
+    private String signatureGuid;
+    private int pageNumber;
+    private int left;
+    private int top;
+    private int imageWidth;
+    private int imageHeight;
+    private int angle;
+
+    public int getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getSignaturePassword() {
+        return signaturePassword;
+    }
+
+    public void setSignaturePassword(String signaturePassword) {
+        this.signaturePassword = signaturePassword;
+    }
+
+    public String getSignatureComment() {
+        return signatureComment;
+    }
+
+    public void setSignatureComment(String signatureComment) {
+        this.signatureComment = signatureComment;
+    }
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
+    }
+
+    public int getLeft() {
+        return left;
+    }
+
+    public void setLeft(int left) {
+        this.left = left;
+    }
+
+    public int getTop() {
+        return top;
+    }
+
+    public void setTop(int top) {
+        this.top = top;
+    }
+
+    public int getAngle() {
+        return angle;
+    }
+
+    public void setAngle(int angle) {
+        this.angle = angle;
+    }
+
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public void setImageWidth(int imageWidth) {
+        this.imageWidth = imageWidth;
+    }
+
+    public int getImageHeight() {
+        return imageHeight;
+    }
+
+    public void setImageHeight(int imageHeight) {
+        this.imageHeight = imageHeight;
+    }
+
+    public String getSignatureGuid() {
+        return signatureGuid;
+    }
+
+    public void setSignatureGuid(String signatureGuid) {
+        this.signatureGuid = signatureGuid;
+    }
+}

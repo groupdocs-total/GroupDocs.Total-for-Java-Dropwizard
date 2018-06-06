@@ -24,9 +24,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="">
-                            <img src="assets/total/images/groupdocs-signature-d.png"/>
-                            <div class="coming-soon">
+                        <a href="signature">
+                            <img src="assets/total/images/groupdocs-signature.png"/>
+                            <div>
                                 <h5>GroupDocs</h5>
                                 <h6>Signature</h6>
                             </div>

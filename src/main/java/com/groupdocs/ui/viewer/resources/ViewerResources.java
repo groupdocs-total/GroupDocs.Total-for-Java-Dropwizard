@@ -1,8 +1,8 @@
 package com.groupdocs.ui.viewer.resources;
 
 import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.viewer.domain.wrapper.FileDescriptionWrapper;
-import com.groupdocs.ui.viewer.domain.wrapper.LoadedPageWrapper;
+import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
+import com.groupdocs.ui.common.domain.wrapper.LoadedPageWrapper;
 import com.groupdocs.ui.viewer.domain.wrapper.RotatedPageWrapper;
 import com.groupdocs.ui.common.domain.web.MediaType;
 import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
@@ -24,9 +24,6 @@ import com.groupdocs.viewer.exception.InvalidPasswordException;
 import com.groupdocs.viewer.handler.ViewerHtmlHandler;
 import com.groupdocs.viewer.handler.ViewerImageHandler;
 import com.groupdocs.viewer.licensing.License;
-import io.dropwizard.jetty.ConnectorFactory;
-import io.dropwizard.jetty.HttpConnectorFactory;
-import io.dropwizard.server.SimpleServerFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Request;
@@ -49,7 +46,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.net.URL;
 import java.nio.file.Files;

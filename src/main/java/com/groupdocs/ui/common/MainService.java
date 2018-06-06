@@ -2,6 +2,7 @@ package com.groupdocs.ui.common;
 
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.health.TemplateHealthCheck;
+import com.groupdocs.ui.signature.resources.SignatureResources;
 import com.groupdocs.ui.total.resources.TotalResources;
 import com.groupdocs.ui.viewer.resources.ViewerResources;
 import io.dropwizard.Application;
@@ -51,6 +52,7 @@ public class MainService extends Application<GlobalConfiguration> {
 
         // Initiate resources (web pages)
         environment.jersey().register(new ViewerResources(globalConfiguration));
+        environment.jersey().register(new SignatureResources(globalConfiguration));
         environment.jersey().register(new TotalResources(globalConfiguration));
 
         // Add dummy health check to get rid of console warnings

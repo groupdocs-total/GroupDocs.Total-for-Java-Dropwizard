@@ -200,7 +200,9 @@ $(document).ready(function(){
     //////////////////////////////////////////////////
     $('.gd-modal-body').on('click', '.gd-signature', function(e){
         // get selected signature guid
-        signature.signatureGuid = $(this).find("label").data("guid");
+        if (typeof $(this).find("label").data("guid") != "undefined") {
+            signature.signatureGuid = $(this).find("label").data("guid");
+        }
         if(signature.signatureType == "digital") {
             // set styles for selected signature
             $.each($(".gd-signature"), function (index, elem) {

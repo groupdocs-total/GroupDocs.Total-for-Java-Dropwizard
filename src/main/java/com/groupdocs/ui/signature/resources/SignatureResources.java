@@ -408,14 +408,14 @@ public class SignatureResources extends Resources {
                 // save file with out rewriting
                 Files.copy(uploadedInputStream, file.toPath());
             }
-            UploadedSignatureWrapper uploadedDocument = new UploadedSignatureWrapper();
+            SignatureFileDescriptionWrapper uploadedDocument = new SignatureFileDescriptionWrapper();
             uploadedDocument.setGuid(documentStoragePath + "/" + fileName);
             if(signatureType.equals("image")){
                 // get page image
                 byte[] bytes = Files.readAllBytes(new File(uploadedDocument.getGuid()).toPath());
                 // encode ByteArray into String
                 String incodedImage = new String(Base64.getEncoder().encode(bytes));
-                uploadedDocument.setSignatureImage(incodedImage);
+                uploadedDocument.setImage(incodedImage);
             }
             return objectToJson(uploadedDocument);
         }catch(Exception ex){

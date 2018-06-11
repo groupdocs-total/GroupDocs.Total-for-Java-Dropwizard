@@ -9,22 +9,22 @@
 $(document).ready(function(){
 
 	// Add Shape
-	$('#csg-params-container').on('click', 'button#csg-shape-add', function(){
+    $('body').on('click', 'button#csg-shape-add', function(){
 		$.fn.stampGenerator.addShape($(this));
 	});
 
 	// Remove Shape
-	$('#csg-params-container').on('click', 'button.csg-shape-remove', function(){
+    $('body').on('click', 'button.csg-shape-remove', function(){
 		$.fn.stampGenerator.removeShape($(this));
 	});
 
 	// Toggle Shape
-	$('#csg-params-container').on('click', 'button.csg-params-toggle', function(){
+    $('body').on('click', 'button.csg-params-toggle', function(){
 		$.fn.stampGenerator.toggleShape($(this));
 	});
 
 	// Preview/Draw Shapes
-	$('#csg-params-container').bind('input', function(){
+	$('body').bind('#csg-params-container input', function(){
 		$.fn.stampGenerator.drawShape();
 	});
 
@@ -220,7 +220,6 @@ $(document).ready(function(){
 			'</div>';
 			return html;
 		}
-
 	});
 
 })(jQuery);

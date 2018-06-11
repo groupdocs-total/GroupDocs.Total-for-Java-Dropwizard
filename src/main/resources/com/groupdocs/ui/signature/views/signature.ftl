@@ -24,9 +24,6 @@
         <script type="text/javascript" src="assets/signature/js/bcPaint.js"></script>
         <script type="text/javascript" src="assets/signature/js/bcPicker.js"></script>
         <script type="text/javascript" src="assets/signature/js/stampGenerator.js"></script>
-
-
-
     </head>
     <body>
         <div id="element"></div>

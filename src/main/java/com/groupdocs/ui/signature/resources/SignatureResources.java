@@ -6,6 +6,7 @@ import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
 import com.groupdocs.ui.common.domain.wrapper.LoadedPageWrapper;
 import com.groupdocs.ui.common.resources.Resources;
 import com.groupdocs.ui.common.domain.web.MediaType;
+import com.groupdocs.ui.signature.SignaturesLoader.SignatureLoader;
 import com.groupdocs.ui.signature.comparator.FileNameComparator;
 import com.groupdocs.ui.signature.comparator.FileTypeComparator;
 import com.groupdocs.ui.signature.domain.wrapper.*;
@@ -42,13 +43,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.beans.XMLEncoder;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -157,6 +153,8 @@ public class SignatureResources extends Resources {
                     break;
                 case "image": rootDirectory = signatureHandler.getSignatureConfig().getImagesPath();
                     break;
+                case "stamp": rootDirectory = stampsPath;
+                    break;
                 default:  rootDirectory = signatureHandler.getSignatureConfig().getStoragePath();
                     break;
             }
@@ -166,41 +164,18 @@ public class SignatureResources extends Resources {
             } else {
                 relDirPath = rootDirectory + "/" + relDirPath;
             }
-            File directory = new File(relDirPath);
-            File[] fList = directory.listFiles();
+            SignatureLoader signatureLoader = new SignatureLoader(relDirPath, globalConfiguration);
             ArrayList<SignatureFileDescriptionWrapper> fileList = new ArrayList<SignatureFileDescriptionWrapper>();
-            List<File> filesList = new ArrayList<>();
-            for (File file : fList) {
-                filesList.add(file);
+            switch (signatureType) {
+                case "digital":  fileList = signatureLoader.LoadFiles();
+                    break;
+                case "image": fileList = signatureLoader.LoadImageSignatures();
+                    break;
+                case "stamp": fileList = signatureLoader.LoadStampSignatures();
+                    break;
+                default:  fileList = signatureLoader.LoadFiles();
+                    break;
             }
-            fList = null;
-            // sort list of files and folders
-            Collections.sort(filesList, Ordering.from(new FileTypeComparator()).compound(new FileNameComparator()));
-            for (File file : filesList) {
-                // check if current file/folder is hidden
-                if(file.isHidden() ||  file.toPath().equals(new File(globalConfiguration.getSignature().getDataDirectory()).toPath())) {
-                    // ignore current file and skip to next one
-                    continue;
-                } else {
-                    SignatureFileDescriptionWrapper fileDescription = new SignatureFileDescriptionWrapper();
-                    fileDescription.setGuid(file.getAbsolutePath());
-                    fileDescription.setName(file.getName());
-                    // set is directory true/false
-                    fileDescription.setDirectory(file.isDirectory());
-                    // set file size
-                    fileDescription.setSize(file.length());
-                    if(signatureType.equals("image")) {
-                        // get image Base64 incoded String
-                        FileInputStream fileInputStreamReader = new FileInputStream(file);
-                        byte[] bytes = new byte[(int)file.length()];
-                        fileInputStreamReader.read(bytes);
-                        fileDescription.setImage(Base64.getEncoder().encodeToString(bytes));
-                    }
-                    // add object to array list
-                    fileList.add(fileDescription);
-                }
-            }
-
             return objectToJson(fileList);
         }catch (Exception ex){
             // set exception message
@@ -643,44 +618,7 @@ public class SignatureResources extends Resources {
     }
 
     /**
-     * Get signature image stream - temporarlly workaround used until release of the GroupDocs.Signature 18.5, after release will be removed
-     * @param request
-     * @param response
-     * @return document page
-     */
-    @POST
-    @Path(value = "/loadSignatureImage")
-    public Object loadSignatureImage(@Context HttpServletRequest request, @Context HttpServletResponse response){
-        try {
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // get request body
-            String requestBody = getRequestBody(request);
-            // get/set parameters
-            String documentGuid = getJsonString(requestBody, "guid");
-            int pageNumber = getJsonInteger(requestBody, "page");
-            String password = getJsonString(requestBody, "password");
-            LoadedPageWrapper loadedPage = new LoadedPageWrapper();
-            // get page image
-            byte[] bytes = Files.readAllBytes( new File(documentGuid).toPath());
-            // encode ByteArray into String
-            String incodedImage = new String(Base64.getEncoder().encode(bytes));
-            loadedPage.setPageImage(incodedImage);
-            // return loaded page object
-            return objectToJson(loadedPage);
-        }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
-        }
-    }
-
-    /**
-     * Get signature image stream - temporarlly workaround used until release of the GroupDocs.Signature 18.5, after release will be removed
+     * Save signature image stream
      * @param request
      * @param response
      * @return document page
@@ -704,6 +642,62 @@ public class SignatureResources extends Resources {
             byte[] decodedImg = Base64.getDecoder().decode(encodedImage.getBytes(StandardCharsets.UTF_8));
             Files.write(new File(imagePath).toPath(), decodedImg);
             savedImage.setGuid(imagePath);
+            // return loaded page object
+            return objectToJson(savedImage);
+        }catch (Exception ex){
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // set exception message
+            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+            exceptionWrapper.setMessage(ex.getMessage());
+            exceptionWrapper.setException(ex);
+            return objectToJson(exceptionWrapper);
+        }
+    }
+
+    /**
+     * Save signature stamp
+     * @param request
+     * @param response
+     * @return stamp
+     */
+    @POST
+    @Path(value = "/saveStamp")
+    public Object saveStamp(@Context HttpServletRequest request, @Context HttpServletResponse response){
+        try {
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // get request body
+            String requestBody = getRequestBody(request);
+            // get/set parameters
+            String encodedImage = getJsonString(requestBody, "image").replace("data:image/png;base64,", "");
+            StampDataWrapper[] stampData = (StampDataWrapper[]) getJsonObject(requestBody, "stampData", StampDataWrapper[].class);
+
+
+            String newFileName = "";
+            FileDescriptionWrapper savedImage = new FileDescriptionWrapper();
+            File file = null;
+            File folder = new File(stampsPath + "/Preview");
+            File[] listOfFiles = folder.listFiles();
+            for (int i = 0; i < listOfFiles.length; i++) {
+                int number = i + 1;
+                newFileName = "000" + number;
+                file = new File(stampsPath + "/Preview/" + newFileName + ".png");
+                if(file.exists()) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            byte[] decodedImg = Base64.getDecoder().decode(encodedImage.getBytes(StandardCharsets.UTF_8));
+            Files.write(file.toPath(), decodedImg);
+            savedImage.setGuid(file.toPath().toString());
+
+            // stamp data to xml file saving
+            XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(stampsPath + "/XML/" + newFileName + ".xml")));
+            encoder.writeObject(stampData);
+            encoder.close();
+
             // return loaded page object
             return objectToJson(savedImage);
         }catch (Exception ex){

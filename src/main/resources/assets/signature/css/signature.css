@@ -245,7 +245,7 @@ BROWSE SIGNATURES SLIDE
 DRAW IMAGE SLIDE
 ******************************************
 */
-#gd-draw-image {
+#gd-draw-image, #gd-draw-stamp {
     margin: 0 !important;
     background-color: #ffffff;
     position: absolute;
@@ -253,6 +253,13 @@ DRAW IMAGE SLIDE
     left: 27px;
     width: 539px;
     height: 257px;
+}
+#csg-preview-container {
+    width: calc(100% - 233px) !important;
+}
+.csg-preview{
+    top: 17px !important;
+    left: -47px;;
 }
 /*
 ******************************************

@@ -465,11 +465,15 @@ function sign() {
             break;
         case "image": url = getApplicationPath('signImage')
             break;
+        case "stamp": url = getApplicationPath('signStamp')
+            break;
     }
     // current document guid is taken from the viewer.js globals
-    var data = {guid: documentGuid,
+    var data = {
+        guid: documentGuid,
         password: password,
-        signaturesData: signaturesList};
+        signaturesData: signaturesList
+    };
     // sign the document
     $.ajax({
         type: 'POST',
@@ -499,7 +503,7 @@ function sign() {
                     $("#gd-finish-step").html(result);
                     $("#gd-signing-footer").hide();
                     break;
-                case "image":
+                default:
                     toggleModalDialog(true, "Signing results", result);
                     $("#gd-modal-signed").toggleClass("gd-image-signed");
                     break;
@@ -574,6 +578,7 @@ function saveDrawnStamp(stamp) {
                 return;
             }
             signature.signatureGuid = returnedData.guid;
+            signaturesList = null;
             loadSignaturesTree('');
             $(".gd-signature-select").removeClass("gd-signing-disabled");
         },
@@ -589,17 +594,21 @@ function saveDrawnStamp(stamp) {
  */
 function getStampData(){
        // get shape data
+    if (signaturesList == null){
+        signaturesList = [];
+    }
     $(".csg-params").each(function(index, shape){
+        var currentShapeId = $(shape).attr("id").replace ( /[^\d.]/g, '' );
         var stampShape = {};
         stampShape.text = $(shape).find("#csg-text").val();
         stampShape.fontSize = $(shape).find("#csg-text-size").val();
         stampShape.textRepeat = $(shape).find("#csg-text-repeat").val();
+        stampShape.textExpansion = $(shape).find("#csg-text-expansion").val();
         stampShape.font = $(shape).find("#csg-text-font").val();
-        stampShape.radius = $(shape).find("#csg-radius").val();
-        var currentShapeId = index + 1;
         stampShape.textColor = $("#csg-fg-color-" + currentShapeId).children().css('background-color');
-        stampShape.strokeColor = $("csg-stroke-color-" + currentShapeId).children().css('background-color');
-        stampShape.backgroundColor = $("csg-bg-color-" + currentShapeId).children().css('background-color');
+        stampShape.radius = $(shape).find("#csg-radius").val();
+        stampShape.strokeColor = $("#csg-stroke-color-" + currentShapeId).children().css('background-color');
+        stampShape.backgroundColor = $("#csg-bg-color-" + currentShapeId).children().css('background-color');
         signaturesList.push(stampShape);
         stampShape = null;
     });
@@ -944,7 +953,7 @@ function loadSignatureImage() {
     // load signature image from the storage
     $.ajax({
         type: 'POST',
-        url: getApplicationPath('loadDocumentPage'),
+        url: getApplicationPath('loadSignatureImage'),
         data: JSON.stringify(data),
         contentType: 'application/json',
         success: function(returnedData) {
@@ -992,6 +1001,9 @@ function insertImage(image, pageNumber) {
     // set document format
     signature.documentType = getDocumentFormat(documentGuid).format;
     // add current signature object into the list of signatures
+    if(signaturesList == null){
+        signaturesList = [];
+    }
     signaturesList.push(signature);
     // prepare index which will be used for specific image HTMl elements naming
     var currentImage = signatureImageIndex;
@@ -1008,6 +1020,7 @@ function insertImage(image, pageNumber) {
         '<image id="gd-image-signature-' + currentImage + '" class="gd-signature-image" src="data:image/png;base64,' + image + '" alt></image>' +
         resizeHandles +
         '</div>';
+    $("#gd-image-signature-" + currentImage).css('background-color','transparent')
     // add signature to the selected page
     $(signatureHtml).insertBefore($("#gd-page-" + pageNumber).find(".gd-wrapper"));
     // calculate initial centre of the rotation
@@ -1055,6 +1068,8 @@ function insertImage(image, pageNumber) {
         create: function (event, ui) {
             var width = $(event.target).width();
             var height = $(event.target).height();
+            signaturesList[currentImage].imageWidth = Math.round(width);
+            signaturesList[currentImage].imageHeight = Math.round(height);
             setGridPosition(width, height);
         },
         stop: function (event, image) {

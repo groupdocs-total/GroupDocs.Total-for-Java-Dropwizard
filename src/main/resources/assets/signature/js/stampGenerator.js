@@ -198,7 +198,7 @@ $(document).ready(function(){
 							'<tr>' +
 								'<td><div class="csg-color-picker" id="csg-fg-color-' + num + '"></div></td>' +
 								'<td><input type="number" id="csg-text-expansion" value="0.173" step="0.001"/></td>' +
-								'<td><input type="number" id="csg-text-repeat" value="2"/></td>' +
+								'<td><input type="number" id="csg-text-repeat" value="1"/></td>' +
 							'</tr>' +
 						'</tbody>' +
 					'</table>' +

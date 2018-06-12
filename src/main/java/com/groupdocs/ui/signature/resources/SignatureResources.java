@@ -1,5 +1,8 @@
 package com.groupdocs.ui.signature.resources;
 
+import com.groupdocs.signature.domain.BorderLine;
+import com.groupdocs.signature.domain.stamps.StampLine;
+import com.groupdocs.signature.options.stampsignature.PdfStampSignOptions;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
 import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
@@ -7,9 +10,11 @@ import com.groupdocs.ui.common.domain.wrapper.LoadedPageWrapper;
 import com.groupdocs.ui.common.resources.Resources;
 import com.groupdocs.ui.common.domain.web.MediaType;
 import com.groupdocs.ui.signature.SignaturesLoader.SignatureLoader;
-import com.groupdocs.ui.signature.comparator.FileNameComparator;
-import com.groupdocs.ui.signature.comparator.FileTypeComparator;
-import com.groupdocs.ui.signature.domain.wrapper.*;
+import com.groupdocs.ui.signature.domain.wrapper.StampDataWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.SignatureFileDescriptionWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.SignedDocumentWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.DocumentDescriptionWrapper;
 import com.groupdocs.ui.signature.views.Signature;
 import com.groupdocs.signature.domain.DocumentDescription;
 import com.groupdocs.signature.handler.SignatureHandler;
@@ -27,9 +32,9 @@ import com.groupdocs.signature.options.imagesignature.PdfSignImageOptions;
 import com.groupdocs.signature.options.loadoptions.LoadOptions;
 import com.groupdocs.signature.options.saveoptions.SaveOptions;
 import com.groupdocs.signature.config.SignatureConfig;
-import com.google.common.collect.Ordering;
 import com.google.gson.Gson;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jetty.server.Request;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,8 +48,17 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import java.awt.*;
+import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.File;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -54,8 +68,6 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Signature
@@ -66,7 +78,13 @@ import java.util.List;
 @Path(value = "/signature")
 public class SignatureResources extends Resources {
     private final SignatureHandler signatureHandler;
-    private String stampsPath;
+    private final String signaturesRootFolder = "SignatureData";
+    private final String stampsRootFolder = "/Stamps";
+    private final String stampsPreviewFolder = "/Preview";
+    private final String stampsXmlFolder = "/XML";
+    private final String certificatesFolder = "/Digital";
+    private final String imagesFolder = "/Image";
+
     /**
      * Constructor
      * @param globalConfiguration global configuration object
@@ -82,7 +100,7 @@ public class SignatureResources extends Resources {
         }
         String signatureDataPath = "";
         if(globalConfiguration.getSignature().getDataDirectory() == null || globalConfiguration.getSignature().getDataDirectory().isEmpty()){
-            signatureDataPath = globalConfiguration.getSignature().getFilesDirectory() + "SignatureData";
+            signatureDataPath = globalConfiguration.getSignature().getFilesDirectory() + signaturesRootFolder;
             if(!Files.exists( new File(signatureDataPath).toPath())) {
                 new File(signatureDataPath).mkdir();
             }
@@ -91,25 +109,24 @@ public class SignatureResources extends Resources {
             signatureDataPath = globalConfiguration.getSignature().getDataDirectory();
         }
 
-        if(!Files.exists(new File(signatureDataPath + "/Digital").toPath())){
-            new File(signatureDataPath + "/Digital").mkdir();
+        if(!Files.exists(new File(signatureDataPath + certificatesFolder).toPath())){
+            new File(signatureDataPath + certificatesFolder).mkdir();
         }
-        if(!Files.exists(new File(signatureDataPath + "/Image").toPath())){
-            new File(signatureDataPath + "/Image").mkdir();
+        if(!Files.exists(new File(signatureDataPath + imagesFolder).toPath())){
+            new File(signatureDataPath + imagesFolder).mkdir();
         }
-        if(!Files.exists(new File(signatureDataPath + "/Stamps").toPath())){
-            new File(signatureDataPath + "/Stamps").mkdir();
-            new File(signatureDataPath + "/Stamps/Preview").mkdir();
-            new File(signatureDataPath + "/Stamps/XML").mkdir();
+        if(!Files.exists(new File(signatureDataPath + stampsRootFolder).toPath())){
+            new File(signatureDataPath + stampsRootFolder).mkdir();
+            new File(signatureDataPath + stampsRootFolder + stampsPreviewFolder).mkdir();
+            new File(signatureDataPath + stampsRootFolder + stampsXmlFolder).mkdir();
         }
         if(globalConfiguration.getSignature().getOutputDirectory() == null || globalConfiguration.getSignature().getOutputDirectory().isEmpty()){
             globalConfiguration.getSignature().setOutputDirectory(globalConfiguration.getSignature().getFilesDirectory());
         }
         config.setStoragePath(globalConfiguration.getSignature().getFilesDirectory());
-        config.setCertificatesPath(signatureDataPath + "/Digital");
-        config.setImagesPath(signatureDataPath + "/Image");
+        config.setCertificatesPath(signatureDataPath + certificatesFolder);
+        config.setImagesPath(signatureDataPath + imagesFolder);
         config.setOutputPath(globalConfiguration.getSignature().getOutputDirectory());
-        stampsPath = signatureDataPath + "/Stamps";
         // set GroupDocs license
         License license = new License();
         license.setLicense(globalConfiguration.getApplication().getLicensePath());
@@ -153,7 +170,7 @@ public class SignatureResources extends Resources {
                     break;
                 case "image": rootDirectory = signatureHandler.getSignatureConfig().getImagesPath();
                     break;
-                case "stamp": rootDirectory = stampsPath;
+                case "stamp": rootDirectory = signatureHandler.getSignatureConfig().getStoragePath() + signaturesRootFolder + stampsRootFolder;
                     break;
                 default:  rootDirectory = signatureHandler.getSignatureConfig().getStoragePath();
                     break;
@@ -171,7 +188,7 @@ public class SignatureResources extends Resources {
                     break;
                 case "image": fileList = signatureLoader.LoadImageSignatures();
                     break;
-                case "stamp": fileList = signatureLoader.LoadStampSignatures();
+                case "stamp": fileList = signatureLoader.LoadStampSignatures(stampsPreviewFolder, stampsXmlFolder);
                     break;
                 default:  fileList = signatureLoader.LoadFiles();
                     break;
@@ -405,6 +422,43 @@ public class SignatureResources extends Resources {
     }
 
     /**
+     * Get signature image stream - temporarlly workaround used until release of the GroupDocs.Signature 18.5, after release will be removed
+     * @param request
+     * @param response
+     * @return document page
+     */
+    @POST
+    @Path(value = "/loadSignatureImage")
+    public Object loadSignatureImage(@Context HttpServletRequest request, @Context HttpServletResponse response){
+        try {
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // get request body
+            String requestBody = getRequestBody(request);
+            // get/set parameters
+            String documentGuid = getJsonString(requestBody, "guid");
+            int pageNumber = getJsonInteger(requestBody, "page");
+            String password = getJsonString(requestBody, "password");
+            LoadedPageWrapper loadedPage = new LoadedPageWrapper();
+            // get page image
+            byte[] bytes = Files.readAllBytes( new File(documentGuid).toPath());
+            // encode ByteArray into String
+            String incodedImage = new String(Base64.getEncoder().encode(bytes));
+            loadedPage.setPageImage(incodedImage);
+            // return loaded page object
+            return objectToJson(loadedPage);
+        }catch (Exception ex){
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // set exception message
+            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+            exceptionWrapper.setMessage(ex.getMessage());
+            exceptionWrapper.setException(ex);
+            return objectToJson(exceptionWrapper);
+        }
+    }
+
+    /**
      * Sign document with digital signature
      * @param request
      * @param response
@@ -618,6 +672,132 @@ public class SignatureResources extends Resources {
     }
 
     /**
+     * Sign document with stamp signature
+     * @param request
+     * @param response
+     * @return signed document info
+     */
+    @POST
+    @Path(value = "/signStamp")
+    public Object signStamp(@Context HttpServletRequest request, @Context HttpServletResponse response){
+        String password = "";
+        try {
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // get request body
+            String requestBody = getRequestBody(request);
+            // get/set parameters
+            String documentGuid = getJsonString(requestBody, "guid");
+            password = getJsonString(requestBody, "password");
+            SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
+            final SaveOptions saveOptions = new SaveOptions();
+            saveOptions.setOutputType(OutputType.String);
+            saveOptions.setOutputFileName(new File(documentGuid).getName());
+            LoadOptions loadOptions = new LoadOptions();
+            if (password != null && !password.isEmpty()) {
+                loadOptions.setPassword(password);
+            }
+            // initiate signed document wrapper
+            SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
+            SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
+            // set signature password if required
+            String xmlPath = signatureHandler.getSignatureConfig().getStoragePath() + signaturesRootFolder + stampsRootFolder + stampsXmlFolder;
+            String mimeType = new MimetypesFileTypeMap().getContentType(documentGuid);
+            // mimeType should now be something like "image/png" if the document is image
+            if (mimeType.substring(0, 5).equalsIgnoreCase("image")) {
+                signaturesData[0].setDocumentType("image");
+            }
+            int redColor = 0;
+            int greenColor = 0;
+            int blueColor = 0;
+            for(int i = 0; i < signaturesData.length; i++) {
+                String stampName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
+                // prepare sgining options and sign document
+                switch (signaturesData[0].getDocumentType()) {
+                    case "Portable Document Format":
+                        XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(xmlPath + "/" + stampName +".xml")));
+                        StampDataWrapper[] stampData = (StampDataWrapper[])decoder.readObject();
+                        // setup options
+                        PdfStampSignOptions pdfSignOptions = new PdfStampSignOptions();
+                        if(signaturesData[i].getImageHeight() > signaturesData[i].getImageWidth()){
+                            signaturesData[i].setImageWidth(signaturesData[i].getImageHeight());
+                        } else {
+                            signaturesData[i].setImageHeight(signaturesData[i].getImageWidth());
+                        }
+                        pdfSignOptions.setHeight(signaturesData[i].getImageHeight());
+                        pdfSignOptions.setWidth(signaturesData[i].getImageWidth());
+                        pdfSignOptions.setTop(signaturesData[i].getTop());
+                        pdfSignOptions.setLeft(signaturesData[i].getLeft());
+                        pdfSignOptions.setDocumentPageNumber(signaturesData[i].getPageNumber());
+                        pdfSignOptions.setRotationAngle(signaturesData[i].getAngle());
+                        ArrayUtils.reverse(stampData);
+                        for(int n = 0; n < stampData.length; n++){
+                            String text = "";
+                            for(int m = 0; m < stampData[n].getTextRepeat(); m++){
+                                text = text + stampData[n].getText();
+                            }
+                            StampLine line = new StampLine();
+                            line.setText(text);
+                            line.getFont().setFontSize(stampData[n].getFontSize());
+                            line.setTextBottomIntent(2);
+                            String[] colors = stampData[n].getTextColor().split(",");
+                            redColor = Integer.parseInt(colors[0].replaceAll("\\D+",""));
+                            greenColor = Integer.parseInt(colors[1].replaceAll("\\D+",""));
+                            blueColor = Integer.parseInt(colors[2].replaceAll("\\D+",""));
+                            line.setTextColor(new Color(redColor, greenColor, blueColor));
+                            colors = stampData[n].getBackgroundColor().split(",");
+                            redColor = Integer.parseInt(colors[0].replaceAll("\\D+",""));
+                            greenColor = Integer.parseInt(colors[1].replaceAll("\\D+",""));
+                            blueColor = Integer.parseInt(colors[2].replaceAll("\\D+",""));
+                            line.setBackgroundColor(new Color(redColor, greenColor, blueColor));
+                            BorderLine border = new BorderLine();
+                            colors = stampData[n].getStrokeColor().split(",");
+                            redColor = Integer.parseInt(colors[0].replaceAll("\\D+",""));
+                            greenColor = Integer.parseInt(colors[1].replaceAll("\\D+",""));
+                            blueColor = Integer.parseInt(colors[2].replaceAll("\\D+",""));
+                            border.setColor(new Color(redColor, greenColor, blueColor));
+                            border.setWeight(2);
+                            line.setOuterBorder(border);
+                            pdfSignOptions.getOuterLines().add(line);
+                        }
+                        signsCollection.add(pdfSignOptions);
+                        break;
+                    case "Microsoft Word":
+
+                        break;
+                    case "Microsoft PowerPoint":
+
+                        break;
+                    case "image":
+
+                        break;
+                    case "Microsoft Excel":
+
+                        break;
+                }
+            }
+            signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions);
+            signedDocument.setGuid(signatureHandler.getSignatureConfig().getOutputPath() + "/" + new File(documentGuid).getName());
+            // return loaded page object
+            return objectToJson(signedDocument);
+        }catch (Exception ex){
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // set exception message
+            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+            if(ex.getMessage().contains("password") && password.isEmpty()) {
+                exceptionWrapper.setMessage("Password Required");
+            }else if(ex.getMessage().contains("password") && !password.isEmpty()){
+                exceptionWrapper.setMessage("Incorrect password");
+            }else{
+                exceptionWrapper.setMessage(ex.getMessage());
+                exceptionWrapper.setException(ex);
+            }
+            return objectToJson(exceptionWrapper);
+        }
+    }
+
+    /**
      * Save signature image stream
      * @param request
      * @param response
@@ -672,29 +852,29 @@ public class SignatureResources extends Resources {
             // get/set parameters
             String encodedImage = getJsonString(requestBody, "image").replace("data:image/png;base64,", "");
             StampDataWrapper[] stampData = (StampDataWrapper[]) getJsonObject(requestBody, "stampData", StampDataWrapper[].class);
-
-
+            String previewPath = signatureHandler.getSignatureConfig().getStoragePath() + signaturesRootFolder + stampsRootFolder + stampsPreviewFolder;
+            String xmlPath = signatureHandler.getSignatureConfig().getStoragePath() + signaturesRootFolder + stampsRootFolder + stampsXmlFolder;
             String newFileName = "";
             FileDescriptionWrapper savedImage = new FileDescriptionWrapper();
             File file = null;
-            File folder = new File(stampsPath + "/Preview");
+            File folder = new File(previewPath);
             File[] listOfFiles = folder.listFiles();
-            for (int i = 0; i < listOfFiles.length; i++) {
+            for (int i = 0; i <= listOfFiles.length; i++) {
                 int number = i + 1;
-                newFileName = "000" + number;
-                file = new File(stampsPath + "/Preview/" + newFileName + ".png");
-                if(file.exists()) {
+                newFileName = String.format("%03d", number);
+                file = new File(previewPath + "/" + newFileName + ".png");
+                if (file.exists()) {
                     continue;
                 } else {
                     break;
                 }
             }
             byte[] decodedImg = Base64.getDecoder().decode(encodedImage.getBytes(StandardCharsets.UTF_8));
+            file.createNewFile();
             Files.write(file.toPath(), decodedImg);
             savedImage.setGuid(file.toPath().toString());
-
             // stamp data to xml file saving
-            XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(stampsPath + "/XML/" + newFileName + ".xml")));
+            XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(xmlPath + "/" + newFileName + ".xml")));
             encoder.writeObject(stampData);
             encoder.close();
 

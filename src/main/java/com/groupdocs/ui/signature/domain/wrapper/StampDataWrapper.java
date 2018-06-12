@@ -1,17 +1,30 @@
 package com.groupdocs.ui.signature.domain.wrapper;
 
+import java.awt.*;
+
 public class StampDataWrapper {
     private String text;
+    private String textExpansion;
+    private String font;
+    private String textColor = "rgb(0,0,0)";
+    private String strokeColor = "rgb(0,0,0)";
+    private String backgroundColor = "rgb(0,0,0)";
+    private int radius;
     private int fontSize;
     private int textRepeat;
-    private String font;
-    private int radius;
-    private String textColor;
-    private String srokeColor;
-    private String backgroundColor;
+    private int width;
+    private int height;
 
     public String getText() {
         return text;
+    }
+
+    public String getTextExpansion() {
+        return textExpansion;
+    }
+
+    public void setTextExpansion(String textExpansion) {
+        this.textExpansion = textExpansion;
     }
 
     public void setText(String text) {
@@ -58,12 +71,12 @@ public class StampDataWrapper {
         this.textColor = textColor;
     }
 
-    public String getSrokeColor() {
-        return srokeColor;
+    public String getStrokeColor() {
+        return strokeColor;
     }
 
-    public void setSrokeColor(String srokeColor) {
-        this.srokeColor = srokeColor;
+    public void setStrokeColor(String strokeColor) {
+        this.strokeColor = strokeColor;
     }
 
     public String getBackgroundColor() {
@@ -72,5 +85,21 @@ public class StampDataWrapper {
 
     public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 }

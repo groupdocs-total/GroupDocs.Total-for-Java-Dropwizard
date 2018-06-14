@@ -269,10 +269,12 @@ $(document).ready(function(){
         // lock feature for image signature modifications
         $(this).parent().draggable("disable").rotatable("disable").resizable("disable");
         // enable save button on the dashboard
-        $("#gd-nav-save").toggleClass("gd-save-disabled");
-        $("#gd-nav-save").on('click', function(){
-            sign();
-        });
+        if($("#gd-nav-save").hasClass("gd-save-disabled")) {
+            $("#gd-nav-save").removeClass("gd-save-disabled");
+            $("#gd-nav-save").on('click', function(){
+                sign();
+            });
+        }
     });
 
     //////////////////////////////////////////////////
@@ -282,7 +284,7 @@ $(document).ready(function(){
         // unlock feature for image signature modifications
         $(this).parent().draggable("enable").rotatable("enable").resizable("enable");
         // disable save button on the dashboard
-        $("#gd-nav-save").toggleClass("gd-save-disabled");
+        $("#gd-nav-save").addClass("gd-save-disabled");
         $("#gd-nav-save").off('click');
     });
 
@@ -482,6 +484,7 @@ function sign() {
         contentType: 'application/json',
         success: function(returnedData) {
             $('#gd-modal-spinner').hide();
+            var result = "";
             if(returnedData.message != undefined){
                 // if password for signature certificate is incorrect return to previouse step and show error
                 if(returnedData.message.toLowerCase().indexOf("password") != -1){
@@ -496,7 +499,7 @@ function sign() {
                 return;
             }
             // prepare signing results HTML
-            var result = '<div id="gd-modal-signed">Document signed successfully</div>';
+            result = '<div id="gd-modal-signed">Document signed successfully</div>';
             // show signing results
             switch(signaturesList[0].signatureType) {
                 case "digital":
@@ -550,12 +553,11 @@ function saveDrawnImage(image) {
 
 /**
  * Save drawn stamp signature
- * @param {string} image - Base64 encoded image
  */
-function saveDrawnStamp(stamp) {
+function saveDrawnStamp() {
     $('#gd-modal-spinner').show();
     //get drawn stamp data- will be available in the signaturesList array
-    getStampData();
+    stampData = getStampData();
     var image = "";
     var ctx = $(".csg-preview")[0].getContext("2d");
     $(".csg-preview").each(function(index, shape){
@@ -563,7 +565,7 @@ function saveDrawnStamp(stamp) {
     });
     image =  $(".csg-preview")[0].toDataURL("image/png");
     // current document guid is taken from the viewer.js globals
-    var data = {image: image, stampData: signaturesList};
+    var data = {image: image, stampData: stampData};
     // sign the document
     $.ajax({
         type: 'POST',
@@ -578,7 +580,6 @@ function saveDrawnStamp(stamp) {
                 return;
             }
             signature.signatureGuid = returnedData.guid;
-            signaturesList = null;
             loadSignaturesTree('');
             $(".gd-signature-select").removeClass("gd-signing-disabled");
         },
@@ -593,11 +594,9 @@ function saveDrawnStamp(stamp) {
  * Open modal on signature upload step
  */
 function getStampData(){
-       // get shape data
-    if (signaturesList == null){
-        signaturesList = [];
-    }
-    $(".csg-params").each(function(index, shape){
+    // get shape data
+    var stampData = [];
+   $(".csg-params").each(function(index, shape){
         var currentShapeId = $(shape).attr("id").replace ( /[^\d.]/g, '' );
         var stampShape = {};
         stampShape.text = $(shape).find("#csg-text").val();
@@ -609,9 +608,12 @@ function getStampData(){
         stampShape.radius = $(shape).find("#csg-radius").val();
         stampShape.strokeColor = $("#csg-stroke-color-" + currentShapeId).children().css('background-color');
         stampShape.backgroundColor = $("#csg-bg-color-" + currentShapeId).children().css('background-color');
-        signaturesList.push(stampShape);
+        stampShape.width = $(".csg-preview")[0].width;
+        stampShape.height = $(".csg-preview")[0].height;
+        stampData.push(stampShape);
         stampShape = null;
     });
+   return stampData;
 }
 
 /**
@@ -1001,9 +1003,6 @@ function insertImage(image, pageNumber) {
     // set document format
     signature.documentType = getDocumentFormat(documentGuid).format;
     // add current signature object into the list of signatures
-    if(signaturesList == null){
-        signaturesList = [];
-    }
     signaturesList.push(signature);
     // prepare index which will be used for specific image HTMl elements naming
     var currentImage = signatureImageIndex;

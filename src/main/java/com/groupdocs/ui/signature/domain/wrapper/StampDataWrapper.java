@@ -6,6 +6,7 @@ public class StampDataWrapper {
     private String text;
     private String textExpansion;
     private String font;
+    private String imageGuid;
     private String textColor = "rgb(0,0,0)";
     private String strokeColor = "rgb(0,0,0)";
     private String backgroundColor = "rgb(0,0,0)";
@@ -19,32 +20,16 @@ public class StampDataWrapper {
         return text;
     }
 
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public String getTextExpansion() {
         return textExpansion;
     }
 
     public void setTextExpansion(String textExpansion) {
         this.textExpansion = textExpansion;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public int getFontSize() {
-        return fontSize;
-    }
-
-    public void setFontSize(int fontSize) {
-        this.fontSize = fontSize;
-    }
-
-    public int getTextRepeat() {
-        return textRepeat;
-    }
-
-    public void setTextRepeat(int textRepeat) {
-        this.textRepeat = textRepeat;
     }
 
     public String getFont() {
@@ -55,12 +40,12 @@ public class StampDataWrapper {
         this.font = font;
     }
 
-    public int getRadius() {
-        return radius;
+    public String getImageGuid() {
+        return imageGuid;
     }
 
-    public void setRadius(int radius) {
-        this.radius = radius;
+    public void setImageGuid(String imageGuid) {
+        this.imageGuid = imageGuid;
     }
 
     public String getTextColor() {
@@ -85,6 +70,30 @@ public class StampDataWrapper {
 
     public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    public int getTextRepeat() {
+        return textRepeat;
+    }
+
+    public void setTextRepeat(int textRepeat) {
+        this.textRepeat = textRepeat;
     }
 
     public int getWidth() {

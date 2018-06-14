@@ -1,8 +1,9 @@
 package com.groupdocs.ui.signature.resources;
 
 import com.groupdocs.signature.domain.BorderLine;
-import com.groupdocs.signature.domain.stamps.StampLine;
-import com.groupdocs.signature.options.stampsignature.PdfStampSignOptions;
+import com.groupdocs.signature.domain.enums.ExtendedDashStyle;
+import com.groupdocs.signature.domain.stamps.*;
+import com.groupdocs.signature.options.stampsignature.*;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
 import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
@@ -106,7 +107,7 @@ public class SignatureResources extends Resources {
             }
             globalConfiguration.getSignature().setDataDirectory(signatureDataPath);
         } else {
-            signatureDataPath = globalConfiguration.getSignature().getDataDirectory();
+            signatureDataPath = globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getSignature().getDataDirectory();
         }
 
         if(!Files.exists(new File(signatureDataPath + certificatesFolder).toPath())){
@@ -122,6 +123,11 @@ public class SignatureResources extends Resources {
         }
         if(globalConfiguration.getSignature().getOutputDirectory() == null || globalConfiguration.getSignature().getOutputDirectory().isEmpty()){
             globalConfiguration.getSignature().setOutputDirectory(globalConfiguration.getSignature().getFilesDirectory());
+        } else {
+            globalConfiguration.getSignature().setOutputDirectory(globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getSignature().getOutputDirectory());
+        }
+        if(!Files.exists(new File(globalConfiguration.getSignature().getOutputDirectory()).toPath())){
+            new File(globalConfiguration.getSignature().getOutputDirectory()).mkdir();
         }
         config.setStoragePath(globalConfiguration.getSignature().getFilesDirectory());
         config.setCertificatesPath(signatureDataPath + certificatesFolder);
@@ -713,66 +719,229 @@ public class SignatureResources extends Resources {
             for(int i = 0; i < signaturesData.length; i++) {
                 String stampName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
                 // prepare sgining options and sign document
+                XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(xmlPath + "/" + stampName +".xml")));
+                StampDataWrapper[] stampData = (StampDataWrapper[])decoder.readObject();
+                ArrayUtils.reverse(stampData);
                 switch (signaturesData[0].getDocumentType()) {
-                    case "Portable Document Format":
-                        XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(xmlPath + "/" + stampName +".xml")));
-                        StampDataWrapper[] stampData = (StampDataWrapper[])decoder.readObject();
+                    case "Portable Document Format":                       
                         // setup options
                         PdfStampSignOptions pdfSignOptions = new PdfStampSignOptions();
-                        if(signaturesData[i].getImageHeight() > signaturesData[i].getImageWidth()){
-                            signaturesData[i].setImageWidth(signaturesData[i].getImageHeight());
-                        } else {
-                            signaturesData[i].setImageHeight(signaturesData[i].getImageWidth());
-                        }
                         pdfSignOptions.setHeight(signaturesData[i].getImageHeight());
                         pdfSignOptions.setWidth(signaturesData[i].getImageWidth());
                         pdfSignOptions.setTop(signaturesData[i].getTop());
                         pdfSignOptions.setLeft(signaturesData[i].getLeft());
                         pdfSignOptions.setDocumentPageNumber(signaturesData[i].getPageNumber());
                         pdfSignOptions.setRotationAngle(signaturesData[i].getAngle());
-                        ArrayUtils.reverse(stampData);
+                        pdfSignOptions.setBackgroundColor(getColor(stampData[stampData.length - 1].getBackgroundColor()));
+                        pdfSignOptions.setBackgroundColorCropType(StampBackgroundCropType.OuterArea);
+                        for (int n = 0; n < stampData.length; n++) {
+                            String text = "";
+                            for (int m = 0; m < stampData[n].getTextRepeat(); m++) {
+                                text = text + stampData[n].getText();
+                            }
+                            int reductionSize = (stampData[n].getHeight() / signaturesData[i].getImageHeight() == 0) ? 1 : stampData[n].getHeight() / signaturesData[i].getImageHeight();
+                            if ((n + 1) == stampData.length) {
+                                StampLine squareLine = new StampLine();
+                                squareLine.setText(text);
+                                squareLine.getFont().setFontSize(stampData[n].getFontSize() / reductionSize);
+                                squareLine.setTextColor(getColor(stampData[n].getTextColor()));
+                                pdfSignOptions.getInnerLines().add(squareLine);
+                                if(stampData.length == 1){
+                                    StampLine line = new StampLine();
+                                    line.setBackgroundColor(getColor(stampData[n].getBackgroundColor()));
+                                    line.getOuterBorder().setColor(getColor(stampData[n].getStrokeColor()));
+                                    line.getOuterBorder().setWeight(0.5);
+                                    line.getInnerBorder().setColor(getColor(stampData[n].getBackgroundColor()));
+                                    line.getInnerBorder().setWeight(0.5);
+                                    line.setHeight(1);
+                                    pdfSignOptions.getOuterLines().add(line);
+                                }
+                            } else {
+                                int height = (stampData[n].getRadius() - stampData[n + 1].getRadius()) / reductionSize;
+                                StampLine line = new StampLine();
+                                line.setBackgroundColor(getColor(stampData[n].getBackgroundColor()));
+                                line.getOuterBorder().setColor(getColor(stampData[n].getStrokeColor()));
+                                line.getOuterBorder().setWeight(0.5);
+                                line.getInnerBorder().setColor(getColor(stampData[n + 1].getStrokeColor()));
+                                line.getInnerBorder().setWeight(0.5);
+                                line.setText(text);
+                                line.setHeight(height);
+                                line.getFont().setFontSize(stampData[n].getFontSize() / reductionSize);
+                                line.setTextColor(getColor(stampData[n].getTextColor()));
+                                line.setTextBottomIntent((height / 2));
+                                line.setTextRepeatType(StampTextRepeatType.RepeatWithTruncation);
+                                pdfSignOptions.getOuterLines().add(line);
+                            }
+                        }
+                        signsCollection.add(pdfSignOptions);
+                        break;
+                    case "Microsoft Word":
+                        // setup options
+                        WordsStampSignOptions wordsSignOptions = new WordsStampSignOptions();
+                        wordsSignOptions.setHeight(signaturesData[i].getImageHeight());
+                        wordsSignOptions.setWidth(signaturesData[i].getImageWidth());
+                        wordsSignOptions.setTop(signaturesData[i].getTop());
+                        wordsSignOptions.setLeft(signaturesData[i].getLeft());
+                        wordsSignOptions.setDocumentPageNumber(signaturesData[i].getPageNumber());
+                        wordsSignOptions.setRotationAngle(signaturesData[i].getAngle());
+                        wordsSignOptions.setBackgroundColor(getColor(stampData[stampData.length - 1].getBackgroundColor()));
+                        wordsSignOptions.setBackgroundColorCropType(StampBackgroundCropType.OuterArea);
                         for(int n = 0; n < stampData.length; n++){
                             String text = "";
                             for(int m = 0; m < stampData[n].getTextRepeat(); m++){
                                 text = text + stampData[n].getText();
                             }
-                            StampLine line = new StampLine();
-                            line.setText(text);
-                            line.getFont().setFontSize(stampData[n].getFontSize());
-                            line.setTextBottomIntent(2);
-                            String[] colors = stampData[n].getTextColor().split(",");
-                            redColor = Integer.parseInt(colors[0].replaceAll("\\D+",""));
-                            greenColor = Integer.parseInt(colors[1].replaceAll("\\D+",""));
-                            blueColor = Integer.parseInt(colors[2].replaceAll("\\D+",""));
-                            line.setTextColor(new Color(redColor, greenColor, blueColor));
-                            colors = stampData[n].getBackgroundColor().split(",");
-                            redColor = Integer.parseInt(colors[0].replaceAll("\\D+",""));
-                            greenColor = Integer.parseInt(colors[1].replaceAll("\\D+",""));
-                            blueColor = Integer.parseInt(colors[2].replaceAll("\\D+",""));
-                            line.setBackgroundColor(new Color(redColor, greenColor, blueColor));
-                            BorderLine border = new BorderLine();
-                            colors = stampData[n].getStrokeColor().split(",");
-                            redColor = Integer.parseInt(colors[0].replaceAll("\\D+",""));
-                            greenColor = Integer.parseInt(colors[1].replaceAll("\\D+",""));
-                            blueColor = Integer.parseInt(colors[2].replaceAll("\\D+",""));
-                            border.setColor(new Color(redColor, greenColor, blueColor));
-                            border.setWeight(2);
-                            line.setOuterBorder(border);
-                            pdfSignOptions.getOuterLines().add(line);
+                            int reductionSize = (stampData[n].getHeight() / signaturesData[i].getImageHeight() == 0) ? 1 : stampData[n].getHeight() / signaturesData[i].getImageHeight();
+                            if((n + 1) == stampData.length){
+                                StampLine squareLine = new StampLine();
+                                squareLine.setText(text);
+                                squareLine.getFont().setFontSize(stampData[n].getFontSize() / reductionSize);
+                                squareLine.setTextColor(getColor(stampData[n].getTextColor()));
+                                wordsSignOptions.getInnerLines().add(squareLine);
+                            } else {
+                                int height = (stampData[n].getRadius() - stampData[n + 1].getRadius()) / reductionSize;
+                                StampLine line = new StampLine();
+                                line.setBackgroundColor(getColor(stampData[n].getBackgroundColor()));
+                                line.getOuterBorder().setColor(getColor(stampData[n].getStrokeColor()));
+                                line.getInnerBorder().setColor(getColor(stampData[n + 1].getStrokeColor()));
+                                line.getInnerBorder().setWeight(0.5);
+                                line.getOuterBorder().setWeight(0.5);
+                                line.setText(text);
+                                line.setHeight(height);
+                                line.getFont().setFontSize(stampData[n].getFontSize() / reductionSize);
+                                line.setTextColor(getColor(stampData[n].getTextColor()));
+                                line.setTextBottomIntent((height / 2));
+                                line.setTextRepeatType(StampTextRepeatType.RepeatWithTruncation);
+                                wordsSignOptions.getOuterLines().add(line);
+                            }
                         }
-                        signsCollection.add(pdfSignOptions);
-                        break;
-                    case "Microsoft Word":
-
+                        signsCollection.add(wordsSignOptions);
                         break;
                     case "Microsoft PowerPoint":
-
+                        // setup options
+                        SlidesStampSignOptions  slidesSignOptions = new SlidesStampSignOptions();
+                        slidesSignOptions.setHeight(signaturesData[i].getImageHeight());
+                        slidesSignOptions.setWidth(signaturesData[i].getImageWidth());
+                        slidesSignOptions.setTop(signaturesData[i].getTop());
+                        slidesSignOptions.setLeft(signaturesData[i].getLeft());
+                        slidesSignOptions.setDocumentPageNumber(signaturesData[i].getPageNumber());
+                        slidesSignOptions.setRotationAngle(signaturesData[i].getAngle());
+                        slidesSignOptions.setBackgroundColor(getColor(stampData[stampData.length - 1].getBackgroundColor()));
+                        slidesSignOptions.setBackgroundColorCropType(StampBackgroundCropType.OuterArea);
+                        for(int n = 0; n < stampData.length; n++){
+                            String text = "";
+                            for(int m = 0; m < stampData[n].getTextRepeat(); m++){
+                                text = text + stampData[n].getText();
+                            }
+                            int reductionSize = (stampData[n].getHeight() / signaturesData[i].getImageHeight() == 0) ? 1 : stampData[n].getHeight() / signaturesData[i].getImageHeight();
+                            if((n + 1) == stampData.length){
+                                StampLine squareLine = new StampLine();
+                                squareLine.setText(text);
+                                squareLine.getFont().setFontSize(stampData[n].getFontSize() / reductionSize);
+                                squareLine.setTextColor(getColor(stampData[n].getTextColor()));
+                                slidesSignOptions.getInnerLines().add(squareLine);
+                            } else {
+                                int height = (stampData[n].getRadius() - stampData[n + 1].getRadius()) / reductionSize;
+                                StampLine line = new StampLine();
+                                line.setBackgroundColor(getColor(stampData[n].getBackgroundColor()));
+                                line.getOuterBorder().setColor(getColor(stampData[n].getStrokeColor()));
+                                line.getInnerBorder().setColor(getColor(stampData[n + 1].getStrokeColor()));
+                                line.getInnerBorder().setWeight(0.5);
+                                line.getOuterBorder().setWeight(0.5);
+                                line.setText(text);
+                                line.setHeight(height);
+                                line.getFont().setFontSize(stampData[n].getFontSize() / reductionSize);
+                                line.setTextColor(getColor(stampData[n].getTextColor()));
+                                line.setTextBottomIntent((height / 2));
+                                line.setTextRepeatType(StampTextRepeatType.RepeatWithTruncation);
+                                slidesSignOptions.getOuterLines().add(line);
+                            }
+                        }
+                        signsCollection.add(slidesSignOptions);
                         break;
                     case "image":
-
+                        // setup options
+                        ImagesStampSignOptions imageSignOptions = new ImagesStampSignOptions();
+                        imageSignOptions.setHeight(signaturesData[i].getImageHeight());
+                        imageSignOptions.setWidth(signaturesData[i].getImageWidth());
+                        imageSignOptions.setTop(signaturesData[i].getTop());
+                        imageSignOptions.setLeft(signaturesData[i].getLeft());
+                        imageSignOptions.setDocumentPageNumber(signaturesData[i].getPageNumber());
+                        imageSignOptions.setRotationAngle(signaturesData[i].getAngle());
+                        imageSignOptions.setBackgroundColor(getColor(stampData[stampData.length - 1].getBackgroundColor()));
+                        imageSignOptions.setBackgroundColorCropType(StampBackgroundCropType.OuterArea);
+                        for(int n = 0; n < stampData.length; n++){
+                            String text = "";
+                            for(int m = 0; m < stampData[n].getTextRepeat(); m++){
+                                text = text + stampData[n].getText();
+                            }
+                            int reductionSize = (stampData[n].getHeight() / signaturesData[i].getImageHeight() == 0) ? 1 : stampData[n].getHeight() / signaturesData[i].getImageHeight();
+                            if((n + 1) == stampData.length){
+                                StampLine squareLine = new StampLine();
+                                squareLine.setText(text);
+                                squareLine.getFont().setFontSize(stampData[n].getFontSize() / reductionSize);
+                                squareLine.setTextColor(getColor(stampData[n].getTextColor()));
+                                imageSignOptions.getInnerLines().add(squareLine);
+                            } else {
+                                int height = (stampData[n].getRadius() - stampData[n + 1].getRadius()) / reductionSize;
+                                StampLine line = new StampLine();
+                                line.setBackgroundColor(getColor(stampData[n].getBackgroundColor()));
+                                line.getOuterBorder().setColor(getColor(stampData[n].getStrokeColor()));
+                                line.getInnerBorder().setColor(getColor(stampData[n + 1].getStrokeColor()));
+                                line.getInnerBorder().setWeight(0.5);
+                                line.getOuterBorder().setWeight(0.5);
+                                line.setText(text);
+                                line.setHeight(height);
+                                line.getFont().setFontSize(stampData[n].getFontSize() / reductionSize);
+                                line.setTextColor(getColor(stampData[n].getTextColor()));
+                                line.setTextBottomIntent((height / 2));
+                                line.setTextRepeatType(StampTextRepeatType.RepeatWithTruncation);
+                                imageSignOptions.getOuterLines().add(line);
+                            }
+                        }
+                        signsCollection.add(imageSignOptions);
                         break;
                     case "Microsoft Excel":
-
+                        // setup options
+                        CellsStampSignOptions cellsSignOptions = new CellsStampSignOptions();
+                        cellsSignOptions.setHeight(signaturesData[i].getImageHeight());
+                        cellsSignOptions.setWidth(signaturesData[i].getImageWidth());
+                        cellsSignOptions.setTop(signaturesData[i].getTop());
+                        cellsSignOptions.setLeft(signaturesData[i].getLeft());
+                        cellsSignOptions.setDocumentPageNumber(signaturesData[i].getPageNumber());
+                        cellsSignOptions.setRotationAngle(signaturesData[i].getAngle());
+                        cellsSignOptions.setBackgroundColor(getColor(stampData[stampData.length - 1].getBackgroundColor()));
+                        cellsSignOptions.setBackgroundColorCropType(StampBackgroundCropType.OuterArea);
+                        for(int n = 0; n < stampData.length; n++){
+                            String text = "";
+                            for(int m = 0; m < stampData[n].getTextRepeat(); m++){
+                                text = text + stampData[n].getText();
+                            }
+                            int reductionSize = (stampData[n].getHeight() / signaturesData[i].getImageHeight() == 0) ? 1 : stampData[n].getHeight() / signaturesData[i].getImageHeight();
+                            if((n + 1) == stampData.length){
+                                StampLine squareLine = new StampLine();
+                                squareLine.setText(text);
+                                squareLine.getFont().setFontSize(stampData[n].getFontSize() / reductionSize);
+                                squareLine.setTextColor(getColor(stampData[n].getTextColor()));
+                                cellsSignOptions.getInnerLines().add(squareLine);
+                            } else {
+                                int height = (stampData[n].getRadius() - stampData[n + 1].getRadius()) / reductionSize;
+                                StampLine line = new StampLine();
+                                line.setBackgroundColor(getColor(stampData[n].getBackgroundColor()));
+                                line.getOuterBorder().setColor(getColor(stampData[n].getStrokeColor()));
+                                line.getInnerBorder().setColor(getColor(stampData[n + 1].getStrokeColor()));
+                                line.getInnerBorder().setWeight(0.5);
+                                line.getOuterBorder().setWeight(0.5);
+                                line.setText(text);
+                                line.setHeight(height);
+                                line.getFont().setFontSize(stampData[n].getFontSize() / reductionSize);
+                                line.setTextColor(getColor(stampData[n].getTextColor()));
+                                line.setTextBottomIntent((height / 2));
+                                line.setTextRepeatType(StampTextRepeatType.RepeatWithTruncation);
+                                cellsSignOptions.getOuterLines().add(line);
+                            }
+                        }
+                        signsCollection.add(cellsSignOptions);
                         break;
                 }
             }
@@ -901,5 +1070,13 @@ public class SignatureResources extends Resources {
             e.printStackTrace();
         }
         return value;
+    }
+
+    private Color getColor(String rgbColor){
+        String[] colors = rgbColor.split(",");
+        int redColor = Integer.parseInt(colors[0].replaceAll("\\D+", ""));
+        int greenColor = Integer.parseInt(colors[1].replaceAll("\\D+", ""));
+        int blueColor = Integer.parseInt(colors[2].replaceAll("\\D+", ""));
+        return new Color(redColor, greenColor, blueColor);
     }
 }

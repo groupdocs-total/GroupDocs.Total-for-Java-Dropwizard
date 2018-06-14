@@ -43,8 +43,8 @@ $(document).ready(function(){
 	* Create private variables.
 	**/
 	var canvasCount = 0;
-	var xCoord = 200;
-	var yCoord = 100;
+	var xCoord = 125;
+	var yCoord = 125;
 	var textPadding = 15;
 	var paramValues = {
 		radius : '#csg-radius',
@@ -121,15 +121,15 @@ $(document).ready(function(){
 				var ctx = c.getContext('2d');
 				// draw canvas
 				ctx.drawCircle(radius, xCoord, yCoord, bgColor, strokeColor);
-				if(i == 1){
-					ctx.fillStyle = fgColor;
-					ctx.font = textSize + 'px ' + textFont;
-					ctx.textAlign = 'center';
-					ctx.fillText(text, xCoord, yCoord + textSize/2);
-					i++;
-				}else{
-					ctx.drawTextCircle(text, parseInt(radius) - parseInt(textPadding), xCoord, yCoord, 0, fgColor, textExpansion, textRepeat, textSize, textFont);
-				}
+                if(i == 1){
+                    ctx.fillStyle = fgColor;
+                    ctx.font = textSize + 'px ' + textFont;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(text, xCoord, yCoord + textSize/2);
+                    i++;
+                }else{
+                    ctx.drawTextCircle(text, parseInt(radius) - parseInt(textPadding), xCoord, yCoord, 0, fgColor, textExpansion, textRepeat, textSize, textFont);
+                }
 			});
 		},
 
@@ -146,7 +146,7 @@ $(document).ready(function(){
 		},
 
 		canvasHtml : function(num){
-			var html = '<canvas id="csg-stamp-' + num + '" class="csg-preview" width="400" height="200"></canvas>';
+			var html = '<canvas id="csg-stamp-' + num + '" class="csg-preview" width="250" height="250"></canvas>';
 			return html;
 		},
 

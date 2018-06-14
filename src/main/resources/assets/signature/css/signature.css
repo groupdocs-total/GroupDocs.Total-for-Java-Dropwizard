@@ -254,12 +254,9 @@ DRAW IMAGE SLIDE
     width: 539px;
     height: 257px;
 }
-#csg-preview-container {
-    width: calc(100% - 233px) !important;
-}
 .csg-preview{
-    top: 17px !important;
-    left: -47px;;
+    top: -8px !important;
+    left: 38px;
 }
 /*
 ******************************************
@@ -391,6 +388,8 @@ SIGNATURE IMAGE PAGE SELECTING STEP
     background-color: #f1f1f1;
     min-width: 160px;
     z-index: 1;
+    overflow-y: auto;
+    max-height: 150px;
 }
 .gd-pages-dropdown-content a {
     color: black;

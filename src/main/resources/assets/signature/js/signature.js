@@ -15,6 +15,7 @@ GLOBAL VARIABLES
 */
 var signatureImageIndex = 0;
 var signaturesList = [];
+var currentDocumentGuid = "";
 var signature = {
     signaturePassword:  "",
     signatureComment: "",
@@ -30,7 +31,9 @@ var signature = {
     date: "",
     pageNumber: 0,
     angle: 0,
-    documentType: ""
+    documentType: "",
+    auxiliaryWidth: 0,
+    auxiliaryHeight: 0
 }
 
 $(document).ready(function(){
@@ -141,10 +144,12 @@ $(document).ready(function(){
             $($(".gd-pagination")[0]).addClass("gd-pagination-active")
         }
         $("#gd-signing-footer").show();
-        if ($("#bcPaint-container").length == 0) {
-            if(signature.signatureType == "image") {
+        if(signature.signatureType == "image") {
+            if ($("#bcPaint-container").length == 0) {
                 $("#gd-draw-image").bcPaint();
-            } else {
+            }
+        } else {
+            if( $("#csg-container").length == 0) {
                 $("#gd-draw-stamp").stampGenerator();
             }
         }
@@ -372,6 +377,13 @@ function loadSignaturesTree(dir, callback) {
                     '</div>';
             }
             $("#gd-signatures").html(goUpHtml + signatures);
+            // check if document was changed
+            if(currentDocumentGuid != documentGuid){
+                // if changed - drop signatures from previous signing
+                signaturesList = [];
+                signatureImageIndex = 0;
+                currentDocumentGuid = documentGuid;
+            }
         },
         error: function(xhr, status, error) {
             var err = eval("(" + xhr.responseText + ")");
@@ -451,6 +463,7 @@ function uploadSignature(file, index, url) {
  */
 function sign() {
     $('#gd-modal-spinner').show();
+    currentDocumentGuid = documentGuid;
     var url = "";
     var signatureType = "";
     // check signature type: digital, image etc.
@@ -540,7 +553,11 @@ function saveDrawnImage(image) {
                 printMessage(returnedData.message);
                 return;
             }
+            // set curent signature data
             signature.signatureGuid = returnedData.guid;
+            signature.auxiliaryHeight = $("#bcPaintCanvas")[0].height;
+            signature.auxiliaryWidth = $("#bcPaintCanvas")[0].width;
+            // load signatuers from storage
             loadSignaturesTree('');
             $(".gd-signature-select").removeClass("gd-signing-disabled");
         },
@@ -556,17 +573,49 @@ function saveDrawnImage(image) {
  */
 function saveDrawnStamp() {
     $('#gd-modal-spinner').show();
-    //get drawn stamp data- will be available in the signaturesList array
+    //get drawn stamp data
     stampData = getStampData();
+    // initiate image
     var image = "";
-    var ctx = $(".csg-preview")[0].getContext("2d");
+    // draw empty canvas - required to resize and crop stamp for its real size
+    var cropedCanvas = "<canvas id='gd-croped-stamp' width='" + stampData[stampData.length - 1].width + "' height='" + stampData[stampData.length - 1].height + "'></canvas>";
+    // combine all stamp lines to one image
+    $("#csg-preview-container").append(cropedCanvas);
+    var ctxCroped = $("#gd-croped-stamp")[0].getContext("2d");
+    // get drawn stamp padding from canvas border
+    var initialLeft = getRealStampSize($(".csg-preview")[0]).left;
+    var initialTop = getRealStampSize($(".csg-preview")[0]).top;
+    // combine stamp lines
     $(".csg-preview").each(function(index, shape){
-        ctx.drawImage(shape, 0, 0);
+        // calculate stamp real size and paddings
+        var newLeft = 0;
+        var newTop = 0;
+        var currentLeft = getRealStampSize(shape).left;
+        var currentTop = getRealStampSize(shape).top
+        if(index != 0){
+            newLeft = currentLeft - initialLeft;
+            newTop = currentTop - initialTop;
+        }
+        // crop canvas empty pixels
+        ctxCroped.drawImage(
+            shape,
+            getRealStampSize(shape).left,
+            getRealStampSize(shape).top,
+            getRealStampSize(shape).width,
+            getRealStampSize(shape).height,
+            newLeft,
+            newTop,
+            getRealStampSize(shape).width,
+            getRealStampSize(shape).height
+        );
+        // remove old canvases
+        $(shape).remove();
     });
-    image =  $(".csg-preview")[0].toDataURL("image/png");
-    // current document guid is taken from the viewer.js globals
+    // get image from canvas
+    image = $("#gd-croped-stamp")[0].toDataURL("image/png");
+    // prepare data for ajax
     var data = {image: image, stampData: stampData};
-    // sign the document
+    // save the stamp image and xml description in the storage
     $.ajax({
         type: 'POST',
         url: getApplicationPath("saveStamp"),
@@ -579,7 +628,10 @@ function saveDrawnStamp() {
                 printMessage(returnedData.message);
                 return;
             }
+            // set signature data
             signature.signatureGuid = returnedData.guid;
+            signature.auxiliaryHeight = $("#gd-croped-stamp")[0].height;
+            signature.auxiliaryWidth = $("#gd-croped-stamp")[0].width;
             loadSignaturesTree('');
             $(".gd-signature-select").removeClass("gd-signing-disabled");
         },
@@ -591,7 +643,7 @@ function saveDrawnStamp() {
 }
 
 /**
- * Open modal on signature upload step
+ * Get drawn stamp data
  */
 function getStampData(){
     // get shape data
@@ -608,12 +660,65 @@ function getStampData(){
         stampShape.radius = $(shape).find("#csg-radius").val();
         stampShape.strokeColor = $("#csg-stroke-color-" + currentShapeId).children().css('background-color');
         stampShape.backgroundColor = $("#csg-bg-color-" + currentShapeId).children().css('background-color');
-        stampShape.width = $(".csg-preview")[0].width;
-        stampShape.height = $(".csg-preview")[0].height;
+        stampShape.width = getRealStampSize($(".csg-preview")[0]).width;
+        stampShape.height = getRealStampSize($(".csg-preview")[0]).height;
         stampData.push(stampShape);
         stampShape = null;
     });
    return stampData;
+}
+
+/**
+ * Get real size of the canvas content
+ * @param {String} stampCanvas - Canvas element
+ */
+function getRealStampSize(stampCanvas) {
+    var ctx = stampCanvas.getContext('2d'),
+        copy = document.createElement('canvas').getContext('2d'),
+        pixels = ctx.getImageData(0, 0, stampCanvas.width, stampCanvas.height),
+        l = pixels.data.length,
+        i,
+        bound = {
+            top: null,
+            left: null,
+            right: null,
+            bottom: null
+        },
+        x, y;
+
+    for (i = 0; i < l; i += 4) {
+        if (pixels.data[i+3] !== 0) {
+            x = (i / 4) % stampCanvas.width;
+            y = ~~((i / 4) / stampCanvas.width);
+
+            if (bound.top === null) {
+                bound.top = y;
+            }
+
+            if (bound.left === null) {
+                bound.left = x;
+            } else if (x < bound.left) {
+                bound.left = x;
+            }
+
+            if (bound.right === null) {
+                bound.right = x;
+            } else if (bound.right < x) {
+                bound.right = x;
+            }
+
+            if (bound.bottom === null) {
+                bound.bottom = y;
+            } else if (bound.bottom < y) {
+                bound.bottom = y;
+            }
+        }
+    }
+    var trimHeight = bound.bottom - bound.top,
+        trimWidth = bound.right - bound.left,
+        trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
+    var result = {height: trimHeight, width: trimWidth, left: bound.left, top: bound.top};
+    return result;
 }
 
 /**
@@ -900,6 +1005,7 @@ function switchToNextSlide(){
         if ($(".gd-signature-information").is(":visible")) {
             setAdditionalInformation();
         }
+        // if signature type is stamp save the stamp
         if($("#gd-signature-draw-step").is(":visible") && signature.signatureType == "stamp"){
             saveDrawnStamp();
         }
@@ -1021,7 +1127,7 @@ function insertImage(image, pageNumber) {
         '</div>';
     $("#gd-image-signature-" + currentImage).css('background-color','transparent')
     // add signature to the selected page
-    $(signatureHtml).insertBefore($("#gd-page-" + pageNumber).find(".gd-wrapper"));
+    $(signatureHtml).insertBefore($("#gd-page-" + pageNumber).find(".gd-wrapper")).delay(1000);
     // calculate initial centre of the rotation
     var rotationTop = $("#gd-image-signature-" + currentImage).height() / 2;
     var rotationLeft = $("#gd-image-signature-" + currentImage).width() / 2;
@@ -1065,8 +1171,18 @@ function insertImage(image, pageNumber) {
         },
         grid: [10, 10],
         create: function (event, ui) {
+            // set signature initial size
             var width = $(event.target).width();
             var height = $(event.target).height();
+            // fix signature size if the signature image was not fully loaded at this moment
+            if(width == 0){
+                // use image width which was set at the saving step
+                width =  signaturesList[0].auxiliaryWidth;
+            }
+            if(height == 0 || height < 19){
+                // use image height which was set at the saving step
+                height =  signaturesList[0].auxiliaryHeight;
+            }
             signaturesList[currentImage].imageWidth = Math.round(width);
             signaturesList[currentImage].imageHeight = Math.round(height);
             setGridPosition(width, height);

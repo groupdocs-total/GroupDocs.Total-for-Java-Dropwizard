@@ -21,9 +21,6 @@ import com.groupdocs.signature.handler.SignatureHandler;
 import com.groupdocs.signature.licensing.License;
 import com.groupdocs.signature.options.OutputType;
 import com.groupdocs.signature.options.SignatureOptionsCollection;
-import com.groupdocs.signature.options.digitalsignature.CellsSignDigitalOptions;
-import com.groupdocs.signature.options.digitalsignature.PdfSignDigitalOptions;
-import com.groupdocs.signature.options.digitalsignature.WordsSignDigitalOptions;
 import com.groupdocs.signature.options.loadoptions.LoadOptions;
 import com.groupdocs.signature.options.saveoptions.SaveOptions;
 import com.groupdocs.signature.config.SignatureConfig;
@@ -58,7 +55,6 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -72,7 +68,7 @@ import java.util.Base64;
 @Path(value = "/signature")
 public class SignatureResources extends Resources {
     private final SignatureHandler signatureHandler;
-    private final String signaturesRootFolder = "SignatureData";
+    private final String signaturesRootFolder = "/SignatureData";
     private final String stampsRootFolder = "/Stamps";
     private final String stampsPreviewFolder = "/Preview";
     private final String stampsXmlFolder = "/XML";
@@ -95,14 +91,13 @@ public class SignatureResources extends Resources {
         String signatureDataPath = "";
         if(globalConfiguration.getSignature().getDataDirectory() == null || globalConfiguration.getSignature().getDataDirectory().isEmpty()){
             signatureDataPath = globalConfiguration.getSignature().getFilesDirectory() + signaturesRootFolder;
-            if(!Files.exists( new File(signatureDataPath).toPath())) {
-                new File(signatureDataPath).mkdir();
-            }
-            globalConfiguration.getSignature().setDataDirectory(signatureDataPath);
         } else {
             signatureDataPath = globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getSignature().getDataDirectory();
         }
-
+        globalConfiguration.getSignature().setDataDirectory(signatureDataPath);
+        if(!Files.exists( new File(signatureDataPath).toPath())) {
+            new File(signatureDataPath).mkdir();
+        }
         if(!Files.exists(new File(signatureDataPath + certificatesFolder).toPath())){
             new File(signatureDataPath + certificatesFolder).mkdir();
         }
@@ -169,7 +164,7 @@ public class SignatureResources extends Resources {
                     break;
                 case "image": rootDirectory = signatureHandler.getSignatureConfig().getImagesPath();
                     break;
-                case "stamp": rootDirectory = signatureHandler.getSignatureConfig().getStoragePath() + signaturesRootFolder + stampsRootFolder;
+                case "stamp": rootDirectory = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder;
                     break;
                 default:  rootDirectory = signatureHandler.getSignatureConfig().getStoragePath();
                     break;
@@ -633,7 +628,7 @@ public class SignatureResources extends Resources {
             SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // set signature password if required
-            String xmlPath = signatureHandler.getSignatureConfig().getStoragePath() + signaturesRootFolder + stampsRootFolder + stampsXmlFolder;
+            String xmlPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + stampsXmlFolder;
             // mimeType should now be something like "image/png" if the document is image
             if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
                 signaturesData[0].setDocumentType("image");
@@ -745,8 +740,8 @@ public class SignatureResources extends Resources {
             // get/set parameters
             String encodedImage = getJsonString(requestBody, "image").replace("data:image/png;base64,", "");
             StampDataWrapper[] stampData = (StampDataWrapper[]) getJsonObject(requestBody, "stampData", StampDataWrapper[].class);
-            String previewPath = signatureHandler.getSignatureConfig().getStoragePath() + signaturesRootFolder + stampsRootFolder + stampsPreviewFolder;
-            String xmlPath = signatureHandler.getSignatureConfig().getStoragePath() + signaturesRootFolder + stampsRootFolder + stampsXmlFolder;
+            String previewPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + stampsPreviewFolder;
+            String xmlPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + stampsXmlFolder;
             String newFileName = "";
             FileDescriptionWrapper savedImage = new FileDescriptionWrapper();
             File file = null;

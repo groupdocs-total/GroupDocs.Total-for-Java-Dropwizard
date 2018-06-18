@@ -31,9 +31,7 @@ var signature = {
     date: "",
     pageNumber: 0,
     angle: 0,
-    documentType: "",
-    auxiliaryWidth: 0,
-    auxiliaryHeight: 0
+    documentType: ""
 }
 
 $(document).ready(function(){
@@ -555,8 +553,8 @@ function saveDrawnImage(image) {
             }
             // set curent signature data
             signature.signatureGuid = returnedData.guid;
-            signature.auxiliaryHeight = $("#bcPaintCanvas")[0].height;
-            signature.auxiliaryWidth = $("#bcPaintCanvas")[0].width;
+            signature.imageHeight = $("#bcPaintCanvas")[0].height;
+            signature.imageWidth = $("#bcPaintCanvas")[0].width;
             // load signatuers from storage
             loadSignaturesTree('');
             $(".gd-signature-select").removeClass("gd-signing-disabled");
@@ -571,7 +569,7 @@ function saveDrawnImage(image) {
 /**
  * Save drawn stamp signature
  */
-function saveDrawnStamp() {
+function saveDrawnStamp(callback) {
     $('#gd-modal-spinner').show();
     //get drawn stamp data
     stampData = getStampData();
@@ -630,14 +628,18 @@ function saveDrawnStamp() {
             }
             // set signature data
             signature.signatureGuid = returnedData.guid;
-            signature.auxiliaryHeight = $("#gd-croped-stamp")[0].height;
-            signature.auxiliaryWidth = $("#gd-croped-stamp")[0].width;
+            signature.imageHeight = stampData[0].height;
+            signature.imageWidth = stampData[0].width;
             loadSignaturesTree('');
             $(".gd-signature-select").removeClass("gd-signing-disabled");
         },
         error: function(xhr, status, error) {
             var err = eval("(" + xhr.responseText + ")");
             console.log(err.Message);
+        }
+    }).done(function(data){
+        if(typeof callback == "function") {
+            callback(data);
         }
     });
 }
@@ -967,7 +969,7 @@ function switchToNextSlide(){
     // check if the last step
     if($("#gd-next").html() == "CONFIRM") {
         // get current signature type
-        switch ($("#gd-sign-section").data("type")) {
+        switch (signature.signatureType) {
             case "digital":
                 // switch to entered data review step
                 switchSlide(4, 3, "right");
@@ -984,6 +986,19 @@ function switchToNextSlide(){
                     loadSignatureImage();
                 }
                 break
+            case "stamp":
+                    // get signature positioning info
+                    signature.pageNumber = $(".gd-signature-information-review i").html();
+                    if(signature.pageNumber == ""){
+                        $(".gd-signature-information-review i").html("Please select page first");
+                    } else {
+                        if($("#gd-signature-draw-step").length == 1) {
+                            saveDrawnStamp(loadSignatureImage);
+                        } else {
+                            loadSignatureImage();
+                        }
+                    }
+                    break;
         }
     } else {
         var currentSlide = null;
@@ -1004,10 +1019,6 @@ function switchToNextSlide(){
         // if next step is review signing data - save entered data values
         if ($(".gd-signature-information").is(":visible")) {
             setAdditionalInformation();
-        }
-        // if signature type is stamp save the stamp
-        if($("#gd-signature-draw-step").is(":visible") && signature.signatureType == "stamp"){
-            saveDrawnStamp();
         }
         // switch to next signing step if the current step is not last
         switchSlide(currentSlide + 1, currentSlide, "right");
@@ -1177,11 +1188,11 @@ function insertImage(image, pageNumber) {
             // fix signature size if the signature image was not fully loaded at this moment
             if(width == 0){
                 // use image width which was set at the saving step
-                width =  signaturesList[0].auxiliaryWidth;
+                width =  signaturesList[currentImage].imageWidth;
             }
             if(height == 0 || height < 19){
                 // use image height which was set at the saving step
-                height =  signaturesList[0].auxiliaryHeight;
+                height =  signaturesList[currentImage].imageHeight;
             }
             signaturesList[currentImage].imageWidth = Math.round(width);
             signaturesList[currentImage].imageHeight = Math.round(height);

@@ -106,6 +106,19 @@ $(document).ready(function(){
     });
 
     //////////////////////////////////////////////////
+    // QrCode sign event
+    //////////////////////////////////////////////////
+    $('#qd-qr-sign').on('click', function(e){
+        if(typeof documentGuid == "undefined" || documentGuid == ""){
+            printMessage("Please open document first");
+        } else {
+            signature.signatureType = "qrCode";
+            toggleModalDialog(true, 'QR Code Signature', getHtmlImageSign());
+            loadSignaturesTree('', openSigningFirstStepModal);
+        }
+    });
+
+    //////////////////////////////////////////////////
     // Open signatures browse button (digital sign dialog) click
     //////////////////////////////////////////////////
     $('.gd-modal-body').on('click', '#gd-open-signature', function(e){
@@ -142,14 +155,19 @@ $(document).ready(function(){
             $($(".gd-pagination")[0]).addClass("gd-pagination-active")
         }
         $("#gd-signing-footer").show();
-        if(signature.signatureType == "image") {
-            if ($("#bcPaint-container").length == 0) {
-                $("#gd-draw-image").bcPaint();
-            }
-        } else {
-            if( $("#csg-container").length == 0) {
-                $("#gd-draw-stamp").stampGenerator();
-            }
+        switch (signature.signatureType) {
+            case "image":
+                if ($("#bcPaint-container").length == 0) {
+                    $("#gd-draw-image").bcPaint();
+                }
+                break;
+            case "stamp":
+                if( $("#csg-container").length == 0) {
+                    $("#gd-draw-stamp").stampGenerator();
+                }
+                break;
+            case "qrCode":
+                $("#gd-draw-qrCode").qrCodeGenerator();
         }
     });
 
@@ -480,6 +498,8 @@ function sign() {
             break;
         case "stamp": url = getApplicationPath('signStamp')
             break;
+        case "qrcode": url = getApplicationPath('saveQrCode')
+            break;
     }
     // current document guid is taken from the viewer.js globals
     var data = {
@@ -737,13 +757,21 @@ function openSigningFirstStepModal(){
                 break;
             case "image": $(".gd-upload-signatures").css("left", "calc(100% - 72%)");
                 break;
+            case "qrCode": $(".gd-upload-signatures").css("left", "calc(100% - 72%)");
+                break;
         }
     } else {
-        if(signature.signatureType == "image") {
-            $(".gd-upload-signatures").css("left", "calc(100% - 87%)");
-            $(".gd-browse-signatures").css("left", "calc(100% - 77%)");
-        } else if(signature.signatureType == "stamp"){
-            $(".gd-browse-signatures").css("left", "calc(100% - 72%)");
+        switch (signature.signatureType) {
+            case "image":
+                $(".gd-upload-signatures").css("left", "calc(100% - 87%)");
+                $(".gd-browse-signatures").css("left", "calc(100% - 77%)");
+                break;
+            case "stamp":
+                $(".gd-browse-signatures").css("left", "calc(100% - 72%)");
+                break;
+            case "qrCode":
+                $(".gd-browse-signatures").css("left", "calc(100% - 72%)");
+                break;
         }
     }
 }
@@ -807,7 +835,7 @@ function getHtmlImageSign() {
  **/
 function getHtmlSignatureUploadModal(){
     var uploadButton = "";
-    if(signature.signatureType != "stamp") {
+    if(signature.signatureType != "stamp" && signature.signatureType != "qrCode") {
         uploadButton = '<label class="gd-upload-signatures">' +
                             '<i class="fa fa-upload"></i>UPLOAD signature(S)<input id="gd-signature-upload-input" type="file" multiple style="display: none;">' +
                         '</label>';
@@ -816,7 +844,7 @@ function getHtmlSignatureUploadModal(){
                             '<i class="fa fa-folder-open"></i>BROWSE signature(S)<button id="gd-open-signature" style="display: none;"></button>'+
                         '</label>';
     var drawImage = "";
-    if (signature.signatureType == "image" || signature.signatureType == "stamp"){
+    if (signature.signatureType != "digital"){
         drawImage = '<label class="gd-draw-signatures">'+
                         '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>DRAW signature(S)<button id="gd-draw-signature" style="display: none;"></button>'+
                     '</label>';
@@ -829,13 +857,13 @@ function getHtmlSignatureUploadModal(){
  **/
 function getHtmlSignaturesSelectModal(){
     return  '<div id="gd-signature-select-step" class="gd-slide" data-index="1">'+
-        '<div class="gd-signing-label">'+
-        '<label>1. Signatures <i>Select signature to sign your document</i></label>'+
-        '</div>'+
-        '<div id="gd-signatures">'+
-        //signatures will be here
-        '</div>'+
-        '</div>';
+                '<div class="gd-signing-label">'+
+                    '<label>1. Signatures <i>Select signature to sign your document</i></label>'+
+                '</div>'+
+                '<div id="gd-signatures">'+
+                //signatures will be here
+                '</div>'+
+            '</div>';
 }
 
 /**
@@ -843,11 +871,11 @@ function getHtmlSignaturesSelectModal(){
  **/
 function getHtmlPagesSelectModal(){
     var stepHeader = '<div class="gd-signing-label">'+
-        '<label>2. Pages <i>Select one page or all pages to add signature</i></label>'+
-        '</div>'+
-        '<div class="gd-signature-information-review">'+
-        '<label>Selected Page : <i></i></label>'+
-        '</div>';
+                        '<label>2. Pages <i>Select one page or all pages to add signature</i></label>'+
+                    '</div>'+
+                    '<div class="gd-signature-information-review">'+
+                        '<label>Selected Page : <i></i></label>'+
+                    '</div>';
     var pageSelector = "";
     var pageNumbers = "";
     for(var i = 0; i < $("#gd-panzoom > div").length; i++){
@@ -855,17 +883,17 @@ function getHtmlPagesSelectModal(){
         pageNumbers = pageNumbers + '<a href="#" class="gd-page-number">' + pageNumber + '</a>';
     }
     pageSelector = '<div class="gd-pages-dropdown">'+
-        '<button class="gd-drop-button">Select page</button>'+
-        '<div class="gd-pages-dropdown-content">'+
-        pageNumbers+
-        '</div>'+
-        '</div>'+
-        '<div id="gd-all-pages">'+
-        '<div class="gd-signature">'+
-        '<input id="gd-radio-all" class="gd-signature-radio" name="gd-radio" type="checkbox">'+
-        '<label for="gd-radio-all" class="gd-all-pages-label">Add for all pages</label>'+
-        '</div>'+
-        '</div>';
+                        '<button class="gd-drop-button">Select page</button>'+
+                        '<div class="gd-pages-dropdown-content">'+
+                            pageNumbers+
+                        '</div>'+
+                    '</div>'+
+                    '<div id="gd-all-pages">'+
+                        '<div class="gd-signature">'+
+                            '<input id="gd-radio-all" class="gd-signature-radio" name="gd-radio" type="checkbox">'+
+                            '<label for="gd-radio-all" class="gd-all-pages-label">Add for all pages</label>'+
+                        '</div>'+
+                    '</div>';
 
     return stepHeader + pageSelector;
 }
@@ -875,13 +903,13 @@ function getHtmlPagesSelectModal(){
  **/
 function getHtmlDrawModal(prefix) {
     return  '<div id="gd-signature-draw-step" class="gd-slide" data-index="1">'+
-        '<div class="gd-signing-label">'+
-        '<label>1. Draw <i>Draw your signature</i></label>'+
-        '</div>'+
-        '<div id="gd-draw-' + prefix + '">' +
-        // draw area will be here
-        '</div>'+
-        '</div>';
+                '<div class="gd-signing-label">'+
+                    '<label>1. Draw <i>Draw your signature</i></label>'+
+                '</div>'+
+                '<div id="gd-draw-' + prefix + '">' +
+                    // draw area will be here
+                '</div>'+
+            '</div>';
 }
 /**
  * Get HTML content for signature information modal

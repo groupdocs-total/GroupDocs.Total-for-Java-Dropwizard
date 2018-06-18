@@ -14,6 +14,7 @@
 		<link type="text/css" rel="stylesheet" href="assets/signature/css/viewer-circle-progress.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/signature.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/stampGenerator.css"/>
+        <link type="text/css" rel="stylesheet" href="assets/signature/css/qrCodeGenerator.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/bcPicker.css"/>
         <script type="text/javascript" src="assets/common/js/jquery.min.js"></script>
         <script type="text/javascript" src="assets/common/js/swiper.min.js"></script>
@@ -24,6 +25,7 @@
         <script type="text/javascript" src="assets/signature/js/bcPaint.js"></script>
         <script type="text/javascript" src="assets/signature/js/bcPicker.js"></script>
         <script type="text/javascript" src="assets/signature/js/stampGenerator.js"></script>
+        <script type="text/javascript" src="assets/signature/js/qrCodeGenerator.js"></script>
     </head>
     <body>
         <div id="element"></div>

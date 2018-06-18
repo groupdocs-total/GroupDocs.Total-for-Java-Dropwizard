@@ -1,5 +1,8 @@
 package com.groupdocs.ui.signature.resources;
 
+import com.groupdocs.signature.domain.enums.DashStyle;
+import com.groupdocs.signature.domain.qrcodes.QRCodeTypes;
+import com.groupdocs.signature.options.qrcodesignature.PdfQRCodeSignOptions;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
 import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
@@ -39,6 +42,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import java.awt.Color;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedOutputStream;
@@ -70,10 +74,11 @@ public class SignatureResources extends Resources {
     private final SignatureHandler signatureHandler;
     private final String signaturesRootFolder = "/SignatureData";
     private final String stampsRootFolder = "/Stamps";
-    private final String stampsPreviewFolder = "/Preview";
-    private final String stampsXmlFolder = "/XML";
+    private final String qrRootFolder = "/QrCodes";
+    private final String previewFolder = "/Preview";
+    private final String xmlFolder = "/XML";
     private final String certificatesFolder = "/Digital";
-    private final String imagesFolder = "/Image";
+    private final String imagesFolder = "/Image";    
     private String[] supportedImageFormats = {"bmp", "jpeg", "jpg", "tiff", "tif", "png"};
     /**
      * Constructor
@@ -106,8 +111,13 @@ public class SignatureResources extends Resources {
         }
         if(!Files.exists(new File(signatureDataPath + stampsRootFolder).toPath())){
             new File(signatureDataPath + stampsRootFolder).mkdir();
-            new File(signatureDataPath + stampsRootFolder + stampsPreviewFolder).mkdir();
-            new File(signatureDataPath + stampsRootFolder + stampsXmlFolder).mkdir();
+            new File(signatureDataPath + stampsRootFolder + previewFolder).mkdir();
+            new File(signatureDataPath + stampsRootFolder + xmlFolder).mkdir();
+        }
+        if(!Files.exists(new File(signatureDataPath + qrRootFolder).toPath())){
+            new File(signatureDataPath + qrRootFolder).mkdir();
+            new File(signatureDataPath + qrRootFolder + previewFolder).mkdir();
+            new File(signatureDataPath + qrRootFolder + xmlFolder).mkdir();
         }
         if(globalConfiguration.getSignature().getOutputDirectory() == null || globalConfiguration.getSignature().getOutputDirectory().isEmpty()){
             globalConfiguration.getSignature().setOutputDirectory(globalConfiguration.getSignature().getFilesDirectory());
@@ -166,6 +176,8 @@ public class SignatureResources extends Resources {
                     break;
                 case "stamp": rootDirectory = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder;
                     break;
+                case "qrCode": rootDirectory = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder;
+                    break;
                 default:  rootDirectory = signatureHandler.getSignatureConfig().getStoragePath();
                     break;
             }
@@ -182,7 +194,9 @@ public class SignatureResources extends Resources {
                     break;
                 case "image": fileList = signatureLoader.LoadImageSignatures();
                     break;
-                case "stamp": fileList = signatureLoader.LoadStampSignatures(stampsPreviewFolder, stampsXmlFolder);
+                case "stamp": fileList = signatureLoader.LoadStampSignatures(previewFolder, xmlFolder);
+                    break;
+                case "qrCode": fileList = signatureLoader.LoadStampSignatures(previewFolder, xmlFolder);
                     break;
                 default:  fileList = signatureLoader.LoadFiles();
                     break;
@@ -628,7 +642,7 @@ public class SignatureResources extends Resources {
             SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // set signature password if required
-            String xmlPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + stampsXmlFolder;
+            String xmlPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + xmlFolder;
             // mimeType should now be something like "image/png" if the document is image
             if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
                 signaturesData[0].setDocumentType("image");
@@ -740,8 +754,8 @@ public class SignatureResources extends Resources {
             // get/set parameters
             String encodedImage = getJsonString(requestBody, "image").replace("data:image/png;base64,", "");
             StampDataWrapper[] stampData = (StampDataWrapper[]) getJsonObject(requestBody, "stampData", StampDataWrapper[].class);
-            String previewPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + stampsPreviewFolder;
-            String xmlPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + stampsXmlFolder;
+            String previewPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + previewFolder;
+            String xmlPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + xmlFolder;
             String newFileName = "";
             FileDescriptionWrapper savedImage = new FileDescriptionWrapper();
             File file = null;
@@ -768,6 +782,55 @@ public class SignatureResources extends Resources {
 
             // return loaded page object
             return objectToJson(savedImage);
+        }catch (Exception ex){
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // set exception message
+            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+            exceptionWrapper.setMessage(ex.getMessage());
+            exceptionWrapper.setException(ex);
+            return objectToJson(exceptionWrapper);
+        }
+    }
+
+    /**
+     * Save signature stamp
+     * @param request
+     * @param response
+     * @return stamp
+     */
+    @POST
+    @Path(value = "/saveQrCode")
+    public Object saveQrCode(@Context HttpServletRequest request, @Context HttpServletResponse response){
+        try {
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // get request body
+            String requestBody = getRequestBody(request);
+            String documentGuid = getJsonString(requestBody, "guid");
+            // initiate signed document wrapper
+            SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
+            // get/set parameters
+            PdfQRCodeSignOptions signOptions = new PdfQRCodeSignOptions("12345678");
+            // barcode type
+            signOptions.setEncodeType(QRCodeTypes.QR);
+            // if you need to sign all sheets set it to true
+            signOptions.setSignAllPages(true);
+            // set border (optionally)
+            signOptions.setBorderVisiblity(true);
+            signOptions.setBorderColor(Color.BLUE);
+            signOptions.setBorderWeight(3);
+            signOptions.setBorderDashStyle(DashStyle.Solid);
+            SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
+            signsCollection.add(signOptions);
+            // sign the document
+            final SaveOptions saveOptions = new SaveOptions();
+            saveOptions.setOutputType(OutputType.String);
+            saveOptions.setOutputFileName(new File(documentGuid).getName());
+            signatureHandler.sign(documentGuid, signsCollection, new LoadOptions(), saveOptions);
+            signedDocument.setGuid(signatureHandler.getSignatureConfig().getOutputPath() + "/" + new File(documentGuid).getName());
+            // return loaded page object
+            return objectToJson(signedDocument);
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);

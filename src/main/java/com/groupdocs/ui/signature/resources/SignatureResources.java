@@ -1,7 +1,10 @@
 package com.groupdocs.ui.signature.resources;
 
 import com.groupdocs.signature.domain.enums.DashStyle;
+import com.groupdocs.signature.domain.enums.HorizontalAlignment;
+import com.groupdocs.signature.domain.enums.VerticalAlignment;
 import com.groupdocs.signature.domain.qrcodes.QRCodeTypes;
+import com.groupdocs.signature.options.qrcodesignature.ImagesQRCodeSignOptions;
 import com.groupdocs.signature.options.qrcodesignature.PdfQRCodeSignOptions;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
@@ -12,12 +15,9 @@ import com.groupdocs.ui.common.domain.web.MediaType;
 import com.groupdocs.ui.signature.SignaturesLoader.SignatureLoader;
 import com.groupdocs.ui.signature.Signer.DigitalSigner;
 import com.groupdocs.ui.signature.Signer.ImageSigner;
+import com.groupdocs.ui.signature.Signer.QrCodeSigner;
 import com.groupdocs.ui.signature.Signer.StampSigner;
-import com.groupdocs.ui.signature.domain.wrapper.StampDataWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureFileDescriptionWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.SignedDocumentWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.DocumentDescriptionWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.*;
 import com.groupdocs.ui.signature.views.Signature;
 import com.groupdocs.signature.domain.DocumentDescription;
 import com.groupdocs.signature.handler.SignatureHandler;
@@ -34,6 +34,7 @@ import org.eclipse.jetty.server.Request;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,16 +44,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
-import java.io.BufferedOutputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.File;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -807,30 +802,43 @@ public class SignatureResources extends Resources {
             setResponseContentType(response, MediaType.APPLICATION_JSON);
             // get request body
             String requestBody = getRequestBody(request);
-            String documentGuid = getJsonString(requestBody, "guid");
-            // initiate signed document wrapper
-            SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
-            // get/set parameters
-            PdfQRCodeSignOptions signOptions = new PdfQRCodeSignOptions("12345678");
-            // barcode type
-            signOptions.setEncodeType(QRCodeTypes.QR);
-            // if you need to sign all sheets set it to true
-            signOptions.setSignAllPages(true);
-            // set border (optionally)
-            signOptions.setBorderVisiblity(true);
-            signOptions.setBorderColor(Color.BLUE);
-            signOptions.setBorderWeight(3);
-            signOptions.setBorderDashStyle(DashStyle.Solid);
-            SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
-            signsCollection.add(signOptions);
-            // sign the document
+            QrCodeDataWrapper qrCodeData = (QrCodeDataWrapper) getJsonObject(requestBody, "properties", QrCodeDataWrapper.class);
+            BufferedImage bufImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
+            QrCodeSigner signer = new QrCodeSigner(qrCodeData);
+            ImagesQRCodeSignOptions signOptions = signer.signImage();
+            String previewPath = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder + previewFolder;
+            String xmlPath = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder + xmlFolder;
+            SignatureOptionsCollection collection = new SignatureOptionsCollection();
+            collection.add(signOptions);
+            File file = null;
+            File folder = new File(previewPath);
+            File[] listOfFiles = folder.listFiles();
+            String newFileName = "";
+            for (int i = 0; i <= listOfFiles.length; i++) {
+                int number = i + 1;
+                newFileName = String.format("%03d", number);
+                file = new File(previewPath + "/" + newFileName + ".png");
+                if (file.exists()) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            ImageIO.write(bufImage, "png", file);
+            bufImage = null;
+            // stamp data to xml file saving
+            XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(xmlPath + "/" + newFileName + ".xml")));
+            encoder.writeObject(qrCodeData);
+            encoder.close();
             final SaveOptions saveOptions = new SaveOptions();
             saveOptions.setOutputType(OutputType.String);
-            saveOptions.setOutputFileName(new File(documentGuid).getName());
-            signatureHandler.sign(documentGuid, signsCollection, new LoadOptions(), saveOptions);
-            signedDocument.setGuid(signatureHandler.getSignatureConfig().getOutputPath() + "/" + new File(documentGuid).getName());
+            saveOptions.setOutputFileName("testsigned.png");
+            String signedpath = signatureHandler.getSignatureConfig().getOutputPath();
+            signatureHandler.getSignatureConfig().setOutputPath(FilenameUtils.getPath(file.getAbsolutePath()));
+            signatureHandler.sign(file.toPath().toString(), collection, saveOptions);
+            signatureHandler.getSignatureConfig().setOutputPath(signedpath);
             // return loaded page object
-            return objectToJson(signedDocument);
+            return objectToJson(qrCodeData);
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);

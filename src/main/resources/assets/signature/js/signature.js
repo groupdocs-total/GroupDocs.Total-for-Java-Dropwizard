@@ -114,7 +114,22 @@ $(document).ready(function(){
         } else {
             signature.signatureType = "qrCode";
             toggleModalDialog(true, 'QR Code Signature', getHtmlImageSign());
-            loadSignaturesTree('', openSigningFirstStepModal);
+            loadSignaturesTree('', function(){
+                $('#modalDialog .gd-modal-title').text("Signing Document");
+                $("#gd-signature-select-step").remove();
+                if( $("#gd-signature-draw-step").length == 0){
+                    var drawStep = getHtmlDrawModal(signature.signatureType);
+                    $(drawStep).insertBefore("#gd-signature-page-select-step");
+                }
+                // open draw signatures step
+                switchSlide(1, 0, "right");
+                // set currently active step pagination
+                if (!$($(".gd-pagination")[0]).hasClass("gd-pagination-active")) {
+                    $($(".gd-pagination")[0]).addClass("gd-pagination-active")
+                }
+                $("#gd-signing-footer").show();
+                $("#gd-draw-qrCode").qrCodeGenerator();
+            });
         }
     });
 
@@ -139,7 +154,7 @@ $(document).ready(function(){
     });
 
     //////////////////////////////////////////////////
-    // Open signatures draw button (digital sign dialog) click
+    // Open signatures draw button click
     //////////////////////////////////////////////////
     $('.gd-modal-body').on('click', '#gd-draw-signature', function(e) {
         $('#modalDialog .gd-modal-title').text("Signing Document");
@@ -317,10 +332,29 @@ $(document).ready(function(){
         saveDrawnImage(drawnImage);
     });
 
-    // Add Shape
+    //////////////////////////////////////////////////
+    // Enable NEXT button when at least one stamp shape is added
+    //////////////////////////////////////////////////
     $('.gd-modal-body').on('click', 'button#csg-shape-add', function(){
         $(".gd-signature-select").removeClass("gd-signing-disabled");
     });
+
+    //////////////////////////////////////////////////
+    // Export drawn QR-Code signature
+    //////////////////////////////////////////////////
+    $('.gd-modal-body').on('change', '.gd-qr-property', function(){
+        var qrProperties = $.fn.qrCodeGenerator.getProperties();
+        saveDrawnQrCode(qrProperties);
+    });
+
+    //////////////////////////////////////////////////
+    // Export drawn QR-Code signature - detect Qr-Color border change event
+    //////////////////////////////////////////////////
+    $('.gd-modal-body').on('click', '#gd-qr-border-color .bcPicker-color', function(){
+        var qrProperties = $.fn.qrCodeGenerator.getProperties();
+        saveDrawnQrCode(qrProperties);
+    });
+
 });
 
 /*
@@ -660,6 +694,39 @@ function saveDrawnStamp(callback) {
     }).done(function(data){
         if(typeof callback == "function") {
             callback(data);
+        }
+    });
+}
+
+/**
+ * Save drawn QR-Code signature
+ * @param {Object} properties - QR_Code properties
+ */
+function saveDrawnQrCode(properties) {
+    // current document guid is taken from the viewer.js globals
+    var data = {properties: properties};
+    // sign the document
+    $.ajax({
+        type: 'POST',
+        url: getApplicationPath("saveQrCode"),
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(returnedData) {
+            $('#gd-modal-spinner').hide();
+            if(returnedData.message != undefined){
+                // open error popup
+                printMessage(returnedData.message);
+                return;
+            }
+            // set curent signature data
+            signature.signatureGuid = returnedData.guid;
+            // signature.imageHeight = $("#bcPaintCanvas")[0].height;
+            // signature.imageWidth = $("#bcPaintCanvas")[0].width;
+            $(".gd-signature-select").removeClass("gd-signing-disabled");
+        },
+        error: function(xhr, status, error) {
+            var err = eval("(" + xhr.responseText + ")");
+            console.log(err.Message);
         }
     });
 }

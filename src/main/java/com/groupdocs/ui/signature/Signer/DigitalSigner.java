@@ -3,7 +3,6 @@ package com.groupdocs.ui.signature.Signer;
 import com.groupdocs.signature.options.digitalsignature.CellsSignDigitalOptions;
 import com.groupdocs.signature.options.digitalsignature.PdfSignDigitalOptions;
 import com.groupdocs.signature.options.digitalsignature.WordsSignDigitalOptions;
-import com.groupdocs.signature.options.imagesignature.*;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
 
 import java.text.ParseException;

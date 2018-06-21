@@ -1,7 +1,5 @@
 package com.groupdocs.ui.signature.domain.wrapper;
 
-import java.awt.*;
-
 public class StampDataWrapper {
     private String text;
     private String textExpansion;

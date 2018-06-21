@@ -7,9 +7,6 @@ import com.groupdocs.signature.options.imagesignature.ImagesSignImageOptions;
 import com.groupdocs.signature.options.imagesignature.CellsSignImageOptions;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
 
-
-import java.awt.*;
-
 /**
  * StampSigner
  * Signs documents with the stamp signature

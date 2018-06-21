@@ -4,6 +4,7 @@ public class QrCodeDataWrapper {
     private String text;
     private String imageGuid;
     private String borderColor = "rgb(0,0,0)";
+    private String encodedImage;
     private int borderStyle;
     private int borderWidth;
     private int width;
@@ -23,6 +24,14 @@ public class QrCodeDataWrapper {
 
     public void setImageGuid(String imageGuid) {
         this.imageGuid = imageGuid;
+    }
+
+    public String getEncodedImage() {
+        return encodedImage;
+    }
+
+    public void setEncodedImage(String encodedImage) {
+        this.encodedImage = encodedImage;
     }
 
     public int getBorderStyle() {

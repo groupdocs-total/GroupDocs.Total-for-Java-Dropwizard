@@ -2,7 +2,6 @@ package com.groupdocs.ui.signature.SignaturesLoader;
 
 import com.google.common.collect.Ordering;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
 import com.groupdocs.ui.signature.comparator.FileNameComparator;
 import com.groupdocs.ui.signature.comparator.FileTypeComparator;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureFileDescriptionWrapper;
@@ -11,8 +10,11 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
+import java.util.Base64;
 
 /**
  * SignatureLoader

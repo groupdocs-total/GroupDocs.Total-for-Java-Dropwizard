@@ -3,11 +3,15 @@ package com.groupdocs.ui.signature.Signer;
 import com.groupdocs.signature.domain.stamps.StampBackgroundCropType;
 import com.groupdocs.signature.domain.stamps.StampLine;
 import com.groupdocs.signature.domain.stamps.StampTextRepeatType;
-import com.groupdocs.signature.options.stampsignature.*;
+import com.groupdocs.signature.options.stampsignature.CellsStampSignOptions;
+import com.groupdocs.signature.options.stampsignature.WordsStampSignOptions;
+import com.groupdocs.signature.options.stampsignature.ImagesStampSignOptions;
+import com.groupdocs.signature.options.stampsignature.SlidesStampSignOptions;
+import com.groupdocs.signature.options.stampsignature.PdfStampSignOptions;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
 import com.groupdocs.ui.signature.domain.wrapper.StampDataWrapper;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * StampSigner

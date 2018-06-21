@@ -122,9 +122,10 @@
 
 #gd-qr-preview-container{
   position: absolute;
-  left: 250px;
+  left: calc(100% - 217px);
   width: calc(100% - 320px);
   height: 100%;
+  top: calc(100% - 172px);
 }
 
 .gd-qr-preview{

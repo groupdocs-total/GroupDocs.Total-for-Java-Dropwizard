@@ -20,11 +20,13 @@
 		borderWidth : 'gd-qr-border-width'
 	}
 
-	$.fn.qrCodeGenerator = function () {
-		$(this).append($.fn.qrCodeGenerator.baseHtml());
-		var propertiesContainer = $.fn.qrCodeGenerator.propertiesHtml();
-        $("#gd-qr-params-header").append(propertiesContainer);
-		$('#' + paramValues.borderColor).bcPicker();
+	$.fn.qrCodeGenerator = function() {
+        if ($("#gd-qr-container").length == 0) {
+            $(this).append($.fn.qrCodeGenerator.baseHtml());
+            var propertiesContainer = $.fn.qrCodeGenerator.propertiesHtml();
+            $("#gd-qr-params-header").append(propertiesContainer);
+            $('#' + paramValues.borderColor).bcPicker();
+        }
 	}
 
 	$.extend(true, $.fn.qrCodeGenerator, {
@@ -89,7 +91,7 @@
 										'</td>'+
 									'</tr>'+
 									'<tr>'+
-                						'<td><i>Border width</i><input type="number" class="gd-qr-property" id="' + paramValues.borderWidth + '" value="1"/></td>'+
+                						'<td><i>Border width</i><input type="number" class="gd-qr-property" id="' + paramValues.borderWidth + '" value="0"/></td>'+
 									'</tr>'+
 								'</tbody>'+
 							'</table>'+

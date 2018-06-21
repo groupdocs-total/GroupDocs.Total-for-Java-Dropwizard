@@ -352,6 +352,7 @@ $(document).ready(function(){
     //////////////////////////////////////////////////
     $('.gd-modal-body').on('click', '#gd-qr-border-color .bcPicker-color', function(){
         var qrProperties = $.fn.qrCodeGenerator.getProperties();
+        qrProperties.borderColor = $(this).css("background-color");
         saveDrawnQrCode(qrProperties);
     });
 
@@ -525,14 +526,15 @@ function sign() {
     }
     // get signing action URL, depends from signature type
     switch (signatureType){
-        case "digital": url = getApplicationPath('signDigital')
+        case "digital":
+            url = getApplicationPath('signDigital')
             signaturesList.push(signature);
             break;
         case "image": url = getApplicationPath('signImage')
             break;
         case "stamp": url = getApplicationPath('signStamp')
             break;
-        case "qrcode": url = getApplicationPath('saveQrCode')
+        case "qrCode": url = getApplicationPath('signQrCode')
             break;
     }
     // current document guid is taken from the viewer.js globals
@@ -705,6 +707,7 @@ function saveDrawnStamp(callback) {
 function saveDrawnQrCode(properties) {
     // current document guid is taken from the viewer.js globals
     var data = {properties: properties};
+    $('#gd-modal-spinner').show();
     // sign the document
     $.ajax({
         type: 'POST',
@@ -718,10 +721,14 @@ function saveDrawnQrCode(properties) {
                 printMessage(returnedData.message);
                 return;
             }
+            $('#gd-modal-spinner').hide();
             // set curent signature data
-            signature.signatureGuid = returnedData.guid;
-            // signature.imageHeight = $("#bcPaintCanvas")[0].height;
-            // signature.imageWidth = $("#bcPaintCanvas")[0].width;
+            signature.signatureGuid = returnedData.imageGuid;
+            signature.imageHeight = returnedData.height;
+            signature.imageWidth = returnedData.width;
+            $("#gd-qr-preview-container").html("");
+            var prevewImage = '<image class="gd-signature-thumbnail-image" src="data:image/png;base64,' + returnedData.encodedImage + '" alt></image>';
+            $("#gd-qr-preview-container").append(prevewImage);
             $(".gd-signature-select").removeClass("gd-signing-disabled");
         },
         error: function(xhr, status, error) {
@@ -1094,6 +1101,16 @@ function switchToNextSlide(){
                         }
                     }
                     break;
+            case "qrCode":
+                // get signature positioning info
+                signature.pageNumber = $(".gd-signature-information-review i").html();
+                if(signature.pageNumber == ""){
+                    $(".gd-signature-information-review i").html("Please select page first");
+                } else {
+                    // load selected signature image from storage
+                    loadSignatureImage();
+                }
+                break
         }
     } else {
         var currentSlide = null;

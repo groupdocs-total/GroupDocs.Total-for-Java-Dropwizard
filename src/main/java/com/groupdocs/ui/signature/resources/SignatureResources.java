@@ -1,5 +1,9 @@
 package com.groupdocs.ui.signature.resources;
 
+import com.groupdocs.signature.domain.enums.PdfTextAnnotationBorderEffect;
+import com.groupdocs.signature.domain.enums.PdfTextSignatureImplementation;
+import com.groupdocs.signature.options.appearances.PdfTextAnnotationAppearance;
+import com.groupdocs.signature.options.textsignature.PdfSignTextOptions;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
 import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
@@ -7,10 +11,7 @@ import com.groupdocs.ui.common.domain.wrapper.LoadedPageWrapper;
 import com.groupdocs.ui.common.resources.Resources;
 import com.groupdocs.ui.common.domain.web.MediaType;
 import com.groupdocs.ui.signature.SignaturesLoader.SignatureLoader;
-import com.groupdocs.ui.signature.Signer.DigitalSigner;
-import com.groupdocs.ui.signature.Signer.ImageSigner;
-import com.groupdocs.ui.signature.Signer.QrCodeSigner;
-import com.groupdocs.ui.signature.Signer.StampSigner;
+import com.groupdocs.ui.signature.Signer.*;
 import com.groupdocs.ui.signature.domain.wrapper.*;
 import com.groupdocs.ui.signature.views.Signature;
 import com.groupdocs.signature.domain.DocumentDescription;
@@ -72,10 +73,13 @@ public class SignatureResources extends Resources {
     private final String signaturesRootFolder = "/SignatureData";
     private final String stampsRootFolder = "/Stamps";
     private final String qrRootFolder = "/QrCodes";
+    private final String barCodeRootFolder = "/BarCodes";
+    private final String textRootFolder = "/Text";
     private final String previewFolder = "/Preview";
     private final String xmlFolder = "/XML";
     private final String certificatesFolder = "/Digital";
-    private final String imagesFolder = "/Image";    
+    private final String imagesFolder = "/Image";
+    private String outPutPath;
     private String[] supportedImageFormats = {"bmp", "jpeg", "jpg", "tiff", "tif", "png"};
     /**
      * Constructor
@@ -97,29 +101,12 @@ public class SignatureResources extends Resources {
             signatureDataPath = globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getSignature().getDataDirectory();
         }
         globalConfiguration.getSignature().setDataDirectory(signatureDataPath);
-        if(!Files.exists( new File(signatureDataPath).toPath())) {
-            new File(signatureDataPath).mkdir();
-        }
-        if(!Files.exists(new File(signatureDataPath + certificatesFolder).toPath())){
-            new File(signatureDataPath + certificatesFolder).mkdir();
-        }
-        if(!Files.exists(new File(signatureDataPath + imagesFolder).toPath())){
-            new File(signatureDataPath + imagesFolder).mkdir();
-        }
-        if(!Files.exists(new File(signatureDataPath + stampsRootFolder).toPath())){
-            new File(signatureDataPath + stampsRootFolder).mkdir();
-            new File(signatureDataPath + stampsRootFolder + previewFolder).mkdir();
-            new File(signatureDataPath + stampsRootFolder + xmlFolder).mkdir();
-        }
-        if(!Files.exists(new File(signatureDataPath + qrRootFolder).toPath())){
-            new File(signatureDataPath + qrRootFolder).mkdir();
-            new File(signatureDataPath + qrRootFolder + previewFolder).mkdir();
-            new File(signatureDataPath + qrRootFolder + xmlFolder).mkdir();
-        }
+        createDirectories(signatureDataPath);
         if(globalConfiguration.getSignature().getOutputDirectory() == null || globalConfiguration.getSignature().getOutputDirectory().isEmpty()){
             globalConfiguration.getSignature().setOutputDirectory(globalConfiguration.getSignature().getFilesDirectory());
         } else {
-            globalConfiguration.getSignature().setOutputDirectory(globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getSignature().getOutputDirectory());
+            String outputDir = globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getSignature().getOutputDirectory();
+            globalConfiguration.getSignature().setOutputDirectory(outputDir);
         }
         if(!Files.exists(new File(globalConfiguration.getSignature().getOutputDirectory()).toPath())){
             new File(globalConfiguration.getSignature().getOutputDirectory()).mkdir();
@@ -128,6 +115,7 @@ public class SignatureResources extends Resources {
         config.setCertificatesPath(signatureDataPath + certificatesFolder);
         config.setImagesPath(signatureDataPath + imagesFolder);
         config.setOutputPath(globalConfiguration.getSignature().getOutputDirectory());
+        outPutPath = globalConfiguration.getSignature().getOutputDirectory();
         // set GroupDocs license
         License license = new License();
         license.setLicense(globalConfiguration.getApplication().getLicensePath());
@@ -173,7 +161,7 @@ public class SignatureResources extends Resources {
                     break;
                 case "stamp": rootDirectory = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder;
                     break;
-                case "qrCode": rootDirectory = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder;
+                case "text": rootDirectory = globalConfiguration.getSignature().getDataDirectory() + textRootFolder;
                     break;
                 default:  rootDirectory = signatureHandler.getSignatureConfig().getStoragePath();
                     break;
@@ -193,7 +181,7 @@ public class SignatureResources extends Resources {
                     break;
                 case "stamp": fileList = signatureLoader.LoadStampSignatures(previewFolder, xmlFolder);
                     break;
-                case "qrCode": fileList = signatureLoader.LoadStampSignatures(previewFolder, xmlFolder);
+                case "text": fileList = signatureLoader.LoadStampSignatures(previewFolder, xmlFolder);
                     break;
                 default:  fileList = signatureLoader.LoadFiles();
                     break;
@@ -702,8 +690,8 @@ public class SignatureResources extends Resources {
      * @return signed document info
      */
     @POST
-    @Path(value = "/signQrCode")
-    public Object signQrCode(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Path(value = "/signOptical")
+    public Object signOptical(@Context HttpServletRequest request, @Context HttpServletResponse response){
         String password = "";
         try {
             // set response content type
@@ -714,6 +702,7 @@ public class SignatureResources extends Resources {
             String documentGuid = getJsonString(requestBody, "guid");
             password = getJsonString(requestBody, "password");
             SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
+            String signatureType = signaturesData[0].getSignatureType();
             // set signed document save options
             final SaveOptions saveOptions = new SaveOptions();
             saveOptions.setOutputType(OutputType.String);
@@ -727,36 +716,65 @@ public class SignatureResources extends Resources {
             SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // get xml files root path
-            String xmlPath = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder + xmlFolder;
+            String xmlPath = "";
+            if(signatureType.equals("qrCode")) {
+                xmlPath = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder + xmlFolder;
+            } else {
+                xmlPath = globalConfiguration.getSignature().getDataDirectory() + barCodeRootFolder + xmlFolder;
+            }
             // prepare signing options and sign document
             for(int i = 0; i < signaturesData.length; i++) {
                 // get xml data of the QR-Code
-                String qrCodeName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
-                XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(xmlPath + "/" + qrCodeName +".xml")));
-                QrCodeDataWrapper qrCodeData = (QrCodeDataWrapper)decoder.readObject();
+                String opticalCodeName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
+                XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(xmlPath + "/" + opticalCodeName +".xml")));
+                OpticalCodeDataWrapper opticalCodeData = (OpticalCodeDataWrapper)decoder.readObject();
                 // check if document type is image
                 if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
                     signaturesData[i].setDocumentType("image");
                 }
                 // initiate QRCode signer object
-                QrCodeSigner signer = new QrCodeSigner(qrCodeData, signaturesData[i]);
-                // prepare signing options and sign document
-                switch (signaturesData[i].getDocumentType()) {
-                    case "Portable Document Format":
-                        signsCollection.add(signer.signPdf());
-                        break;
-                    case "Microsoft Word":
-                        signsCollection.add(signer.signWord());
-                        break;
-                    case "Microsoft PowerPoint":
-                        signsCollection.add(signer.signSlides());
-                        break;
-                    case "image":
-                        signsCollection.add(signer.signImage());
-                        break;
-                    case "Microsoft Excel":
-                        signsCollection.add(signer.signCells());
-                        break;
+                QrCodeSigner qrSigner = null;
+                BarCodeSigner barSigner = null;
+                if(signatureType.equals("qrCode")) {
+                     qrSigner = new QrCodeSigner(opticalCodeData, signaturesData[i]);
+                    // prepare signing options and sign document
+                    switch (signaturesData[i].getDocumentType()) {
+                        case "Portable Document Format":
+                            signsCollection.add(qrSigner.signPdf());
+                            break;
+                        case "Microsoft Word":
+                            signsCollection.add(qrSigner.signWord());
+                            break;
+                        case "Microsoft PowerPoint":
+                            signsCollection.add(qrSigner.signSlides());
+                            break;
+                        case "image":
+                            signsCollection.add(qrSigner.signImage());
+                            break;
+                        case "Microsoft Excel":
+                            signsCollection.add(qrSigner.signCells());
+                            break;
+                    }
+                } else {
+                    barSigner = new BarCodeSigner(opticalCodeData, signaturesData[i]);
+                    // prepare signing options and sign document
+                    switch (signaturesData[i].getDocumentType()) {
+                        case "Portable Document Format":
+                            signsCollection.add(barSigner.signPdf());
+                            break;
+                        case "Microsoft Word":
+                            signsCollection.add(barSigner.signWord());
+                            break;
+                        case "Microsoft PowerPoint":
+                            signsCollection.add(barSigner.signSlides());
+                            break;
+                        case "image":
+                            signsCollection.add(barSigner.signImage());
+                            break;
+                        case "Microsoft Excel":
+                            signsCollection.add(barSigner.signCells());
+                            break;
+                    }
                 }
             }
             // sign the document
@@ -875,20 +893,21 @@ public class SignatureResources extends Resources {
     }
 
     /**
-     * Save QR-Code signature data
+     * Save Optical signature data
      * @param request
      * @param response
      * @return stamp
      */
     @POST
-    @Path(value = "/saveQrCode")
-    public Object saveQrCode(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Path(value = "/saveOpticalCode")
+    public Object saveOpticalCode(@Context HttpServletRequest request, @Context HttpServletResponse response){
         try {
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
             // get request body
             String requestBody = getRequestBody(request);
-            QrCodeDataWrapper qrCodeData = (QrCodeDataWrapper) getJsonObject(requestBody, "properties", QrCodeDataWrapper.class);
+            OpticalCodeDataWrapper opticalCodeData = (OpticalCodeDataWrapper) getJsonObject(requestBody, "properties", OpticalCodeDataWrapper.class);
+            String signatureType = getJsonString(requestBody, "signatureType");
             // initiate signature data wrapper with default values
             SignatureDataWrapper signaturesData = new SignatureDataWrapper();
             signaturesData.setImageHeight(200);
@@ -896,29 +915,48 @@ public class SignatureResources extends Resources {
             signaturesData.setLeft(0);
             signaturesData.setTop(0);
             // initiate signer object
-            QrCodeSigner signer = new QrCodeSigner(qrCodeData, signaturesData);
-            // get preview path
-            String previewPath = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder + previewFolder;
-            // get xml file path
-            String xmlPath = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder + xmlFolder;
+            String previewPath = "";
+            String xmlPath = "";
+            QrCodeSigner qrSigner = null;
+            BarCodeSigner barCodeSigner = null;
             // initiate signature options collection
             SignatureOptionsCollection collection = new SignatureOptionsCollection();
-            // generate uniq file names for preview image and xml file
-            collection.add(signer.signImage());
+            if(signatureType.equals("qrCode")) {
+                qrSigner = new QrCodeSigner(opticalCodeData, signaturesData);
+                // get preview path
+                previewPath = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder + previewFolder;
+                // get xml file path
+                xmlPath = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder + xmlFolder;
+                // generate uniq file names for preview image and xml file
+                collection.add(qrSigner.signImage());
+            } else {
+                barCodeSigner = new BarCodeSigner(opticalCodeData, signaturesData);
+                // get preview path
+                previewPath = globalConfiguration.getSignature().getDataDirectory() + barCodeRootFolder + previewFolder;
+                // get xml file path
+                xmlPath = globalConfiguration.getSignature().getDataDirectory() + barCodeRootFolder + xmlFolder;
+                // generate uniq file names for preview image and xml file
+                collection.add(barCodeSigner.signImage());
+            }
             File file = null;
             File folder = new File(previewPath);
             File[] listOfFiles = folder.listFiles();
-            String newFileName = "";
-            for (int i = 0; i <= listOfFiles.length; i++) {
-                int number = i + 1;
-                // set file name, for example 001
-                newFileName = String.format("%03d", number);
-                file = new File(previewPath + "/" + newFileName + ".png");
-                // check if file with such name already exists
-                if (file.exists()) {
-                    continue;
-                } else {
-                    break;
+            String fileName = "";
+            if(opticalCodeData.getImageGuid() != null && !opticalCodeData.getImageGuid().isEmpty()){
+                file = new File(opticalCodeData.getImageGuid());
+                fileName = FilenameUtils.getBaseName(opticalCodeData.getImageGuid());
+            } else {
+                for (int i = 0; i <= listOfFiles.length; i++) {
+                    int number = i + 1;
+                    // set file name, for example 001
+                    fileName = String.format("%03d", number);
+                    file = new File(previewPath + "/" + fileName + ".png");
+                    // check if file with such name already exists
+                    if (file.exists()) {
+                        continue;
+                    } else {
+                        break;
+                    }
                 }
             }
             // generate empty image for future signing with QR-Code, such approach required to get QR-Code as image
@@ -934,32 +972,134 @@ public class SignatureResources extends Resources {
             ImageIO.write(bufImage, "png", file);
             bufImage = null;
             // QR-Code data to xml file saving
-            XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(xmlPath + "/" + newFileName + ".xml")));
-            encoder.writeObject(qrCodeData);
+            XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(xmlPath + "/" + fileName + ".xml")));
+            encoder.writeObject(opticalCodeData);
             encoder.close();
             // set signing save options
             final SaveOptions saveOptions = new SaveOptions();
             saveOptions.setOutputType(OutputType.String);
             saveOptions.setOutputFileName(file.getName());
             saveOptions.setOverwriteExistingFiles(true);
-            // set temporary signed documents path to QR-Code image previews folder
-            String signedPath = signatureHandler.getSignatureConfig().getOutputPath();
+            // set temporary signed documents path to QR-Code/BarCode image previews folder
             signatureHandler.getSignatureConfig().setOutputPath(previewPath);
             // sign generated image with QR-Code
             signatureHandler.sign(file.toPath().toString(), collection, saveOptions);
             // set signed documents path back to correct path
-            signatureHandler.getSignatureConfig().setOutputPath(signedPath);
+            signatureHandler.getSignatureConfig().setOutputPath(outPutPath);
             // set QR-Code data for response
-            qrCodeData.setImageGuid(file.toPath().toString());
-            qrCodeData.setHeight(200);
-            qrCodeData.setWidth(200);
+            opticalCodeData.setImageGuid(file.toPath().toString());
+            opticalCodeData.setHeight(200);
+            opticalCodeData.setWidth(200);
             // get QR-Code preview as Base64 String
             byte[] bytes = signatureHandler.getPageImage(file.toPath().toString(), 1, "", null, 100);
             // encode ByteArray into String
             String incodedImage = new String(Base64.getEncoder().encode(bytes));
-            qrCodeData.setEncodedImage(incodedImage);
+            opticalCodeData.setEncodedImage(incodedImage);
             // return loaded page object
-            return objectToJson(qrCodeData);
+            return objectToJson(opticalCodeData);
+        }catch (Exception ex){
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // set exception message
+            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+            exceptionWrapper.setMessage(ex.getMessage());
+            exceptionWrapper.setException(ex);
+            return objectToJson(exceptionWrapper);
+        }
+    }
+
+    /**
+     * Save signature text
+     * @param request
+     * @param response
+     * @return stamp
+     */
+    @POST
+    @Path(value = "/saveText")
+    public Object saveText(@Context HttpServletRequest request, @Context HttpServletResponse response){
+        try {
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // get request body
+            String requestBody = getRequestBody(request);
+            TextDataWrapper textData = (TextDataWrapper) getJsonObject(requestBody, "properties", TextDataWrapper.class);
+            // initiate signature data wrapper with default values
+            SignatureDataWrapper signaturesData = new SignatureDataWrapper();
+            signaturesData.setImageHeight(200);
+            signaturesData.setImageWidth(200);
+            signaturesData.setLeft(0);
+            signaturesData.setTop(0);
+            // initiate signer object
+            String previewPath = "";
+            String xmlPath = "";
+            TextSigner textSigner = new TextSigner(textData, signaturesData);
+            // initiate signature options collection
+            SignatureOptionsCollection collection = new SignatureOptionsCollection();
+            // get preview path
+            previewPath = globalConfiguration.getSignature().getDataDirectory() + textRootFolder + previewFolder;
+            // get xml file path
+            xmlPath = globalConfiguration.getSignature().getDataDirectory() + textRootFolder + xmlFolder;
+            // generate uniq file names for preview image and xml file
+            collection.add(textSigner.signImage());
+            File file = null;
+            File folder = new File(previewPath);
+            File[] listOfFiles = folder.listFiles();
+            String fileName = "";
+            if(textData.getImageGuid() != null && !textData.getImageGuid().isEmpty()){
+                file = new File(textData.getImageGuid());
+                fileName = FilenameUtils.getBaseName(textData.getImageGuid());
+            } else {
+                for (int i = 0; i <= listOfFiles.length; i++) {
+                    int number = i + 1;
+                    // set file name, for example 001
+                    fileName = String.format("%03d", number);
+                    file = new File(previewPath + "/" + fileName + ".png");
+                    // check if file with such name already exists
+                    if (file.exists()) {
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            // generate empty image for future signing with QR-Code, such approach required to get QR-Code as image
+            BufferedImage bufImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
+            // Create a graphics contents on the buffered image
+            Graphics2D g2d = bufImage.createGraphics();
+            // Draw graphics
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(0, 0, 200, 200);
+            // Graphics context no longer needed so dispose it
+            g2d.dispose();
+            // save BufferedImage to file
+            ImageIO.write(bufImage, "png", file);
+            bufImage = null;
+            // QR-Code data to xml file saving
+            XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(xmlPath + "/" + fileName + ".xml")));
+            encoder.writeObject(textData);
+            encoder.close();
+            // set signing save options
+            final SaveOptions saveOptions = new SaveOptions();
+            saveOptions.setOutputType(OutputType.String);
+            saveOptions.setOutputFileName(file.getName());
+            saveOptions.setOverwriteExistingFiles(true);
+            // set temporary signed documents path to QR-Code/BarCode image previews folder
+            signatureHandler.getSignatureConfig().setOutputPath(previewPath);
+            // sign generated image with QR-Code
+            signatureHandler.sign(file.toPath().toString(), collection, saveOptions);
+            // set signed documents path back to correct path
+            signatureHandler.getSignatureConfig().setOutputPath(outPutPath);
+            // set QR-Code data for response
+            textData.setImageGuid(file.toPath().toString());
+            textData.setHeight(200);
+            textData.setWidth(200);
+            // get QR-Code preview as Base64 String
+            byte[] bytes = signatureHandler.getPageImage(file.toPath().toString(), 1, "", null, 100);
+            // encode ByteArray into String
+            String incodedImage = new String(Base64.getEncoder().encode(bytes));
+            textData.setEncodedImage(incodedImage);
+            // return loaded page object
+            return objectToJson(textData);
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
@@ -981,5 +1121,41 @@ public class SignatureResources extends Resources {
             e.printStackTrace();
         }
         return value;
+    }
+
+    private void createDirectories(String rootPath) {
+        try {
+            if (!Files.exists(new File(rootPath).toPath())) {
+                new File(rootPath).mkdir();
+            }
+            if (!Files.exists(new File(rootPath + certificatesFolder).toPath())) {
+                new File(rootPath + certificatesFolder).mkdir();
+            }
+            if (!Files.exists(new File(rootPath + imagesFolder).toPath())) {
+                new File(rootPath + imagesFolder).mkdir();
+            }
+            if (!Files.exists(new File(rootPath + stampsRootFolder).toPath())) {
+                new File(rootPath + stampsRootFolder).mkdir();
+                new File(rootPath + stampsRootFolder + previewFolder).mkdir();
+                new File(rootPath + stampsRootFolder + xmlFolder).mkdir();
+            }
+            if (!Files.exists(new File(rootPath + qrRootFolder).toPath())) {
+                new File(rootPath + qrRootFolder).mkdir();
+                new File(rootPath + qrRootFolder + previewFolder).mkdir();
+                new File(rootPath + qrRootFolder + xmlFolder).mkdir();
+            }
+            if (!Files.exists(new File(rootPath + barCodeRootFolder).toPath())) {
+                new File(rootPath + barCodeRootFolder).mkdir();
+                new File(rootPath + barCodeRootFolder + previewFolder).mkdir();
+                new File(rootPath + barCodeRootFolder + xmlFolder).mkdir();
+            }
+            if (!Files.exists(new File(rootPath + textRootFolder).toPath())) {
+                new File(rootPath + textRootFolder).mkdir();
+                new File(rootPath + textRootFolder + previewFolder).mkdir();
+                new File(rootPath + textRootFolder + xmlFolder).mkdir();
+            }
+        } catch (Exception ex) {
+            throw ex;
+        }
     }
 }

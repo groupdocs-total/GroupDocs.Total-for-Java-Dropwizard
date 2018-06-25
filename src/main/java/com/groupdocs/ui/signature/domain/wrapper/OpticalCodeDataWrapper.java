@@ -1,6 +1,6 @@
 package com.groupdocs.ui.signature.domain.wrapper;
 
-public class QrCodeDataWrapper {
+public class OpticalCodeDataWrapper {
     private String text;
     private String imageGuid;
     private String borderColor = "rgb(0,0,0)";

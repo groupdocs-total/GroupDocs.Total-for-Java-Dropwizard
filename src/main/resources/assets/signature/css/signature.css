@@ -245,7 +245,7 @@ BROWSE SIGNATURES SLIDE
 DRAW IMAGE SLIDE
 ******************************************
 */
-#gd-draw-image, #gd-draw-stamp, #gd-draw-qrCode {
+#gd-draw-image, #gd-draw-stamp, #gd-draw-optical, #gd-draw-text {
     margin: 0 !important;
     background-color: #ffffff;
     position: absolute;

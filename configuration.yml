@@ -82,15 +82,15 @@ signature:
   # Directory where all signature data such as digital certificates, images, stamps etc. are stored, if empty - signatureData directory will be created inside the filesDirectory
   dataDirectory: ''
   # Enable/disable text signature
-  textSignature: false
+  textSignature: true
   # Enable/disable image signature
   imageSignature: true
   # Enable/disable digital signature
   digitalSignature: true
   # Enable/disable QR-Code signature
-  qrCodeSignature: false
+  qrCodeSignature: true
   # Enable/disable Barcode signature
-  barCodeSignature: false
+  barCodeSignature: true
   # Enable/disable Stamp signature
   stampSignature: true
   # Enable/disable original document downloading

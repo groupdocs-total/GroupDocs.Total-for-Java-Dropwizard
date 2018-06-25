@@ -106,19 +106,25 @@ $(document).ready(function(){
     });
 
     //////////////////////////////////////////////////
-    // QrCode sign event
+    // Optical sign event
     //////////////////////////////////////////////////
-    $('#qd-qr-sign').on('click', function(e){
+    $('#qd-qr-sign, #qd-barcode-sign').on('click', function(e){
         if(typeof documentGuid == "undefined" || documentGuid == ""){
             printMessage("Please open document first");
         } else {
-            signature.signatureType = "qrCode";
-            toggleModalDialog(true, 'QR Code Signature', getHtmlImageSign());
+            signature.signatureGuid = "";
+            if($(e.target).attr("id") == "qd-qr-sign"){
+                signature.signatureType = "qrCode";
+            } else {
+                signature.signatureType = "barCode";
+            }
+
+            toggleModalDialog(true, "Optical Signature", getHtmlImageSign());
             loadSignaturesTree('', function(){
                 $('#modalDialog .gd-modal-title').text("Signing Document");
                 $("#gd-signature-select-step").remove();
                 if( $("#gd-signature-draw-step").length == 0){
-                    var drawStep = getHtmlDrawModal(signature.signatureType);
+                    var drawStep = getHtmlDrawModal("optical");
                     $(drawStep).insertBefore("#gd-signature-page-select-step");
                 }
                 // open draw signatures step
@@ -128,8 +134,21 @@ $(document).ready(function(){
                     $($(".gd-pagination")[0]).addClass("gd-pagination-active")
                 }
                 $("#gd-signing-footer").show();
-                $("#gd-draw-qrCode").qrCodeGenerator();
+                $("#gd-draw-optical").opticalCodeGenerator();
             });
+        }
+    });
+
+    //////////////////////////////////////////////////
+    // Text sign event
+    //////////////////////////////////////////////////
+    $('#qd-text-sign').on('click', function(e){
+        if(typeof documentGuid == "undefined" || documentGuid == ""){
+            printMessage("Please open document first");
+        } else {
+            signature.signatureType = "text";
+            toggleModalDialog(true, 'Text Signature', getHtmlTextSign());
+            loadSignaturesTree('', openSigningFirstStepModal);
         }
     });
 
@@ -181,8 +200,11 @@ $(document).ready(function(){
                     $("#gd-draw-stamp").stampGenerator();
                 }
                 break;
-            case "qrCode":
-                $("#gd-draw-qrCode").qrCodeGenerator();
+            case "text":
+                if( $("#gd-text-container").length == 0) {
+                    $("#gd-draw-text").textGenerator();
+                }
+                break;
         }
     });
 
@@ -340,20 +362,41 @@ $(document).ready(function(){
     });
 
     //////////////////////////////////////////////////
-    // Export drawn QR-Code signature
+    // Export drawn Optical signature
     //////////////////////////////////////////////////
     $('.gd-modal-body').on('change', '.gd-qr-property', function(){
-        var qrProperties = $.fn.qrCodeGenerator.getProperties();
-        saveDrawnQrCode(qrProperties);
+        var opticalProperties = $.fn.opticalCodeGenerator.getProperties();
+        opticalProperties.imageGuid = signature.signatureGuid;
+        saveDrawnOpticalCode(opticalProperties);
     });
 
     //////////////////////////////////////////////////
-    // Export drawn QR-Code signature - detect Qr-Color border change event
+    // Export drawn Optical signature - detect Color border change event
     //////////////////////////////////////////////////
     $('.gd-modal-body').on('click', '#gd-qr-border-color .bcPicker-color', function(){
-        var qrProperties = $.fn.qrCodeGenerator.getProperties();
-        qrProperties.borderColor = $(this).css("background-color");
-        saveDrawnQrCode(qrProperties);
+        var opticalProperties = $.fn.opticalCodeGenerator.getProperties();
+        opticalProperties.borderColor = $(this).css("background-color");
+        opticalProperties.imageGuid = signature.signatureGuid;
+        saveDrawnOpticalCode(opticalProperties);
+    });
+
+    //////////////////////////////////////////////////
+    // Export drawn Text signature
+    //////////////////////////////////////////////////
+    $('.gd-modal-body').on('change', '.gd-text-property', function(){
+        var textProperties = $.fn.textGenerator.getProperties();
+        textProperties.imageGuid = signature.signatureGuid;
+        saveDrawnText(textProperties);
+    });
+
+    //////////////////////////////////////////////////
+    // Export drawn Text signature - detect color change event
+    //////////////////////////////////////////////////
+    $('.gd-modal-body').on('click', '#gd-text-border-color .bcPicker-color, #gd-text-background .bcPicker-color, #gd-text-font-color .bcPicker-color', function(){
+        var textProperties = $.fn.textGenerator.getProperties();
+        textProperties.imageGuid = signature.signatureGuid;
+        textProperties.borderColor = $(this).css("background-color");
+        saveDrawnText(textProperties);
     });
 
 });
@@ -534,7 +577,9 @@ function sign() {
             break;
         case "stamp": url = getApplicationPath('signStamp')
             break;
-        case "qrCode": url = getApplicationPath('signQrCode')
+        case "qrCode": url = getApplicationPath('signOptical')
+            break;
+        case "barCode": url = getApplicationPath('signOptical')
             break;
     }
     // current document guid is taken from the viewer.js globals
@@ -702,16 +747,54 @@ function saveDrawnStamp(callback) {
 
 /**
  * Save drawn QR-Code signature
- * @param {Object} properties - QR_Code properties
+ * @param {Object} properties - Optical properties
  */
-function saveDrawnQrCode(properties) {
+function saveDrawnOpticalCode(properties) {
+    // current document guid is taken from the viewer.js globals
+    var data = {properties: properties, signatureType: signature.signatureType};
+    $('#gd-modal-spinner').show();
+    // sign the document
+    $.ajax({
+        type: 'POST',
+        url: getApplicationPath("saveOpticalCode"),
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(returnedData) {
+            $('#gd-modal-spinner').hide();
+            if(returnedData.message != undefined){
+                // open error popup
+                printMessage(returnedData.message);
+                return;
+            }
+            $('#gd-modal-spinner').hide();
+            // set curent signature data
+            signature.signatureGuid = returnedData.imageGuid;
+            signature.imageHeight = returnedData.height;
+            signature.imageWidth = returnedData.width;
+            $("#gd-qr-preview-container").html("");
+            var prevewImage = '<image class="gd-signature-thumbnail-image" src="data:image/png;base64,' + returnedData.encodedImage + '" alt></image>';
+            $("#gd-qr-preview-container").append(prevewImage);
+            $(".gd-signature-select").removeClass("gd-signing-disabled");
+        },
+        error: function(xhr, status, error) {
+            var err = eval("(" + xhr.responseText + ")");
+            console.log(err.Message);
+        }
+    });
+}
+
+/**
+ * Save drawn Text signature
+ * @param {Object} properties - Text properties
+ */
+function saveDrawnText(properties) {
     // current document guid is taken from the viewer.js globals
     var data = {properties: properties};
     $('#gd-modal-spinner').show();
     // sign the document
     $.ajax({
         type: 'POST',
-        url: getApplicationPath("saveQrCode"),
+        url: getApplicationPath("saveText"),
         data: JSON.stringify(data),
         contentType: 'application/json',
         success: function(returnedData) {
@@ -831,8 +914,6 @@ function openSigningFirstStepModal(){
                 break;
             case "image": $(".gd-upload-signatures").css("left", "calc(100% - 72%)");
                 break;
-            case "qrCode": $(".gd-upload-signatures").css("left", "calc(100% - 72%)");
-                break;
         }
     } else {
         switch (signature.signatureType) {
@@ -841,9 +922,6 @@ function openSigningFirstStepModal(){
                 $(".gd-browse-signatures").css("left", "calc(100% - 77%)");
                 break;
             case "stamp":
-                $(".gd-browse-signatures").css("left", "calc(100% - 72%)");
-                break;
-            case "qrCode":
                 $(".gd-browse-signatures").css("left", "calc(100% - 72%)");
                 break;
         }
@@ -861,22 +939,22 @@ function getHtmlDigitalSign() {
     var footer = getHtmlSigningModalFooter(3);
     // generate signing modal HTML
     return '<section id="gd-sign-section" data-type="digital">' +
-        '<div id="gd-modal-spinner"><i class="fa fa-circle-o-notch fa-spin"></i> &nbsp;Loading... Please wait.</div>'+
-        '<div id="gd-upload-step" class="gd-slide" data-index="0">'+
-        uploadStep+
-        '</div>'+
-        signaturesSelectStep+
-        '<div id="gd-additional-info-step" class="gd-slide" data-index="2">'+
-        signatureInformationStep+
-        '</div>'+
-        '<div id="gd-review-step" class="gd-slide" data-index="3" data-last="true">'+
-        // entered date review will be here
-        '</div>'+
-        '<div id="gd-finish-step" class="gd-slide" data-index="4">'+
-        // Signing results will be here
-        '</div>'+
-        footer+
-        '</section>';
+                '<div id="gd-modal-spinner"><i class="fa fa-circle-o-notch fa-spin"></i> &nbsp;Loading... Please wait.</div>'+
+                    '<div id="gd-upload-step" class="gd-slide" data-index="0">'+
+                        uploadStep+
+                    '</div>'+
+                signaturesSelectStep+
+                '<div id="gd-additional-info-step" class="gd-slide" data-index="2">'+
+                    signatureInformationStep+
+                '</div>'+
+                '<div id="gd-review-step" class="gd-slide" data-index="3" data-last="true">'+
+                    // entered date review will be here
+                '</div>'+
+                '<div id="gd-finish-step" class="gd-slide" data-index="4">'+
+                    // Signing results will be here
+                '</div>'+
+                footer+
+            '</section>';
 }
 
 /**
@@ -886,22 +964,53 @@ function getHtmlImageSign() {
     // prepare signing steps HTML
     var uploadStep = getHtmlSignatureUploadModal();
     var signaturesSelectStep = getHtmlSignaturesSelectModal();
-    var drawStep = getHtmlDrawModal(signature.signatureType);
+    var drawStep = "";
+    if(signature.signatureType == "qrCode" || signature.signatureType == "barCode"){
+        drawStep = getHtmlDrawModal("optical");
+    } else {
+        drawStep = getHtmlDrawModal(signature.signatureType);
+    }
     var signaturePageSelectStep = getHtmlPagesSelectModal();
     var footer = getHtmlSigningModalFooter(2);
     // generate signing modal HTML
     return '<section id="gd-sign-section"  data-type="image">' +
-        '<div id="gd-modal-spinner"><i class="fa fa-circle-o-notch fa-spin"></i> &nbsp;Loading... Please wait.</div>'+
-        '<div id="gd-upload-step" class="gd-slide" data-index="0">'+
-        uploadStep+
-        '</div>'+
-        signaturesSelectStep+
-        drawStep+
-        '<div id="gd-signature-page-select-step" class="gd-slide" data-index="2" data-last="true">'+
-        signaturePageSelectStep+
-        '</div>'+
-        footer+
-        '</section>';
+                '<div id="gd-modal-spinner"><i class="fa fa-circle-o-notch fa-spin"></i> &nbsp;Loading... Please wait.</div>'+
+                '<div id="gd-upload-step" class="gd-slide" data-index="0">'+
+                    uploadStep+
+                '</div>'+
+                signaturesSelectStep+
+                drawStep+
+                '<div id="gd-signature-page-select-step" class="gd-slide" data-index="2" data-last="true">'+
+                    signaturePageSelectStep+
+                '</div>'+
+                footer+
+            '</section>';
+}
+
+/**
+ * Generate HTML content of the Text sign modal
+ */
+function getHtmlTextSign() {
+    // prepare signing steps HTML
+    var uploadStep = getHtmlSignatureUploadModal();
+    var signaturesSelectStep = getHtmlSignaturesSelectModal();
+    var drawStep = "";
+    drawStep = getHtmlDrawModal(signature.signatureType);
+    var signaturePageSelectStep = getHtmlPagesSelectModal();
+    var footer = getHtmlSigningModalFooter(2);
+    // generate signing modal HTML
+    return '<section id="gd-sign-section"  data-type="image">' +
+                '<div id="gd-modal-spinner"><i class="fa fa-circle-o-notch fa-spin"></i> &nbsp;Loading... Please wait.</div>'+
+                '<div id="gd-upload-step" class="gd-slide" data-index="0">'+
+                    uploadStep+
+                '</div>'+
+                signaturesSelectStep+
+                drawStep+
+                '<div id="gd-signature-page-select-step" class="gd-slide" data-index="2" data-last="true">'+
+                    signaturePageSelectStep+
+                '</div>'+
+                footer+
+            '</section>';
 }
 
 /**
@@ -909,7 +1018,7 @@ function getHtmlImageSign() {
  **/
 function getHtmlSignatureUploadModal(){
     var uploadButton = "";
-    if(signature.signatureType != "stamp" && signature.signatureType != "qrCode") {
+    if(signature.signatureType != "stamp" && signature.signatureType != "text") {
         uploadButton = '<label class="gd-upload-signatures">' +
                             '<i class="fa fa-upload"></i>UPLOAD signature(S)<input id="gd-signature-upload-input" type="file" multiple style="display: none;">' +
                         '</label>';
@@ -1111,6 +1220,16 @@ function switchToNextSlide(){
                     loadSignatureImage();
                 }
                 break
+            case "barCode":
+                // get signature positioning info
+                signature.pageNumber = $(".gd-signature-information-review i").html();
+                if(signature.pageNumber == ""){
+                    $(".gd-signature-information-review i").html("Please select page first");
+                } else {
+                    // load selected signature image from storage
+                    loadSignatureImage();
+                }
+                break
         }
     } else {
         var currentSlide = null;
@@ -1197,6 +1316,8 @@ function loadSignatureImage() {
             // when ajax is done insert loaded image into the document page
             toggleModalDialog(false, "");
             var signatureGuid = "";
+            var width = 0;
+            var height = 0;
             // check if image should be added to all pages
             if(signature.pageNumber == "All") {
                 // add image for each document page
@@ -1206,8 +1327,12 @@ function loadSignatureImage() {
                     // otherwise if not to drop it during inserting it will use the same object for all signatures
                     if(typeof(signature.signatureGuid) != "undefined"){
                         signatureGuid = signature.signatureGuid;
+                        width = signature.imageWidth;
+                        height = signature.imageHeight;
                     }
                     signature.signatureGuid = signatureGuid;
+                    signature.imageWidth = width;
+                    signature.imageHeight = height;
                     // insert image over the document page
                     insertImage(returnedData.pageImage, i + 1);
                 }

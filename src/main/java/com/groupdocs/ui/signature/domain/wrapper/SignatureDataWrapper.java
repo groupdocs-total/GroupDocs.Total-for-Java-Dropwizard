@@ -9,6 +9,7 @@ public class SignatureDataWrapper {
     private String  signatureComment;
     private String documentType;
     private String signatureGuid;
+    private String signatureType;
     private int pageNumber;
     private int left;
     private int top;
@@ -78,6 +79,14 @@ public class SignatureDataWrapper {
 
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
+    }
+
+    public String getSignatureType() {
+        return signatureType;
+    }
+
+    public void setSignatureType(String signatureType) {
+        this.signatureType = signatureType;
     }
 
     public int getLeft() {

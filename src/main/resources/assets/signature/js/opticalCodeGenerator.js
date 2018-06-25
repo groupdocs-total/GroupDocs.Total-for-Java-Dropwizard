@@ -10,9 +10,7 @@
 
 	/**
 	* Create private variables.
-	**/	
-	var xCoord = 125;
-	var yCoord = 125;	
+	**/
 	var paramValues = {	
 		text : 'gd-qr-text',
 		borderColor : 'gd-qr-border-color',
@@ -20,16 +18,16 @@
 		borderWidth : 'gd-qr-border-width'
 	}
 
-	$.fn.qrCodeGenerator = function() {
+	$.fn.opticalCodeGenerator = function() {
         if ($("#gd-qr-container").length == 0) {
-            $(this).append($.fn.qrCodeGenerator.baseHtml());
-            var propertiesContainer = $.fn.qrCodeGenerator.propertiesHtml();
+            $(this).append($.fn.opticalCodeGenerator.baseHtml());
+            var propertiesContainer = $.fn.opticalCodeGenerator.propertiesHtml();
             $("#gd-qr-params-header").append(propertiesContainer);
             $('#' + paramValues.borderColor).bcPicker();
         }
 	}
 
-	$.extend(true, $.fn.qrCodeGenerator, {
+	$.extend(true, $.fn.opticalCodeGenerator, {
 
         getProperties : function(){
 				var text = $(this).find('#' + paramValues.text).val();
@@ -54,7 +52,7 @@
 
 		propertiesHtml : function(){
 			var html = '<div class="gd-qr-params" id="gd-qr-params">'+
-							'<h3>Qr Code Properties</h3>' +
+							'<h3>Signature Properties</h3>' +
 							'<table id="gd-qr-text-table">'+
 								'<thead>'+
 									'<tr><td>Text</td></tr>'+

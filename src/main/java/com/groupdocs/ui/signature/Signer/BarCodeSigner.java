@@ -1,35 +1,36 @@
 package com.groupdocs.ui.signature.Signer;
 
+import com.groupdocs.signature.domain.barcodes.BarcodeTypes;
 import com.groupdocs.signature.domain.enums.HorizontalAlignment;
 import com.groupdocs.signature.domain.enums.VerticalAlignment;
-import com.groupdocs.signature.domain.qrcodes.QRCodeTypes;
-import com.groupdocs.signature.options.qrcodesignature.SlidesQRCodeSignOptions;
-import com.groupdocs.signature.options.qrcodesignature.CellsQRCodeSignOptions;
-import com.groupdocs.signature.options.qrcodesignature.WordsQRCodeSignOptions;
-import com.groupdocs.signature.options.qrcodesignature.PdfQRCodeSignOptions;
-import com.groupdocs.signature.options.qrcodesignature.ImagesQRCodeSignOptions;
+import com.groupdocs.signature.options.barcodesignature.CellsBarcodeSignOptions;
+import com.groupdocs.signature.options.barcodesignature.WordsBarcodeSignOptions;
+import com.groupdocs.signature.options.barcodesignature.ImagesBarcodeSignOptions;
+import com.groupdocs.signature.options.barcodesignature.PdfBarcodeSignOptions;
+import com.groupdocs.signature.options.barcodesignature.SlidesBarcodeSignOptions;
 import com.groupdocs.ui.signature.domain.wrapper.OpticalCodeDataWrapper;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
 
 import java.awt.Color;
+
 /**
  * StampSigner
  * Signs documents with the stamp signature
  * @author Aspose Pty Ltd
  */
-public class QrCodeSigner {
+public class BarCodeSigner {
     private OpticalCodeDataWrapper qrCodeData;
     private SignatureDataWrapper signatureData;
 
-    public QrCodeSigner(OpticalCodeDataWrapper qrCodeData, SignatureDataWrapper signatureData){
+    public BarCodeSigner(OpticalCodeDataWrapper qrCodeData, SignatureDataWrapper signatureData){
         this.qrCodeData = qrCodeData;
         this.signatureData = signatureData;
     }
 
-    public PdfQRCodeSignOptions signPdf(){
+    public PdfBarcodeSignOptions signPdf(){
         // setup options
-        PdfQRCodeSignOptions signOptions = new PdfQRCodeSignOptions(qrCodeData.getText());
-        signOptions.setEncodeType(QRCodeTypes.QR);
+        PdfBarcodeSignOptions signOptions = new PdfBarcodeSignOptions(qrCodeData.getText());
+        signOptions.setEncodeType(BarcodeTypes.CODE_39_STANDARD);
         signOptions.setHorizontalAlignment(HorizontalAlignment.None);
         signOptions.setVerticalAlignment(VerticalAlignment.None);
         signOptions.setWidth(signatureData.getImageWidth());
@@ -47,10 +48,10 @@ public class QrCodeSigner {
         return signOptions;
     }
 
-    public ImagesQRCodeSignOptions signImage(){
+    public ImagesBarcodeSignOptions signImage(){
         // setup options
-        ImagesQRCodeSignOptions signOptions = new ImagesQRCodeSignOptions(qrCodeData.getText());
-        signOptions.setEncodeType(QRCodeTypes.QR);
+        ImagesBarcodeSignOptions signOptions = new ImagesBarcodeSignOptions(qrCodeData.getText());
+        signOptions.setEncodeType(BarcodeTypes.CODE_39_STANDARD);
         signOptions.setHorizontalAlignment(HorizontalAlignment.None);
         signOptions.setVerticalAlignment(VerticalAlignment.None);
         signOptions.setWidth(signatureData.getImageWidth());
@@ -69,10 +70,10 @@ public class QrCodeSigner {
         return signOptions;
     }
 
-    public WordsQRCodeSignOptions signWord(){
+    public WordsBarcodeSignOptions signWord(){
         // setup options
-        WordsQRCodeSignOptions signOptions = new WordsQRCodeSignOptions(qrCodeData.getText());
-        signOptions.setEncodeType(QRCodeTypes.QR);
+        WordsBarcodeSignOptions signOptions = new WordsBarcodeSignOptions(qrCodeData.getText());
+        signOptions.setEncodeType(BarcodeTypes.CODE_39_STANDARD);
         signOptions.setHorizontalAlignment(HorizontalAlignment.None);
         signOptions.setVerticalAlignment(VerticalAlignment.None);
         signOptions.setWidth(signatureData.getImageWidth());
@@ -90,10 +91,10 @@ public class QrCodeSigner {
         return signOptions;
     }
 
-    public CellsQRCodeSignOptions signCells(){
+    public CellsBarcodeSignOptions signCells(){
         // setup options
-        CellsQRCodeSignOptions signOptions = new CellsQRCodeSignOptions(qrCodeData.getText());
-        signOptions.setEncodeType(QRCodeTypes.QR);
+        CellsBarcodeSignOptions signOptions = new CellsBarcodeSignOptions(qrCodeData.getText());
+        signOptions.setEncodeType(BarcodeTypes.CODE_39_STANDARD);
         signOptions.setHorizontalAlignment(HorizontalAlignment.None);
         signOptions.setVerticalAlignment(VerticalAlignment.None);
         signOptions.setWidth(signatureData.getImageWidth());
@@ -111,10 +112,10 @@ public class QrCodeSigner {
         return signOptions;
     }
 
-    public SlidesQRCodeSignOptions signSlides(){
+    public SlidesBarcodeSignOptions signSlides(){
         // setup options
-        SlidesQRCodeSignOptions signOptions = new SlidesQRCodeSignOptions(qrCodeData.getText());
-        signOptions.setEncodeType(QRCodeTypes.QR);
+        SlidesBarcodeSignOptions signOptions = new SlidesBarcodeSignOptions(qrCodeData.getText());
+        signOptions.setEncodeType(BarcodeTypes.CODE_39_STANDARD);
         signOptions.setHorizontalAlignment(HorizontalAlignment.None);
         signOptions.setVerticalAlignment(VerticalAlignment.None);
         signOptions.setWidth(signatureData.getImageWidth());

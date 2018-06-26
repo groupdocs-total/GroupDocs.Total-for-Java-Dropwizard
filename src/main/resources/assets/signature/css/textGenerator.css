@@ -1,128 +1,138 @@
-#gd-text-container{
-  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background-color: #ffffff;
-  position: relative;
-  width: 100%;
-  height: 100%;
+#gd-text-container {
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: #ffffff;
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
-#gd-text-container input{
-  border: 1px solid #dcdcdc;
-  padding: 5px;
-  color: #9c9c9c;
-  margin-bottom: 10px;
+#gd-text-container input {
+    border: 1px solid #dcdcdc;
+    padding: 5px;
+    color: #9c9c9c;
+    margin-bottom: 10px;
 }
 
-#gd-text-container input:focus, button:focus{
-  outline: none;
+#gd-text-container input:focus, button:focus {
+    outline: none;
 }
 
-#gd-text-params-header{
-  text-align: center;
+#gd-text-params-header {
+    text-align: center;
 }
 
-#gd-text-params-container{
-  background-color: #e2e2e2;
-  width: 284px;
-  height: calc(100% - 137px);
-  padding: 10px;
-  position: fixed;
-  overflow-y: auto;
-  overflow-x: hidden;
+#gd-text-params-container {
+    background-color: #e2e2e2;
+    width: 284px;
+    height: calc(100% - 137px);
+    padding: 10px;
+    position: fixed;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-.gd-text-params{
-  background-color: #f7f7f7;
-  padding: 15px 20px;
-  margin-bottom: 10px;
-  position: relative;
-  border: 1px solid #ddd;
+.gd-text-params {
+    background-color: #f7f7f7;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    position: relative;
+    border: 1px solid #ddd;
 }
 
-.gd-text-params h3{
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 300;
-  font-size: 12px;
-  margin: 0;
-  margin-top: 15px;
+.gd-text-params h3 {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 300;
+    font-size: 12px;
+    margin: 0;
+    margin-top: 15px;
 }
 
-.gd-text-params > div{
-  display: block;
+.gd-text-params > div {
+    display: block;
 }
 
-.gd-text-params input[type="number"]{
-  width: 60px;
+.gd-text-params input[type="number"] {
+    width: 60px;
 }
 
-.gd-text-params input[type="text"]{
-  width: 185px;
+.gd-text-params input[type="text"] {
+    width: 185px;
 }
 
-.gd-text-params #gd-text-text-font{
-  width: 120px;
+.gd-text-params #gd-text-text-font {
+    width: 120px;
 }
 
-.gd-text-params .gd-text-color-picker{
-  width: 75px;
-  height: 27px;
-  border: 1px solid #dcdcdc;
-  margin-right: 10px;
-  margin-bottom: 10px;
+.gd-text-params .gd-text-color-picker {
+    width: 75px;
+    height: 27px;
+    border: 1px solid #dcdcdc;
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
 
-.gd-text-params{
-  top: 2px;
-  right: 1px;
+.gd-text-params {
+    top: 2px;
+    right: 1px;
 }
 
-.gd-text-params table{
-  margin-bottom: 13px;
-  margin-left: -13px;
+.gd-text-params table {
+    margin-bottom: 13px;
+    margin-left: -13px;
 }
 
-#gd-text-border-table i, #gd-text-table i{
-  font-size: 12px;
-  color: #808080;
-  font-style: unset;
-  display: block;
+#gd-text-border-table label, #gd-text-table label, #gd-text-font-properties-table label {
+    font-size: 12px;
+    width: 100px;
+    color: #808080;
+    font-style: unset;
+    text-align: inherit;
+    display: block;
 }
 
-#gd-text-border-table td, #gd-text-table td{
-  text-align: left;
+#gd-text-border-width-label{
+    width: 67px !important;
 }
 
-.gd-border-style-wrapper{
-  border: 1px solid #ccc;
-  width: 120px;
-  border-radius: 3px;
-  overflow: hidden;
-  background: #fafafa;
+#gd-text-border-table td, #gd-text-table td, #gd-text-font-properties-table td {
+    text-align: left;
 }
 
-.gd-border-style-select{
-  padding: 5px 8px;
-  border: none;
-  box-shadow: none;
-  background: transparent;
-  background-image: none;
-  -webkit-appearance: none;
+.gd-border-style-wrapper {
+    border: 1px solid #ccc;
+    width: 120px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: #fafafa;
 }
 
-#gd-text-preview-container{
-  position: absolute;
-  left: calc(100% - 217px);
-  width: calc(100% - 320px);
-  height: 100%;
-  top: calc(100% - 172px);
+.gd-border-style-select {
+    padding: 5px 8px;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    background-image: none;
+    -webkit-appearance: none;
 }
 
-.gd-text-preview{
-  position: absolute;
-  top: 50px;
+#gd-text-font {
+    width: 120px;
 }
 
-.bcPicker-palette{
-  top: 25px;
+#gd-text-preview-container {
+    position: absolute;
+    left: calc(100% - 217px);
+    width: calc(100% - 320px);
+    height: 100%;
+    top: calc(100% - 172px);
+}
+
+.gd-text-preview {
+    position: absolute;
+    top: 50px;
+}
+
+.bcPicker-palette {
+    top: 25px;
 }

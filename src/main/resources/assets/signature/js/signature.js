@@ -153,7 +153,7 @@ $(document).ready(function(){
     });
 
     //////////////////////////////////////////////////
-    // Open signatures browse button (digital sign dialog) click
+    // Open signatures browse button click
     //////////////////////////////////////////////////
     $('.gd-modal-body').on('click', '#gd-open-signature', function(e){
         $('#modalDialog .gd-modal-title').text("Signing Document");
@@ -203,6 +203,11 @@ $(document).ready(function(){
             case "text":
                 if( $("#gd-text-container").length == 0) {
                     $("#gd-draw-text").textGenerator();
+                    $("#gd-text-background").find(".bcPicker-picker").css("background-color", "#ffffff");
+                    var docType = getDocumentFormat(documentGuid).format;
+                    if(docType == "Microsoft PowerPoint"){
+                        $("#gd-text-border-style-line").hide();
+                    }
                 }
                 break;
         }
@@ -395,7 +400,17 @@ $(document).ready(function(){
     $('.gd-modal-body').on('click', '#gd-text-border-color .bcPicker-color, #gd-text-background .bcPicker-color, #gd-text-font-color .bcPicker-color', function(){
         var textProperties = $.fn.textGenerator.getProperties();
         textProperties.imageGuid = signature.signatureGuid;
-        textProperties.borderColor = $(this).css("background-color");
+        switch($(this).parent().parent().attr("id")){
+            case "gd-text-font-color":
+                textProperties.fontColor = $(this).css("background-color");
+                break;
+            case "gd-text-border-color":
+                textProperties.borderColor = $(this).css("background-color");
+                break;
+            case "gd-text-background":
+                textProperties.backgroundColor = $(this).css("background-color");
+                break;
+        }
         saveDrawnText(textProperties);
     });
 
@@ -447,7 +462,7 @@ function loadSignaturesTree(dir, callback) {
                         '<div class="gd-signature-name" data-guid="' + guid + '">' + name + '</div>'+
                         '</div>';
                 } else {
-                    if(signature.signatureType == "image" || signature.signatureType == "stamp"){
+                    if(signature.signatureType == "image" || signature.signatureType == "stamp" || signature.signatureType == "text"){
                         signatures = signatures + '<div class="gd-signature gd-signature-thumbnail">' +
                             '<input id="gd-radio' + index + '" class="gd-signature-radio" name="gd-radio" type="radio">' +
                             '<label for="gd-radio' + index + '" class="gd-signature-name" data-guid="' + guid + '"></label>' +
@@ -580,6 +595,8 @@ function sign() {
         case "qrCode": url = getApplicationPath('signOptical')
             break;
         case "barCode": url = getApplicationPath('signOptical')
+            break;
+        case "text": url = getApplicationPath('signText')
             break;
     }
     // current document guid is taken from the viewer.js globals
@@ -809,9 +826,9 @@ function saveDrawnText(properties) {
             signature.signatureGuid = returnedData.imageGuid;
             signature.imageHeight = returnedData.height;
             signature.imageWidth = returnedData.width;
-            $("#gd-qr-preview-container").html("");
-            var prevewImage = '<image class="gd-signature-thumbnail-image" src="data:image/png;base64,' + returnedData.encodedImage + '" alt></image>';
-            $("#gd-qr-preview-container").append(prevewImage);
+            $("#gd-text-preview-container").html("");
+            var prevewImage = '<image src="data:image/png;base64,' + returnedData.encodedImage + '" alt></image>';
+            $("#gd-text-preview-container").append(prevewImage);
             $(".gd-signature-select").removeClass("gd-signing-disabled");
         },
         error: function(xhr, status, error) {
@@ -923,6 +940,9 @@ function openSigningFirstStepModal(){
                 break;
             case "stamp":
                 $(".gd-browse-signatures").css("left", "calc(100% - 72%)");
+                break;
+            case "text":
+                $(".gd-browse-signatures").css("left", "calc(100% - 74%)");
                 break;
         }
     }
@@ -1221,6 +1241,16 @@ function switchToNextSlide(){
                 }
                 break
             case "barCode":
+                // get signature positioning info
+                signature.pageNumber = $(".gd-signature-information-review i").html();
+                if(signature.pageNumber == ""){
+                    $(".gd-signature-information-review i").html("Please select page first");
+                } else {
+                    // load selected signature image from storage
+                    loadSignatureImage();
+                }
+                break
+            case "text":
                 // get signature positioning info
                 signature.pageNumber = $(".gd-signature-information-review i").html();
                 if(signature.pageNumber == ""){

@@ -1,9 +1,5 @@
 package com.groupdocs.ui.signature.resources;
 
-import com.groupdocs.signature.domain.enums.PdfTextAnnotationBorderEffect;
-import com.groupdocs.signature.domain.enums.PdfTextSignatureImplementation;
-import com.groupdocs.signature.options.appearances.PdfTextAnnotationAppearance;
-import com.groupdocs.signature.options.textsignature.PdfSignTextOptions;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
 import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
@@ -11,8 +7,19 @@ import com.groupdocs.ui.common.domain.wrapper.LoadedPageWrapper;
 import com.groupdocs.ui.common.resources.Resources;
 import com.groupdocs.ui.common.domain.web.MediaType;
 import com.groupdocs.ui.signature.SignaturesLoader.SignatureLoader;
-import com.groupdocs.ui.signature.Signer.*;
-import com.groupdocs.ui.signature.domain.wrapper.*;
+import com.groupdocs.ui.signature.Signer.BarCodeSigner;
+import com.groupdocs.ui.signature.Signer.QrCodeSigner;
+import com.groupdocs.ui.signature.Signer.DigitalSigner;
+import com.groupdocs.ui.signature.Signer.ImageSigner;
+import com.groupdocs.ui.signature.Signer.StampSigner;
+import com.groupdocs.ui.signature.Signer.TextSigner;
+import com.groupdocs.ui.signature.domain.wrapper.TextDataWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.OpticalCodeDataWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.StampDataWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.DocumentDescriptionWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.SignedDocumentWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.SignatureFileDescriptionWrapper;
 import com.groupdocs.ui.signature.views.Signature;
 import com.groupdocs.signature.domain.DocumentDescription;
 import com.groupdocs.signature.handler.SignatureHandler;
@@ -684,7 +691,7 @@ public class SignatureResources extends Resources {
     }
 
     /**
-     * Sign document with QR-Code signature
+     * Sign document with Optical signature
      * @param request
      * @param response
      * @return signed document info
@@ -775,6 +782,93 @@ public class SignatureResources extends Resources {
                             signsCollection.add(barSigner.signCells());
                             break;
                     }
+                }
+            }
+            // sign the document
+            signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions);
+            signedDocument.setGuid(signatureHandler.getSignatureConfig().getOutputPath() + "/" + new File(documentGuid).getName());
+            // return loaded page object
+            return objectToJson(signedDocument);
+        }catch (Exception ex){
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // set exception message
+            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+            if(ex.getMessage().contains("password") && password.isEmpty()) {
+                exceptionWrapper.setMessage("Password Required");
+            }else if(ex.getMessage().contains("password") && !password.isEmpty()){
+                exceptionWrapper.setMessage("Incorrect password");
+            }else{
+                exceptionWrapper.setMessage(ex.getMessage());
+                exceptionWrapper.setException(ex);
+            }
+            return objectToJson(exceptionWrapper);
+        }
+    }
+
+    /**
+     * Sign document with Text signature
+     * @param request
+     * @param response
+     * @return signed document info
+     */
+    @POST
+    @Path(value = "/signText")
+    public Object signText(@Context HttpServletRequest request, @Context HttpServletResponse response){
+        String password = "";
+        try {
+            // set response content type
+            setResponseContentType(response, MediaType.APPLICATION_JSON);
+            // get request body
+            String requestBody = getRequestBody(request);
+            // get/set parameters
+            String documentGuid = getJsonString(requestBody, "guid");
+            password = getJsonString(requestBody, "password");
+            SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
+            // set signed document save options
+            final SaveOptions saveOptions = new SaveOptions();
+            saveOptions.setOutputType(OutputType.String);
+            saveOptions.setOutputFileName(new File(documentGuid).getName());
+            // set document password if required
+            LoadOptions loadOptions = new LoadOptions();
+            if (password != null && !password.isEmpty()) {
+                loadOptions.setPassword(password);
+            }
+            // initiate signed document wrapper
+            SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
+            SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
+            // get xml files root path
+            String xmlPath = "";
+            xmlPath = globalConfiguration.getSignature().getDataDirectory() + textRootFolder + xmlFolder;
+            // prepare signing options and sign document
+            for(int i = 0; i < signaturesData.length; i++) {
+                // get xml data of the Text signature
+                String textName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
+                XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(xmlPath + "/" + textName +".xml")));
+                TextDataWrapper textData = (TextDataWrapper)decoder.readObject();
+                // check if document type is image
+                if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
+                    signaturesData[i].setDocumentType("image");
+                }
+                // initiate QRCode signer object
+                TextSigner textSigner = new TextSigner(textData, signaturesData[i]);
+                // prepare signing options and sign document
+                switch (signaturesData[i].getDocumentType()) {
+                    case "Portable Document Format":
+                        signsCollection.add(textSigner.signPdf());
+                        break;
+                    case "Microsoft Word":
+                        signsCollection.add(textSigner.signWord());
+                        break;
+                    case "Microsoft PowerPoint":
+                        signsCollection.add(textSigner.signSlides());
+                        break;
+                    case "image":
+                        signsCollection.add(textSigner.signImage());
+                        break;
+                    case "Microsoft Excel":
+                        signsCollection.add(textSigner.signCells());
+                        break;
                 }
             }
             // sign the document
@@ -1025,8 +1119,8 @@ public class SignatureResources extends Resources {
             TextDataWrapper textData = (TextDataWrapper) getJsonObject(requestBody, "properties", TextDataWrapper.class);
             // initiate signature data wrapper with default values
             SignatureDataWrapper signaturesData = new SignatureDataWrapper();
-            signaturesData.setImageHeight(200);
-            signaturesData.setImageWidth(200);
+            signaturesData.setImageHeight(textData.getHeight());
+            signaturesData.setImageWidth(textData.getWidth());
             signaturesData.setLeft(0);
             signaturesData.setTop(0);
             // initiate signer object
@@ -1062,19 +1156,19 @@ public class SignatureResources extends Resources {
                     }
                 }
             }
-            // generate empty image for future signing with QR-Code, such approach required to get QR-Code as image
-            BufferedImage bufImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
+            // generate empty image for future signing with Text, such approach required to get Text as image
+            BufferedImage bufImage = new BufferedImage(signaturesData.getImageWidth(), signaturesData.getImageHeight(), BufferedImage.TYPE_INT_ARGB);
             // Create a graphics contents on the buffered image
             Graphics2D g2d = bufImage.createGraphics();
             // Draw graphics
             g2d.setColor(Color.WHITE);
-            g2d.fillRect(0, 0, 200, 200);
+            g2d.fillRect(0, 0, signaturesData.getImageWidth(), signaturesData.getImageHeight());
             // Graphics context no longer needed so dispose it
             g2d.dispose();
             // save BufferedImage to file
             ImageIO.write(bufImage, "png", file);
             bufImage = null;
-            // QR-Code data to xml file saving
+            // Text data to xml file saving
             XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(xmlPath + "/" + fileName + ".xml")));
             encoder.writeObject(textData);
             encoder.close();
@@ -1083,17 +1177,15 @@ public class SignatureResources extends Resources {
             saveOptions.setOutputType(OutputType.String);
             saveOptions.setOutputFileName(file.getName());
             saveOptions.setOverwriteExistingFiles(true);
-            // set temporary signed documents path to QR-Code/BarCode image previews folder
+            // set temporary signed documents path to Text/BarCode image previews folder
             signatureHandler.getSignatureConfig().setOutputPath(previewPath);
-            // sign generated image with QR-Code
+            // sign generated image with Text
             signatureHandler.sign(file.toPath().toString(), collection, saveOptions);
             // set signed documents path back to correct path
             signatureHandler.getSignatureConfig().setOutputPath(outPutPath);
-            // set QR-Code data for response
+            // set Text data for response
             textData.setImageGuid(file.toPath().toString());
-            textData.setHeight(200);
-            textData.setWidth(200);
-            // get QR-Code preview as Base64 String
+            // get Text preview as Base64 String
             byte[] bytes = signatureHandler.getPageImage(file.toPath().toString(), 1, "", null, 100);
             // encode ByteArray into String
             String incodedImage = new String(Base64.getEncoder().encode(bytes));

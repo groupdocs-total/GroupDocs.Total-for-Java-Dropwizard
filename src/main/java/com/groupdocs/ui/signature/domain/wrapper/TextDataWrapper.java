@@ -5,21 +5,15 @@ public class TextDataWrapper {
     private String imageGuid;
     private String encodedImage;
     private String text;
-    private String contentsDescription;
-    private String subject;
-    private String title;
     private String backgroundColor = "rgb(0,0,0)";
     private String fontColor = "rgb(0,0,0)";
     private String borderColor = "rgb(0,0,0)";
     private String font;
     private int borderStyle;
-    private int borderEffect;
     private int fontSize;
     private int borderWidth;
     private int width;
     private int height;
-    private int borderEffectIntensity;
-    private int cornerRadius;
     private Boolean bold;
     private Boolean italic;
     private Boolean underline;
@@ -46,30 +40,6 @@ public class TextDataWrapper {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public String getContentsDescription() {
-        return contentsDescription;
-    }
-
-    public void setContentsDescription(String contentsDescription) {
-        this.contentsDescription = contentsDescription;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getBackgroundColor() {
@@ -112,14 +82,6 @@ public class TextDataWrapper {
         this.borderStyle = borderStyle;
     }
 
-    public int getBorderEffect() {
-        return borderEffect;
-    }
-
-    public void setBorderEffect(int borderEffect) {
-        this.borderEffect = borderEffect;
-    }
-
     public int getFontSize() {
         return fontSize;
     }
@@ -150,22 +112,6 @@ public class TextDataWrapper {
 
     public void setHeight(int height) {
         this.height = height;
-    }
-
-    public int getBorderEffectIntensity() {
-        return borderEffectIntensity;
-    }
-
-    public void setBorderEffectIntensity(int borderEffectIntensity) {
-        this.borderEffectIntensity = borderEffectIntensity;
-    }
-
-    public int getCornerRadius() {
-        return cornerRadius;
-    }
-
-    public void setCornerRadius(int cornerRadius) {
-        this.cornerRadius = cornerRadius;
     }
 
     public Boolean getBold() {

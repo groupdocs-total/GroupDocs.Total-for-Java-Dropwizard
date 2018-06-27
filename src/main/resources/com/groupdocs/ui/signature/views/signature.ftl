@@ -5,13 +5,13 @@
         <title>Signature for Java Dropwizard</title>
         <link type="text/css" rel="stylesheet" href="assets/common/css/font-awesome.min.css"/>
         <link type="text/css" rel="stylesheet" href="assets/common/css/swiper.min.css">
-        <link type="text/css" rel="stylesheet" href="assets/signature/css/jquery-ui.min.css"/>
-        <link type="text/css" rel="stylesheet" href="assets/signature/css/viewer.css"/>
-        <link type="text/css" rel="stylesheet" href="assets/signature/css/viewer.mobile.css"/>
-        <link type="text/css" rel="stylesheet" href="assets/signature/css/viewer-dark.css"/>
+        <link type="text/css" rel="stylesheet" href="assets/common/css/jquery-ui.min.css"/>
+        <link type="text/css" rel="stylesheet" href="assets/common/css/circle-progress.css"/>
+        <link type="text/css" rel="stylesheet" href="assets/viewer/css/viewer.css"/>
+        <link type="text/css" rel="stylesheet" href="assets/viewer/css/viewer.mobile.css"/>
+        <link type="text/css" rel="stylesheet" href="assets/viewer/css/viewer-dark.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/bcPaint.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/bcPaint.mobile.css"/>
-		<link type="text/css" rel="stylesheet" href="assets/signature/css/viewer-circle-progress.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/signature.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/stampGenerator.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/opticalCodeGenerator.css"/>
@@ -19,8 +19,8 @@
         <link type="text/css" rel="stylesheet" href="assets/signature/css/bcPicker.css"/>
         <script type="text/javascript" src="assets/common/js/jquery.min.js"></script>
         <script type="text/javascript" src="assets/common/js/swiper.min.js"></script>
-        <script type="text/javascript" src="assets/signature/js/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="assets/signature/js/viewer.js"></script>
+        <script type="text/javascript" src="assets/common/js/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="assets/viewer/js/viewer.js"></script>
         <script type="text/javascript" src="assets/signature/js/signature.js"></script>
         <script type="text/javascript" src="assets/signature/js/rotatable.js"></script>
         <script type="text/javascript" src="assets/signature/js/bcPaint.js"></script>

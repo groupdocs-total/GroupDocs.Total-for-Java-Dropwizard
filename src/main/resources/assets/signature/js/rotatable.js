@@ -243,6 +243,7 @@
             if (!this.options.handle) {
                 handle = $(document.createElement('div'))
                 handle.addClass('ui-rotatable-handle')
+                handle.append('<i class="fa fa-undo" aria-hidden="true"></i>');
                 if (this.options.handleOffset.top !== 0 || this.options.handleOffset.left !== 0) {
                     handle.css('position', 'relative')
                     handle.css('top', this.options.handleOffset.top + 'px')

@@ -98,6 +98,12 @@ public class SignatureResources extends Resources {
 
         // create total application configuration
         SignatureConfig config = new SignatureConfig();
+        if(new File(globalConfiguration.getApplication().getLicensePath()).isAbsolute()) {
+            globalConfiguration.getApplication().setLicensePath(globalConfiguration.getApplication().getLicensePath());
+        } else {
+            String licensePath = new File("").getAbsolutePath() + globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getApplication().getLicensePath();
+            globalConfiguration.getApplication().setLicensePath(licensePath);
+        }
         if(!new File(globalConfiguration.getSignature().getFilesDirectory()).isAbsolute()) {
             globalConfiguration.getSignature().setFilesDirectory(new File("").getAbsolutePath() + globalConfiguration.getSignature().getFilesDirectory());
         }

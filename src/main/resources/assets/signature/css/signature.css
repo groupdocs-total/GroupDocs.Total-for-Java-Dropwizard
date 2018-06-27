@@ -9,6 +9,9 @@ FIX DOCUMENT PAGE POSITION FOR IMAGE SIGNATURE
 .gd-save-disabled {
     cursor: not-allowed !important;
 }
+#gd-header-logo {
+    background-image: url(/assets/signature/images/logo.png) !important;
+}
 /*
 ******************************************
 MODAL
@@ -414,14 +417,11 @@ SIGNATURE IMAGE ROTATION
 ******************************************
 */
 .ui-rotatable-handle {
-    height: 16px;
-    width: 16px;
     cursor: pointer;
-    background-image: url('../images/rotate.png');
-    background-size: 100%;
-    left: calc(100% - 57%);
-    top: -22px;
+    left: calc(100% - 56%);
+    top: -24px;
     position: absolute;
+    color: #3e4e5a;
 }
 /*
 ******************************************

@@ -72,6 +72,12 @@ public class ViewerResources extends Resources {
      */
     public ViewerResources(GlobalConfiguration globalConfiguration) throws UnknownHostException {
         super(globalConfiguration);
+        if(new File(globalConfiguration.getApplication().getLicensePath()).isAbsolute()) {
+            globalConfiguration.getApplication().setLicensePath(globalConfiguration.getApplication().getLicensePath());
+        } else {
+            String licensePath = new File("").getAbsolutePath() + globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getApplication().getLicensePath();
+            globalConfiguration.getApplication().setLicensePath(licensePath);
+        }
         if(!new File(globalConfiguration.getViewer().getFilesDirectory()).isAbsolute()) {
             globalConfiguration.getViewer().setFilesDirectory(new File("").getAbsolutePath() + globalConfiguration.getViewer().getFilesDirectory());
         }

@@ -299,7 +299,6 @@ public class SignatureResources extends Resources {
     @GET
     @Path(value = "/downloadDocument")
     public Object downloadDocument(@Context HttpServletRequest request, @Context HttpServletResponse response) throws IOException {
-        int bytesRead = 0;
         int count = 0;
         byte[] buff = new byte[16 * 1024];
         OutputStream out = response.getOutputStream();
@@ -307,14 +306,21 @@ public class SignatureResources extends Resources {
         setResponseContentType(response, MediaType.APPLICATION_OCTET_STREAM);
         // get document path
         String documentGuid = request.getParameter("path");
+        Boolean signed = Boolean.valueOf(request.getParameter("signed"));
         String fileName = new File(documentGuid).getName();
         // set response content disposition
         response.setHeader("Content-disposition", "attachment; filename=" + fileName);
         BufferedOutputStream outStream = null;
         BufferedInputStream inputStream = null;
+        String pathToDownload = "";
+        if(signed) {
+            pathToDownload = signatureHandler.getSignatureConfig().getOutputPath() + "/" + fileName;
+        } else {
+            pathToDownload = signatureHandler.getSignatureConfig().getStoragePath() + "/" + fileName;
+        }
         try {
             // download the document
-            inputStream = new BufferedInputStream(new FileInputStream(documentGuid));
+            inputStream = new BufferedInputStream(new FileInputStream(pathToDownload));
             outStream = new BufferedOutputStream(out);
             while ((count = inputStream.read(buff)) != -1) {
                 outStream.write(buff, 0, count);
@@ -495,18 +501,17 @@ public class SignatureResources extends Resources {
             switch (signaturesData[0].getDocumentType()){
                 case "Portable Document Format":
                     // sign document
-                    signatureHandler.sign(documentGuid, signer.signPdf(), loadOptions, saveOptions);
+                    signedDocument.setGuid(signatureHandler.sign(documentGuid, signer.signPdf(), loadOptions, saveOptions).toString());
                     break;
                 case "Microsoft Word":
                     // sign document
-                    signatureHandler.sign(documentGuid, signer.signWord(), loadOptions, saveOptions);
+                    signedDocument.setGuid(signatureHandler.sign(documentGuid, signer.signWord(), loadOptions, saveOptions).toString());
                     break;
                 case "Microsoft Excel":
                     // sign document
-                    signatureHandler.sign(documentGuid, signer.signCell(), loadOptions, saveOptions);
+                    signedDocument.setGuid(signatureHandler.sign(documentGuid, signer.signCell(), loadOptions, saveOptions).toString());
                     break;
             }
-            signedDocument.setGuid(signatureHandler.getSignatureConfig().getOutputPath() + "/" + signedFileName);
             // return loaded page object
             return objectToJson(signedDocument);
         }catch (Exception ex){
@@ -583,8 +588,7 @@ public class SignatureResources extends Resources {
                 }
             }
             // sign the document
-            signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions);
-            signedDocument.setGuid(signatureHandler.getSignatureConfig().getOutputPath() + "/" + new File(documentGuid).getName());
+            signedDocument.setGuid(signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions).toString());
             // return loaded page object
             return objectToJson(signedDocument);
         }catch (Exception ex){
@@ -669,8 +673,7 @@ public class SignatureResources extends Resources {
                 }
             }
             // sign the document
-            signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions);
-            signedDocument.setGuid(signatureHandler.getSignatureConfig().getOutputPath() + "/" + new File(documentGuid).getName());
+            signedDocument.setGuid(signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions).toString());
             // return loaded page object
             return objectToJson(signedDocument);
         }catch (Exception ex){
@@ -785,8 +788,7 @@ public class SignatureResources extends Resources {
                 }
             }
             // sign the document
-            signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions);
-            signedDocument.setGuid(signatureHandler.getSignatureConfig().getOutputPath() + "/" + new File(documentGuid).getName());
+            signedDocument.setGuid(signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions).toString());
             // return loaded page object
             return objectToJson(signedDocument);
         }catch (Exception ex){
@@ -872,8 +874,7 @@ public class SignatureResources extends Resources {
                 }
             }
             // sign the document
-            signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions);
-            signedDocument.setGuid(signatureHandler.getSignatureConfig().getOutputPath() + "/" + new File(documentGuid).getName());
+            signedDocument.setGuid(signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions).toString());
             // return loaded page object
             return objectToJson(signedDocument);
         }catch (Exception ex){
@@ -1015,6 +1016,7 @@ public class SignatureResources extends Resources {
             BarCodeSigner barCodeSigner = null;
             // initiate signature options collection
             SignatureOptionsCollection collection = new SignatureOptionsCollection();
+            // check optical signature type
             if(signatureType.equals("qrCode")) {
                 qrSigner = new QrCodeSigner(opticalCodeData, signaturesData);
                 // get preview path
@@ -1053,7 +1055,7 @@ public class SignatureResources extends Resources {
                     }
                 }
             }
-            // generate empty image for future signing with QR-Code, such approach required to get QR-Code as image
+            // generate empty image for future signing with Optical signature, such approach required to get QR-Code as image
             BufferedImage bufImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
             // Create a graphics contents on the buffered image
             Graphics2D g2d = bufImage.createGraphics();
@@ -1065,7 +1067,7 @@ public class SignatureResources extends Resources {
             // save BufferedImage to file
             ImageIO.write(bufImage, "png", file);
             bufImage = null;
-            // QR-Code data to xml file saving
+            // Optical data to xml file saving
             XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(xmlPath + "/" + fileName + ".xml")));
             encoder.writeObject(opticalCodeData);
             encoder.close();
@@ -1076,15 +1078,15 @@ public class SignatureResources extends Resources {
             saveOptions.setOverwriteExistingFiles(true);
             // set temporary signed documents path to QR-Code/BarCode image previews folder
             signatureHandler.getSignatureConfig().setOutputPath(previewPath);
-            // sign generated image with QR-Code
+            // sign generated image with Optical signature
             signatureHandler.sign(file.toPath().toString(), collection, saveOptions);
             // set signed documents path back to correct path
             signatureHandler.getSignatureConfig().setOutputPath(outPutPath);
-            // set QR-Code data for response
+            // set data for response
             opticalCodeData.setImageGuid(file.toPath().toString());
             opticalCodeData.setHeight(200);
             opticalCodeData.setWidth(200);
-            // get QR-Code preview as Base64 String
+            // get signature preview as Base64 String
             byte[] bytes = signatureHandler.getPageImage(file.toPath().toString(), 1, "", null, 100);
             // encode ByteArray into String
             String incodedImage = new String(Base64.getEncoder().encode(bytes));

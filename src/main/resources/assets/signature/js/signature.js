@@ -16,6 +16,7 @@ GLOBAL VARIABLES
 var signatureImageIndex = 0;
 var signaturesList = [];
 var currentDocumentGuid = "";
+var signedDocumentGuid = "";
 var signature = {
     signaturePassword:  "",
     signatureComment: "",
@@ -414,6 +415,13 @@ $(document).ready(function(){
         saveDrawnText(textProperties);
     });
 
+    //////////////////////////////////////////////////
+    // Download event
+    //////////////////////////////////////////////////
+    $('#gd-btn-download-value > li').bind('click', function(e){
+        download($(this));
+    });
+
 });
 
 /*
@@ -571,6 +579,10 @@ function uploadSignature(file, index, url) {
  * Sign current document
  */
 function sign() {
+    if($(".gd-modal-body").children().length == 0){
+        var spinner = '<div id="gd-modal-spinner"><i class="fa fa-circle-o-notch fa-spin"></i> &nbsp;Loading... Please wait.</div>';
+        toggleModalDialog(true, "Signing document", spinner);
+    }
     $('#gd-modal-spinner').show();
     currentDocumentGuid = documentGuid;
     var url = "";
@@ -627,6 +639,7 @@ function sign() {
                 }
                 return;
             }
+            signedDocumentGuid = returnedData.guid;
             // prepare signing results HTML
             result = '<div id="gd-modal-signed">Document signed successfully</div>';
             // show signing results
@@ -636,7 +649,7 @@ function sign() {
                     $("#gd-signing-footer").hide();
                     break;
                 default:
-                    toggleModalDialog(true, "Signing results", result);
+                    $(".gd-modal-body").append(result);
                     $("#gd-modal-signed").toggleClass("gd-image-signed");
                     break;
             }
@@ -1487,6 +1500,9 @@ function insertImage(image, pageNumber) {
     signature = {};
 }
 
+/**
+ * Get HTML of the resize handles - used to add resize handles to the added signature image
+ */
 function getHtmlResizeHandles(){
     return '<div class="ui-resizable-handle ui-resizable-n"></div>'+
         '<div class="ui-resizable-handle ui-resizable-e"></div>'+
@@ -1498,12 +1514,41 @@ function getHtmlResizeHandles(){
         '<div class="ui-resizable-handle ui-resizable-nw"></div>';
 }
 
+/**
+ * Set grid position
+ * @param {int} width - Current signature image width
+ * @param {int} height - Current signature image height
+ */
 function setGridPosition(width, height){
     $('.ui-resizable-n').css('left', (width/2-4)+'px');
     $('.ui-resizable-e').css('top', (height/2-4)+'px');
     $('.ui-resizable-s').css('left', (width/2-4)+'px');
     $('.ui-resizable-w').css('top', (height/2-4)+'px');
 }
+
+/**
+ * Download document
+ * @param {Object} button - Clicked download button
+ */
+function download (button){
+    var signed = false;
+    var documentName = "";
+    if($(button).attr("id") == "gd-signed-download"){
+        signed = true;
+        documentName = signedDocumentGuid;
+        signedDocumentGuid = "";
+    } else {
+        documentName = documentGuid;
+    }
+    if(typeof documentName != "undefined" && documentName != ""){
+         // Open download dialog
+         window.location.assign(getApplicationPath("downloadDocument/?path=") + documentName + "&signed=" + signed);
+    } else {
+         // open error popup
+         printMessage("Please open or sign document first");
+    }
+}
+
 /*
 ******************************************************************
 ******************************************************************

@@ -34,6 +34,7 @@
     margin-bottom: 10px;
     position: relative;
     border: 1px solid #ddd;
+    height: 217px;
 }
 
 .gd-qr-params h3 {
@@ -66,12 +67,6 @@
     height: 27px;
     border: 1px solid #dcdcdc;
     margin-right: 10px;
-}
-
-.gd-qr-params {
-    top: 2px;
-    right: 1px;
-    height: 217px;
 }
 
 .gd-qr-params table {

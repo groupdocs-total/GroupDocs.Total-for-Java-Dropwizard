@@ -255,11 +255,13 @@ $(document).ready(function(){
             uploadSignature(uploadFiles[i], i, "");
         }
         $(".gd-browse-signatures").show();
-        if (signature.signatureType == "image") {
-            $(".gd-upload-signatures").css("left", "calc(100% - 87%)");
-            $(".gd-browse-signatures").css("left", "calc(100% - 77%)");
-        } else {
-            $(".gd-upload-signatures").css("left", "calc(100% - 76%)");
+        if(!/Mobi/.test(navigator.userAgent)) {
+            if (signature.signatureType == "image") {
+                $(".gd-upload-signatures").css("left", "calc(100% - 87%)");
+                $(".gd-browse-signatures").css("left", "calc(100% - 77%)");
+            } else {
+                $(".gd-upload-signatures").css("left", "calc(100% - 76%)");
+            }
         }
     });
 
@@ -939,24 +941,28 @@ function openSigningFirstStepModal(){
     // show or hide the browse button, depends on signature availability in the storage
     if(!browseSignatures){
         $(".gd-browse-signatures").hide();
-        switch (signature.signatureType) {
-            case "digital": $(".gd-upload-signatures").css("left", "calc(100% - 60%)");
-                break;
-            case "image": $(".gd-upload-signatures").css("left", "calc(100% - 72%)");
-                break;
+        if(!/Mobi/.test(navigator.userAgent)) {
+            switch (signature.signatureType) {
+                case "digital": $(".gd-upload-signatures").css("left", "calc(100% - 60%)");
+                    break;
+                case "image": $(".gd-upload-signatures").css("left", "calc(100% - 72%)");
+                    break;
+            }
         }
     } else {
-        switch (signature.signatureType) {
-            case "image":
-                $(".gd-upload-signatures").css("left", "calc(100% - 87%)");
-                $(".gd-browse-signatures").css("left", "calc(100% - 77%)");
-                break;
-            case "stamp":
-                $(".gd-browse-signatures").css("left", "calc(100% - 72%)");
-                break;
-            case "text":
-                $(".gd-browse-signatures").css("left", "calc(100% - 74%)");
-                break;
+        if(!/Mobi/.test(navigator.userAgent)) {
+            switch (signature.signatureType) {
+                case "image":
+                    $(".gd-upload-signatures").css("left", "calc(100% - 87%)");
+                    $(".gd-browse-signatures").css("left", "calc(100% - 77%)");
+                    break;
+                case "stamp":
+                    $(".gd-browse-signatures").css("left", "calc(100% - 72%)");
+                    break;
+                case "text":
+                    $(".gd-browse-signatures").css("left", "calc(100% - 74%)");
+                    break;
+            }
         }
     }
 }
@@ -1284,7 +1290,11 @@ function switchToNextSlide(){
             // if next step is last step, update next button to confirm button
             if ($($(".gd-slide")[index + 1]).data("last")) {
                 $("#gd-next").html("CONFIRM");
-                $("#gd-next").css("left", "calc(100% - 123px)");
+                if(/Mobi/.test(navigator.userAgent)){
+                    $("#gd-next").css("left",  "calc(100% - 285px)", "!important");
+                } else {
+                    $("#gd-next").css("left", "calc(100% - 123px)");
+                }
             }
             if(currentSlide != null){
                 return false;
@@ -1416,9 +1426,12 @@ function insertImage(image, pageNumber) {
         '<image id="gd-image-signature-' + currentImage + '" class="gd-signature-image" src="data:image/png;base64,' + image + '" alt></image>' +
         resizeHandles +
         '</div>';
-    $("#gd-image-signature-" + currentImage).css('background-color','transparent')
+    $("#gd-image-signature-" + currentImage).css('background-color','transparent');
     // add signature to the selected page
     $(signatureHtml).insertBefore($("#gd-page-" + pageNumber).find(".gd-wrapper")).delay(1000);
+    if(signature.signatureType == "image" && /Mobi/.test(navigator.userAgent)){
+        $(".gd-draggable-helper").css("width", "100%", "!important");
+    }
     // calculate initial centre of the rotation
     var rotationTop = $("#gd-image-signature-" + currentImage).height() / 2;
     var rotationLeft = $("#gd-image-signature-" + currentImage).width() / 2;

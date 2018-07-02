@@ -13,6 +13,7 @@
         <link type="text/css" rel="stylesheet" href="assets/signature/css/bcPaint.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/bcPaint.mobile.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/signature.css"/>
+        <link type="text/css" rel="stylesheet" href="assets/signature/css/signature.mobile.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/stampGenerator.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/opticalCodeGenerator.css"/>
         <link type="text/css" rel="stylesheet" href="assets/signature/css/textGenerator.css"/>
@@ -28,6 +29,7 @@
         <script type="text/javascript" src="assets/signature/js/stampGenerator.js"></script>
         <script type="text/javascript" src="assets/signature/js/opticalCodeGenerator.js"></script>
         <script type="text/javascript" src="assets/signature/js/textGenerator.js"></script>
+        <script type="text/javascript" src="assets/common/js/jquery.ui.touch-punch.min.js"></script>
     </head>
     <body>
         <div id="element"></div>

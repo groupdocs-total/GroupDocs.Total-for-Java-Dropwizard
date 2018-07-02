@@ -1,13 +1,13 @@
 package com.groupdocs.ui.viewer.resources;
 
 import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
-import com.groupdocs.ui.common.domain.wrapper.LoadedPageWrapper;
+import com.groupdocs.ui.common.entity.web.FileDescriptionWrapper;
+import com.groupdocs.ui.common.entity.web.LoadedPageWrapper;
 import com.groupdocs.ui.viewer.entity.web.RotatedPageEntity;
-import com.groupdocs.ui.common.domain.web.MediaType;
-import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
+import com.groupdocs.ui.common.entity.web.MediaType;
+import com.groupdocs.ui.common.entity.web.ExceptionWrapper;
 import com.groupdocs.ui.common.resources.Resources;
-import com.groupdocs.ui.common.domain.wrapper.UploadedDocumentWrapper;
+import com.groupdocs.ui.common.entity.web.UploadedDocumentWrapper;
 import com.groupdocs.ui.viewer.views.Viewer;
 import com.google.gson.Gson;
 import com.groupdocs.viewer.config.ViewerConfig;
@@ -31,7 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;

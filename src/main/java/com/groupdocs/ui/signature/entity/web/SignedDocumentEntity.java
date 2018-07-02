@@ -1,6 +1,6 @@
-package com.groupdocs.ui.signature.domain.wrapper;
+package com.groupdocs.ui.signature.entity.web;
 
-public class SignedDocumentWrapper {
+public class SignedDocumentEntity {
     private String guid;
 
     public String getGuid() {

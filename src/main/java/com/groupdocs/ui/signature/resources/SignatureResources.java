@@ -9,22 +9,21 @@ import com.groupdocs.signature.options.SignatureOptionsCollection;
 import com.groupdocs.signature.options.loadoptions.LoadOptions;
 import com.groupdocs.signature.options.saveoptions.SaveOptions;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.common.domain.web.MediaType;
-import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
-import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
-import com.groupdocs.ui.common.domain.wrapper.LoadedPageWrapper;
+import com.groupdocs.ui.common.entity.web.MediaType;
+import com.groupdocs.ui.common.entity.web.FileDescriptionWrapper;
+import com.groupdocs.ui.common.entity.web.LoadedPageWrapper;
 import com.groupdocs.ui.common.resources.Resources;
-import com.groupdocs.ui.signature.domain.wrapper.DocumentDescriptionWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureFileDescriptionWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.SignedDocumentWrapper;
+import com.groupdocs.ui.signature.entity.web.DocumentDescriptionEntity;
+import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
+import com.groupdocs.ui.signature.entity.web.SignatureFileDescriptionEntity;
+import com.groupdocs.ui.signature.entity.web.SignedDocumentEntity;
 import com.groupdocs.ui.signature.entity.directory.DataDirectoryEntity;
 import com.groupdocs.ui.signature.entity.xml.OpticalXmlEntity;
 import com.groupdocs.ui.signature.entity.xml.StampXmlEntity;
 import com.groupdocs.ui.signature.entity.xml.TextXmlEntity;
 import com.groupdocs.ui.signature.signatureloader.SignatureLoader;
 import com.groupdocs.ui.signature.signer.*;
-import com.groupdocs.ui.signature.util.DirectoryUtils;
+import com.groupdocs.ui.signature.util.directory.DirectoryUtils;
 import com.groupdocs.ui.signature.views.Signature;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -140,7 +139,7 @@ public class SignatureResources extends Resources {
                 relDirPath = rootDirectory + "/" + relDirPath;//TODO String.Format
             }
             SignatureLoader signatureLoader = new SignatureLoader(relDirPath, globalConfiguration);
-            ArrayList<SignatureFileDescriptionWrapper> fileList;
+            ArrayList<SignatureFileDescriptionEntity> fileList;
             switch (signatureType) {
                 case "digital":  fileList = signatureLoader.LoadFiles();
                     break;
@@ -180,11 +179,11 @@ public class SignatureResources extends Resources {
             DocumentDescription documentDescription;
             // get document info container
             documentDescription = signatureHandler.getDocumentDescription(documentGuid, password);
-            ArrayList<DocumentDescriptionWrapper> pagesDescription = new ArrayList<>();
+            ArrayList<DocumentDescriptionEntity> pagesDescription = new ArrayList<>();
             // get info about each document page
             for(int i = 1; i <= documentDescription.getPageCount(); i++) {
                 //initiate custom Document description object
-                DocumentDescriptionWrapper description = new DocumentDescriptionWrapper();
+                DocumentDescriptionEntity description = new DocumentDescriptionEntity();
                 // get current page size
                 java.awt.Dimension pageSize = signatureHandler.getDocumentPageSize(documentGuid, i, password, (double)0, (double)0, null);
                 // set current page info for result
@@ -340,7 +339,7 @@ public class SignatureResources extends Resources {
                 // save file with out rewriting
                 Files.copy(uploadedInputStream, file.toPath());
             }
-            SignatureFileDescriptionWrapper uploadedDocument = new SignatureFileDescriptionWrapper();
+            SignatureFileDescriptionEntity uploadedDocument = new SignatureFileDescriptionEntity();
             uploadedDocument.setGuid(documentStoragePath + "/" + fileName); //TODO String.Format
             if(signatureType.equals("image")){
                 // get page image
@@ -402,11 +401,11 @@ public class SignatureResources extends Resources {
             // get/set parameters
             String documentGuid = getJsonString(requestBody, "guid");
             password = getJsonString(requestBody, "password");
-            SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
+            SignatureDataEntity[] signaturesData = (SignatureDataEntity[]) getJsonObject(requestBody, "signaturesData", SignatureDataEntity[].class);
             // get signed document name
             String signedFileName = new File(documentGuid).getName();
             // initiate signed document wrapper
-            SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
+            SignedDocumentEntity signedDocument = new SignedDocumentEntity();
 
             final SaveOptions saveOptions = new SaveOptions();
             saveOptions.setOutputType(OutputType.String);
@@ -458,7 +457,7 @@ public class SignatureResources extends Resources {
             // get/set parameters
             String documentGuid = getJsonString(requestBody, "guid");
             password = getJsonString(requestBody, "password");
-            SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
+            SignatureDataEntity[] signaturesData = (SignatureDataEntity[]) getJsonObject(requestBody, "signaturesData", SignatureDataEntity[].class);
 
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // set signature password if required
@@ -498,7 +497,7 @@ public class SignatureResources extends Resources {
             // get/set parameters
             String documentGuid = getJsonString(requestBody, "guid");
             password = getJsonString(requestBody, "password");
-            SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
+            SignatureDataEntity[] signaturesData = (SignatureDataEntity[]) getJsonObject(requestBody, "signaturesData", SignatureDataEntity[].class);
 
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // mimeType should now be something like "image/png" if the document is image
@@ -542,7 +541,7 @@ public class SignatureResources extends Resources {
             // get/set parameters
             String documentGuid = getJsonString(requestBody, "guid");
             password = getJsonString(requestBody, "password");
-            SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
+            SignatureDataEntity[] signaturesData = (SignatureDataEntity[]) getJsonObject(requestBody, "signaturesData", SignatureDataEntity[].class);
             String signatureType = signaturesData[0].getSignatureType();
 
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
@@ -589,7 +588,7 @@ public class SignatureResources extends Resources {
             // get/set parameters
             String documentGuid = getJsonString(requestBody, "guid");
             password = getJsonString(requestBody, "password");
-            SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
+            SignatureDataEntity[] signaturesData = (SignatureDataEntity[]) getJsonObject(requestBody, "signaturesData", SignatureDataEntity[].class);
 
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // prepare signing options and sign document
@@ -647,7 +646,7 @@ public class SignatureResources extends Resources {
         }
 
         // sign document
-        SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
+        SignedDocumentEntity signedDocument = new SignedDocumentEntity();
         signedDocument.setGuid(signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions).toString());
         return objectToJson(signedDocument);
     }
@@ -749,7 +748,7 @@ public class SignatureResources extends Resources {
             OpticalXmlEntity opticalCodeData = (OpticalXmlEntity) getJsonObject(requestBody, "properties", OpticalXmlEntity.class);
             String signatureType = getJsonString(requestBody, "signatureType");
             // initiate signature data wrapper with default values
-            SignatureDataWrapper signaturesData = new SignatureDataWrapper();
+            SignatureDataEntity signaturesData = new SignatureDataEntity();
             signaturesData.setImageHeight(200);
             signaturesData.setImageWidth(200);
             signaturesData.setLeft(0);
@@ -859,7 +858,7 @@ public class SignatureResources extends Resources {
             String requestBody = getRequestBody(request);
             TextXmlEntity textData = (TextXmlEntity) getJsonObject(requestBody, "properties", TextXmlEntity.class);
             // initiate signature data wrapper with default values
-            SignatureDataWrapper signaturesData = new SignatureDataWrapper();
+            SignatureDataEntity signaturesData = new SignatureDataEntity();
             signaturesData.setImageHeight(textData.getHeight());
             signaturesData.setImageWidth(textData.getWidth());
             signaturesData.setLeft(0);

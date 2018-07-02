@@ -4,7 +4,7 @@ import com.groupdocs.signature.options.SignOptions;
 import com.groupdocs.signature.options.digitalsignature.CellsSignDigitalOptions;
 import com.groupdocs.signature.options.digitalsignature.PdfSignDigitalOptions;
 import com.groupdocs.signature.options.digitalsignature.WordsSignDigitalOptions;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
+import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 
 import javax.ws.rs.NotSupportedException;
 import java.text.ParseException;
@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat;
 public class DigitalSigner extends Signer{
     private String password;
 
-    public DigitalSigner(SignatureDataWrapper signatureData, String password){
+    public DigitalSigner(SignatureDataEntity signatureData, String password){
         super(signatureData);
         this.password = password;
     }

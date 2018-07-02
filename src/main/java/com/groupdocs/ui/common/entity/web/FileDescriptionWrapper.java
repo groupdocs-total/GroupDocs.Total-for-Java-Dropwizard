@@ -1,4 +1,4 @@
-package com.groupdocs.ui.common.domain.wrapper;
+package com.groupdocs.ui.common.entity.web;
 
 /**
  * FileDescriptionWrapper

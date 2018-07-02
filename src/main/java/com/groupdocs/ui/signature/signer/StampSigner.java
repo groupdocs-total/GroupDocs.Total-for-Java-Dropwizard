@@ -8,10 +8,8 @@ import com.groupdocs.signature.options.stampsignature.WordsStampSignOptions;
 import com.groupdocs.signature.options.stampsignature.ImagesStampSignOptions;
 import com.groupdocs.signature.options.stampsignature.SlidesStampSignOptions;
 import com.groupdocs.signature.options.stampsignature.PdfStampSignOptions;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
+import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 import com.groupdocs.ui.signature.entity.xml.StampXmlEntity;
-
-import java.awt.Color;
 
 /**
  * StampSigner
@@ -21,7 +19,7 @@ import java.awt.Color;
 public class StampSigner extends Signer{
     private StampXmlEntity[] stampData;
 
-    public StampSigner(StampXmlEntity[] stampData, SignatureDataWrapper signatureData){
+    public StampSigner(StampXmlEntity[] stampData, SignatureDataEntity signatureData){
         super(signatureData);
         this.stampData = stampData;
     }

@@ -5,7 +5,7 @@ import com.groupdocs.signature.options.imagesignature.WordsSignImageOptions;
 import com.groupdocs.signature.options.imagesignature.SlidesSignImageOptions;
 import com.groupdocs.signature.options.imagesignature.ImagesSignImageOptions;
 import com.groupdocs.signature.options.imagesignature.CellsSignImageOptions;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
+import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 
 /**
  * StampSigner
@@ -14,7 +14,7 @@ import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
  */
 public class ImageSigner extends Signer{
 
-    public ImageSigner(SignatureDataWrapper signatureData){
+    public ImageSigner(SignatureDataEntity signatureData){
         super(signatureData);
     }
 

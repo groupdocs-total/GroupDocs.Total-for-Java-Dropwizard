@@ -9,9 +9,7 @@ import com.groupdocs.signature.options.barcodesignature.ImagesBarcodeSignOptions
 import com.groupdocs.signature.options.barcodesignature.PdfBarcodeSignOptions;
 import com.groupdocs.signature.options.barcodesignature.SlidesBarcodeSignOptions;
 import com.groupdocs.ui.signature.entity.xml.OpticalXmlEntity;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
-
-import java.awt.Color;
+import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 
 /**
  * StampSigner
@@ -21,7 +19,7 @@ import java.awt.Color;
 public class BarCodeSigner extends Signer{
     private OpticalXmlEntity qrCodeData;
 
-    public BarCodeSigner(OpticalXmlEntity qrCodeData, SignatureDataWrapper signatureData){
+    public BarCodeSigner(OpticalXmlEntity qrCodeData, SignatureDataEntity signatureData){
         super(signatureData);
         this.qrCodeData = qrCodeData;
     }

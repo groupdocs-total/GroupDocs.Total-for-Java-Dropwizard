@@ -9,9 +9,8 @@ import com.groupdocs.signature.options.qrcodesignature.WordsQRCodeSignOptions;
 import com.groupdocs.signature.options.qrcodesignature.PdfQRCodeSignOptions;
 import com.groupdocs.signature.options.qrcodesignature.ImagesQRCodeSignOptions;
 import com.groupdocs.ui.signature.entity.xml.OpticalXmlEntity;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
+import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 
-import java.awt.Color;
 /**
  * StampSigner
  * Signs documents with the stamp signature
@@ -20,8 +19,7 @@ import java.awt.Color;
 public class QrCodeSigner extends Signer{
     private OpticalXmlEntity qrCodeData;
 
-
-    public QrCodeSigner(OpticalXmlEntity qrCodeData, SignatureDataWrapper signatureData){
+    public QrCodeSigner(OpticalXmlEntity qrCodeData, SignatureDataEntity signatureData){
         super(signatureData);
         this.qrCodeData = qrCodeData;
     }

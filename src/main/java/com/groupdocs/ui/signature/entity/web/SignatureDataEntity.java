@@ -1,6 +1,6 @@
-package com.groupdocs.ui.signature.domain.wrapper;
+package com.groupdocs.ui.signature.entity.web;
 
-public class SignatureDataWrapper {
+public class SignatureDataEntity {
     private String reason;
     private String  contact;
     private String  address;

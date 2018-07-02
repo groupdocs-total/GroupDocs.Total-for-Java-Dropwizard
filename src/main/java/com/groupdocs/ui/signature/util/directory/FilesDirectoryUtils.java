@@ -1,4 +1,4 @@
-package com.groupdocs.ui.signature.util;
+package com.groupdocs.ui.signature.util.directory;
 
 import com.groupdocs.ui.signature.config.SignatureConfiguration;
 

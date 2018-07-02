@@ -13,10 +13,8 @@ import com.groupdocs.signature.options.textsignature.CellsSignTextOptions;
 import com.groupdocs.signature.options.textsignature.WordsSignTextOptions;
 import com.groupdocs.signature.options.textsignature.ImagesSignTextOptions;
 import com.groupdocs.signature.options.textsignature.PdfSignTextOptions;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
+import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 import com.groupdocs.ui.signature.entity.xml.TextXmlEntity;
-
-import java.awt.Color;
 
 /**
  * StampSigner
@@ -26,7 +24,7 @@ import java.awt.Color;
 public class TextSigner extends Signer{
     private TextXmlEntity textData;
 
-    public TextSigner(TextXmlEntity textData, SignatureDataWrapper signatureData){
+    public TextSigner(TextXmlEntity textData, SignatureDataEntity signatureData){
         super(signatureData);
         this.textData = textData;
     }

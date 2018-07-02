@@ -2,8 +2,8 @@ package com.groupdocs.ui.common.resources;
 
 import com.google.gson.Gson;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.common.domain.web.MediaType;
-import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
+import com.groupdocs.ui.common.entity.web.MediaType;
+import com.groupdocs.ui.common.entity.web.ExceptionWrapper;
 import com.groupdocs.ui.viewer.resources.ViewerResources;
 import io.dropwizard.jetty.ConnectorFactory;
 import io.dropwizard.jetty.HttpConnectorFactory;

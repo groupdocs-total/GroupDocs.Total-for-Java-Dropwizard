@@ -1,16 +1,16 @@
 package com.groupdocs.ui.signature.signer;
 
 import com.groupdocs.signature.options.SignOptions;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
+import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 
 import javax.ws.rs.NotSupportedException;
 import java.awt.*;
 import java.text.ParseException;
 
 public abstract class Signer {
-    protected SignatureDataWrapper signatureData;
+    protected SignatureDataEntity signatureData;
 
-    public Signer(SignatureDataWrapper signatureData){
+    public Signer(SignatureDataEntity signatureData){
         this.signatureData = signatureData;
     }
 

@@ -1,4 +1,4 @@
-package com.groupdocs.ui.common.domain.web;
+package com.groupdocs.ui.common.entity.web;
 
 /**
  * MediaType

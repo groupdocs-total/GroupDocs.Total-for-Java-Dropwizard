@@ -1,6 +1,6 @@
-package com.groupdocs.ui.signature.domain.wrapper;
+package com.groupdocs.ui.signature.entity.web;
 
-public class DocumentDescriptionWrapper {
+public class DocumentDescriptionEntity {
     private double Width;
     private double Height;
     private int Number;

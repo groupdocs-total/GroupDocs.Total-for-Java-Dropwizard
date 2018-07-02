@@ -1,4 +1,4 @@
-package com.groupdocs.ui.signature.comparator;
+package com.groupdocs.ui.signature.util.comparator;
 
 import java.io.File;
 import java.util.Comparator;

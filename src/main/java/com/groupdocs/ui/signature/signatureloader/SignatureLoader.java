@@ -2,9 +2,9 @@ package com.groupdocs.ui.signature.signatureloader;
 
 import com.google.common.collect.Ordering;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.signature.comparator.FileNameComparator;
-import com.groupdocs.ui.signature.comparator.FileTypeComparator;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureFileDescriptionWrapper;
+import com.groupdocs.ui.signature.util.comparator.FileNameComparator;
+import com.groupdocs.ui.signature.util.comparator.FileTypeComparator;
+import com.groupdocs.ui.signature.entity.web.SignatureFileDescriptionEntity;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -37,13 +37,13 @@ public class SignatureLoader {
 
     /**
      * Load image signatures
-     * @return ArrayList<SignatureFileDescriptionWrapper>
+     * @return ArrayList<SignatureFileDescriptionEntity>
      * @throws IOException
      */
-    public ArrayList<SignatureFileDescriptionWrapper> LoadImageSignatures() throws IOException {
+    public ArrayList<SignatureFileDescriptionEntity> LoadImageSignatures() throws IOException {
         File directory = new File(path);
         File[] fList = directory.listFiles();
-        ArrayList<SignatureFileDescriptionWrapper> fileList = new ArrayList<SignatureFileDescriptionWrapper>();
+        ArrayList<SignatureFileDescriptionEntity> fileList = new ArrayList<SignatureFileDescriptionEntity>();
         List<File> filesList = new ArrayList<>();
         try {
             for (File file : fList) {
@@ -58,7 +58,7 @@ public class SignatureLoader {
                     // ignore current file and skip to next one
                     continue;
                 } else {
-                    SignatureFileDescriptionWrapper fileDescription = new SignatureFileDescriptionWrapper();
+                    SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
                     fileDescription.setGuid(file.getAbsolutePath());
                     fileDescription.setName(file.getName());
                     // set is directory true/false
@@ -82,12 +82,12 @@ public class SignatureLoader {
 
     /**
      * Load digital signatures or documents for signing
-     * @return ArrayList<SignatureFileDescriptionWrapper>
+     * @return ArrayList<SignatureFileDescriptionEntity>
      */
-    public ArrayList<SignatureFileDescriptionWrapper> LoadFiles() {
+    public ArrayList<SignatureFileDescriptionEntity> LoadFiles() {
         File directory = new File(path);
         File[] fList = directory.listFiles();
-        ArrayList<SignatureFileDescriptionWrapper> fileList = new ArrayList<SignatureFileDescriptionWrapper>();
+        ArrayList<SignatureFileDescriptionEntity> fileList = new ArrayList<SignatureFileDescriptionEntity>();
         List<File> filesList = new ArrayList<>();
         try {
             for (File file : fList) {
@@ -102,7 +102,7 @@ public class SignatureLoader {
                     // ignore current file and skip to next one
                     continue;
                 } else {
-                    SignatureFileDescriptionWrapper fileDescription = new SignatureFileDescriptionWrapper();
+                    SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
                     fileDescription.setGuid(file.getAbsolutePath());
                     fileDescription.setName(file.getName());
                     // set is directory true/false
@@ -119,11 +119,11 @@ public class SignatureLoader {
         }
     }
 
-    public ArrayList<SignatureFileDescriptionWrapper> LoadStampSignatures(String previewFolder, String xmlFolder) throws IOException {
+    public ArrayList<SignatureFileDescriptionEntity> LoadStampSignatures(String previewFolder, String xmlFolder) throws IOException {
         String imagesPath = path + previewFolder;
         String xmlPath = path + xmlFolder;
         File images = new File(imagesPath);
-        ArrayList<SignatureFileDescriptionWrapper> fileList = new ArrayList<SignatureFileDescriptionWrapper>();
+        ArrayList<SignatureFileDescriptionEntity> fileList = new ArrayList<SignatureFileDescriptionEntity>();
         try {
             if(images.listFiles() != null) {
                 List<File> imageFiles = new ArrayList<File>(Arrays.asList(images.listFiles()));
@@ -150,7 +150,7 @@ public class SignatureLoader {
                         // ignore current file and skip to next one
                         continue;
                     } else {
-                        SignatureFileDescriptionWrapper fileDescription = new SignatureFileDescriptionWrapper();
+                        SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
                         fileDescription.setGuid(file.getAbsolutePath());
                         fileDescription.setName(file.getName());
                         // set is directory true/false

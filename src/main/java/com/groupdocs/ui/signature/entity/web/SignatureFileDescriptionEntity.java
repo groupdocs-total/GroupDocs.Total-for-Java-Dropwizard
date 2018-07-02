@@ -1,8 +1,8 @@
-package com.groupdocs.ui.signature.domain.wrapper;
+package com.groupdocs.ui.signature.entity.web;
 
-import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
+import com.groupdocs.ui.common.entity.web.FileDescriptionWrapper;
 
-public class SignatureFileDescriptionWrapper extends FileDescriptionWrapper {
+public class SignatureFileDescriptionEntity extends FileDescriptionWrapper {
     private String image;
 
     /**

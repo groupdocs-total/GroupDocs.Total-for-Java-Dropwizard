@@ -931,43 +931,6 @@ public class SignatureResources extends Resources {
 
     /**
      *
-     * @param ex
-     * @return
-     */
-    private Object generateException(HttpServletResponse response, Exception ex){
-        // set response content type
-        setResponseContentType(response, MediaType.APPLICATION_JSON);
-
-        ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-        exceptionWrapper.setMessage(ex.getMessage());
-        exceptionWrapper.setException(ex);
-        return objectToJson(exceptionWrapper);
-    }
-
-    /**
-     *
-     * @param ex
-     * @param password
-     * @return
-     */
-    private Object generateException(HttpServletResponse response, Exception ex, String password){
-        // set response content type
-        setResponseContentType(response, MediaType.APPLICATION_JSON);
-
-        ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-        if(ex.getMessage().contains("password") && password.isEmpty()) {
-            exceptionWrapper.setMessage("Password Required");
-        }else if(ex.getMessage().contains("password") && !password.isEmpty()){
-            exceptionWrapper.setMessage("Incorrect password");
-        }else{
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-        }
-        return objectToJson(exceptionWrapper);
-    }
-
-    /**
-     *
      * @param xmlPath
      * @param xmlFileName
      * @return

@@ -1,11 +1,11 @@
-package com.groupdocs.ui.viewer.domain.wrapper;
+package com.groupdocs.ui.viewer.entity.web;
 
 /**
- * RotatedPageWrapper
+ * RotatedPageEntity
  *
  * @author Aspose Pty Ltd
  */
-public class RotatedPageWrapper {
+public class RotatedPageEntity {
     private int pageNumber;
     private String angle;
 

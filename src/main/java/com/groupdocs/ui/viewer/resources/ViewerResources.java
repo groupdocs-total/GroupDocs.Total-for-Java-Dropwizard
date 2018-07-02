@@ -3,7 +3,7 @@ package com.groupdocs.ui.viewer.resources;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
 import com.groupdocs.ui.common.domain.wrapper.LoadedPageWrapper;
-import com.groupdocs.ui.viewer.domain.wrapper.RotatedPageWrapper;
+import com.groupdocs.ui.viewer.entity.web.RotatedPageEntity;
 import com.groupdocs.ui.common.domain.web.MediaType;
 import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
 import com.groupdocs.ui.common.resources.Resources;
@@ -145,11 +145,7 @@ public class ViewerResources extends Resources {
             }
             return objectToJson(fileList);
         }catch (Exception ex){
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(response, ex);
         }
     }
 
@@ -176,7 +172,7 @@ public class ViewerResources extends Resources {
             if(!Paths.get(documentGuid).isAbsolute()){
                 documentGuid = globalConfiguration.getViewer().getFilesDirectory() + "/" + documentGuid;
             }
-            DocumentInfoContainer documentInfoContainer = new DocumentInfoContainer();
+            DocumentInfoContainer documentInfoContainer;
             // get document info options
             DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
             // set password for protected document
@@ -204,11 +200,7 @@ public class ViewerResources extends Resources {
             exceptionWrapper.setException(ex);
             return objectToJson(exceptionWrapper);
         }catch (Exception ex){
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(response, ex);
         }
     }
 
@@ -232,7 +224,7 @@ public class ViewerResources extends Resources {
             boolean htmlMode = getJsonBoolean(requestBody, "htmlMode");
             String password = getJsonString(requestBody, "password");
             LoadedPageWrapper loadedPage = new LoadedPageWrapper();
-            String angle = "0";
+            String angle;
             // set options
             if(htmlMode) {
                 HtmlOptions htmlOptions = new HtmlOptions();
@@ -258,8 +250,8 @@ public class ViewerResources extends Resources {
                 // get page image
                 byte[] bytes = IOUtils.toByteArray(viewerImageHandler.getPages(documentGuid, imageOptions).get(0).getStream());
                 // encode ByteArray into String
-                String incodedImage = new String(Base64.getEncoder().encode(bytes));
-                loadedPage.setPageImage(incodedImage);
+                String encodedImage = new String(Base64.getEncoder().encode(bytes));
+                loadedPage.setPageImage(encodedImage);
                 // get page rotation angle
                 angle = String.valueOf(viewerImageHandler.getDocumentInfo(documentGuid).getPages().get(pageNumber - 1).getAngle());
             }
@@ -267,13 +259,7 @@ public class ViewerResources extends Resources {
             // return loaded page object
             return objectToJson(loadedPage);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(response, ex);
         }
     }
 
@@ -298,15 +284,15 @@ public class ViewerResources extends Resources {
             boolean htmlMode = getJsonBoolean(requestBody, "htmlMode");
             String password = getJsonString(requestBody, "password");
             // a list of the rotated pages info
-            ArrayList<RotatedPageWrapper> rotatedPages = new ArrayList<RotatedPageWrapper>();
+            ArrayList<RotatedPageEntity> rotatedPages = new ArrayList<>();
             // rotate pages
             for(int i = 0; i < pages.length(); i++) {
                 // prepare rotated page info object
-                RotatedPageWrapper rotatedPage = new RotatedPageWrapper();
+                RotatedPageEntity rotatedPage = new RotatedPageEntity();
                 int pageNumber = Integer.parseInt(pages.get(i).toString());
                 RotatePageOptions rotateOptions = new RotatePageOptions(pageNumber, angle);
                 // perform page rotation
-                String resultAngle = "0";
+                String resultAngle;
                 // set password for protected document
                 if(!password.isEmpty() && password != null) {
                     rotateOptions.setPassword(password);
@@ -327,13 +313,7 @@ public class ViewerResources extends Resources {
             }
             return new Gson().toJson(rotatedPages);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(response, ex);
         }
     }
 
@@ -344,9 +324,8 @@ public class ViewerResources extends Resources {
      */
     @GET
     @Path(value = "/downloadDocument")
-    public Object downloadDocument(@Context HttpServletRequest request, @Context HttpServletResponse response) throws ServletException, IOException {
-        int bytesRead = 0;
-        int count = 0;
+    public Object downloadDocument(@Context HttpServletRequest request, @Context HttpServletResponse response) throws IOException {
+        int count;
         byte[] buff = new byte[16 * 1024];
         OutputStream out = response.getOutputStream();
         // set response content type
@@ -367,13 +346,7 @@ public class ViewerResources extends Resources {
             }
             return outStream;
         } catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(response, ex);
         } finally {
             // close streams
             if (inputStream != null)
@@ -405,7 +378,7 @@ public class ViewerResources extends Resources {
             // get rewrite mode
             boolean rewrite = Boolean.parseBoolean(request.getParameter("rewrite"));
             InputStream uploadedInputStream = null;
-            String fileName = "";
+            String fileName;
             if(documentUrl.isEmpty() || documentUrl == null) {
                 // get the InputStream to store the file
                 uploadedInputStream = filePart.getInputStream();
@@ -425,8 +398,7 @@ public class ViewerResources extends Resources {
                 // save file with rewrite if exists
                 Files.copy(uploadedInputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } else {
-                if (file.exists())
-                {
+                if (file.exists()){
                     // get file with new name
                     file = getFreeFileName(documentStoragePath, fileName);
                 }
@@ -437,13 +409,7 @@ public class ViewerResources extends Resources {
             uploadedDocument.setGuid(documentStoragePath + "/" + fileName);
             return objectToJson(uploadedDocument);
         }catch(Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(response, ex);
         }
     }
 }

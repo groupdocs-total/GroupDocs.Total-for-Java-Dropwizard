@@ -1,26 +1,14 @@
-package com.groupdocs.ui.signature.domain.wrapper;
+package com.groupdocs.ui.signature.entity.xml;
 
-public class StampDataWrapper {
-    private String text;
+public class StampXmlEntity extends XmlEntity{
     private String textExpansion;
     private String font;
-    private String imageGuid;
     private String textColor = "rgb(0,0,0)";
     private String strokeColor = "rgb(0,0,0)";
     private String backgroundColor = "rgb(0,0,0)";
     private int radius;
     private int fontSize;
     private int textRepeat;
-    private int width;
-    private int height;
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
 
     public String getTextExpansion() {
         return textExpansion;
@@ -36,14 +24,6 @@ public class StampDataWrapper {
 
     public void setFont(String font) {
         this.font = font;
-    }
-
-    public String getImageGuid() {
-        return imageGuid;
-    }
-
-    public void setImageGuid(String imageGuid) {
-        this.imageGuid = imageGuid;
     }
 
     public String getTextColor() {
@@ -92,21 +72,5 @@ public class StampDataWrapper {
 
     public void setTextRepeat(int textRepeat) {
         this.textRepeat = textRepeat;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
     }
 }

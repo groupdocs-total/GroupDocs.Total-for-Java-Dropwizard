@@ -1,4 +1,4 @@
-package com.groupdocs.ui.signature.Signer;
+package com.groupdocs.ui.signature.signer;
 
 import com.groupdocs.signature.domain.stamps.StampBackgroundCropType;
 import com.groupdocs.signature.domain.stamps.StampLine;
@@ -9,7 +9,7 @@ import com.groupdocs.signature.options.stampsignature.ImagesStampSignOptions;
 import com.groupdocs.signature.options.stampsignature.SlidesStampSignOptions;
 import com.groupdocs.signature.options.stampsignature.PdfStampSignOptions;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.StampDataWrapper;
+import com.groupdocs.ui.signature.entity.xml.StampXmlEntity;
 
 import java.awt.Color;
 
@@ -19,10 +19,10 @@ import java.awt.Color;
  * @author Aspose Pty Ltd
  */
 public class StampSigner {
-    private StampDataWrapper[] stampData;
+    private StampXmlEntity[] stampData;
     private SignatureDataWrapper signatureData;
 
-    public StampSigner(StampDataWrapper[] stampData, SignatureDataWrapper signatureData){
+    public StampSigner(StampXmlEntity[] stampData, SignatureDataWrapper signatureData){
      this.stampData = stampData;
      this.signatureData = signatureData;
     }

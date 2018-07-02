@@ -1,4 +1,4 @@
-package com.groupdocs.ui.signature.Signer;
+package com.groupdocs.ui.signature.signer;
 
 import com.groupdocs.signature.options.imagesignature.PdfSignImageOptions;
 import com.groupdocs.signature.options.imagesignature.WordsSignImageOptions;

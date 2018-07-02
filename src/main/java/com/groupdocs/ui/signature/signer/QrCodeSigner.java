@@ -1,4 +1,4 @@
-package com.groupdocs.ui.signature.Signer;
+package com.groupdocs.ui.signature.signer;
 
 import com.groupdocs.signature.domain.enums.HorizontalAlignment;
 import com.groupdocs.signature.domain.enums.VerticalAlignment;
@@ -8,7 +8,7 @@ import com.groupdocs.signature.options.qrcodesignature.CellsQRCodeSignOptions;
 import com.groupdocs.signature.options.qrcodesignature.WordsQRCodeSignOptions;
 import com.groupdocs.signature.options.qrcodesignature.PdfQRCodeSignOptions;
 import com.groupdocs.signature.options.qrcodesignature.ImagesQRCodeSignOptions;
-import com.groupdocs.ui.signature.domain.wrapper.OpticalCodeDataWrapper;
+import com.groupdocs.ui.signature.entity.xml.OpticalXmlEntity;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
 
 import java.awt.Color;
@@ -18,10 +18,10 @@ import java.awt.Color;
  * @author Aspose Pty Ltd
  */
 public class QrCodeSigner {
-    private OpticalCodeDataWrapper qrCodeData;
+    private OpticalXmlEntity qrCodeData;
     private SignatureDataWrapper signatureData;
 
-    public QrCodeSigner(OpticalCodeDataWrapper qrCodeData, SignatureDataWrapper signatureData){
+    public QrCodeSigner(OpticalXmlEntity qrCodeData, SignatureDataWrapper signatureData){
         this.qrCodeData = qrCodeData;
         this.signatureData = signatureData;
     }

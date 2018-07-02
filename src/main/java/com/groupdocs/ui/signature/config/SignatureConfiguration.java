@@ -1,6 +1,7 @@
 package com.groupdocs.ui.signature.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.groupdocs.ui.signature.util.DirectoryUtils;
 import io.dropwizard.Configuration;
 
 import javax.validation.Valid;

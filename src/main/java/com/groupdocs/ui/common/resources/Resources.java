@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.File;
+import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
@@ -43,8 +44,10 @@ public abstract class Resources {
         SimpleServerFactory serverFactory = (SimpleServerFactory) globalConfiguration.getServerFactory();
         ConnectorFactory connector = serverFactory.getConnector();
         globalConfiguration.getServer().setHttpPort(((HttpConnectorFactory) connector).getPort());
+
         // set host address
         globalConfiguration.getServer().setHostAddress(InetAddress.getLocalHost().getHostAddress());
+
     }
 
     /**
@@ -165,6 +168,25 @@ public abstract class Resources {
         try {
             JSONObject jsonObject = new JSONObject(json);
             value = jsonObject.getBoolean(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
+
+    /**
+     *
+     * @param json
+     * @param key
+     * @param type
+     * @return
+     */
+    protected Object getJsonObject(String json, String key, Type type){
+        Object value = null;
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            Gson gson = new Gson();
+            value = gson.fromJson(jsonObject.get(key).toString(), type);
         } catch (JSONException e) {
             e.printStackTrace();
         }

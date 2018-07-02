@@ -1,4 +1,4 @@
-package com.groupdocs.ui.signature.Signer;
+package com.groupdocs.ui.signature.signer;
 
 import com.groupdocs.signature.domain.enums.HorizontalAlignment;
 import com.groupdocs.signature.domain.enums.VerticalAlignment;
@@ -14,7 +14,7 @@ import com.groupdocs.signature.options.textsignature.WordsSignTextOptions;
 import com.groupdocs.signature.options.textsignature.ImagesSignTextOptions;
 import com.groupdocs.signature.options.textsignature.PdfSignTextOptions;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.TextDataWrapper;
+import com.groupdocs.ui.signature.entity.xml.TextXmlEntity;
 
 import java.awt.Color;
 
@@ -24,10 +24,10 @@ import java.awt.Color;
  * @author Aspose Pty Ltd
  */
 public class TextSigner {
-    private TextDataWrapper textData;
+    private TextXmlEntity textData;
     private SignatureDataWrapper signatureData;
 
-    public TextSigner(TextDataWrapper textData, SignatureDataWrapper signatureData){
+    public TextSigner(TextXmlEntity textData, SignatureDataWrapper signatureData){
         this.textData = textData;
         this.signatureData = signatureData;
     }

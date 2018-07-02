@@ -1,30 +1,10 @@
-package com.groupdocs.ui.signature.domain.wrapper;
+package com.groupdocs.ui.signature.entity.xml;
 
-public class OpticalCodeDataWrapper {
-    private String text;
-    private String imageGuid;
+public class OpticalXmlEntity extends XmlEntity {
     private String borderColor = "rgb(0,0,0)";
     private String encodedImage;
     private int borderStyle;
     private int borderWidth;
-    private int width;
-    private int height;
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getImageGuid() {
-        return imageGuid;
-    }
-
-    public void setImageGuid(String imageGuid) {
-        this.imageGuid = imageGuid;
-    }
 
     public String getEncodedImage() {
         return encodedImage;
@@ -56,21 +36,5 @@ public class OpticalCodeDataWrapper {
 
     public void setBorderWidth(int borderWidth) {
         this.borderWidth = borderWidth;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
     }
 }

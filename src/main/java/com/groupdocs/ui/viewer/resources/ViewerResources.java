@@ -72,25 +72,20 @@ public class ViewerResources extends Resources {
      */
     public ViewerResources(GlobalConfiguration globalConfiguration) throws UnknownHostException {
         super(globalConfiguration);
-        if(new File(globalConfiguration.getApplication().getLicensePath()).isAbsolute()) {
-            globalConfiguration.getApplication().setLicensePath(globalConfiguration.getApplication().getLicensePath());
-        } else {
-            String licensePath = new File("").getAbsolutePath() + globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getApplication().getLicensePath();
-            globalConfiguration.getApplication().setLicensePath(licensePath);
-        }
-        if(!new File(globalConfiguration.getViewer().getFilesDirectory()).isAbsolute()) {
-            globalConfiguration.getViewer().setFilesDirectory(new File("").getAbsolutePath() + globalConfiguration.getViewer().getFilesDirectory());
-        }
-        // create total application configuration
+
+        // create viewer application configuration
         ViewerConfig config = new ViewerConfig();
         config.setStoragePath(globalConfiguration.getViewer().getFilesDirectory());
         config.setUseCache(true);
         config.getFontDirectories().add(globalConfiguration.getViewer().getFontsDirectory());
+
         // set GroupDocs license
         License license = new License();
         license.setLicense(globalConfiguration.getApplication().getLicensePath());
+
         // initialize total instance for the HTML mode
         viewerHtmlHandler = new ViewerHtmlHandler(config);
+
         // initialize total instance for the Image mode
         viewerImageHandler = new ViewerImageHandler(config);
     }

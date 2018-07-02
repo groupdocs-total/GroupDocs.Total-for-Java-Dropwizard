@@ -1,4 +1,4 @@
-package com.groupdocs.ui.signature.Signer;
+package com.groupdocs.ui.signature.signer;
 
 import com.groupdocs.signature.domain.barcodes.BarcodeTypes;
 import com.groupdocs.signature.domain.enums.HorizontalAlignment;
@@ -8,7 +8,7 @@ import com.groupdocs.signature.options.barcodesignature.WordsBarcodeSignOptions;
 import com.groupdocs.signature.options.barcodesignature.ImagesBarcodeSignOptions;
 import com.groupdocs.signature.options.barcodesignature.PdfBarcodeSignOptions;
 import com.groupdocs.signature.options.barcodesignature.SlidesBarcodeSignOptions;
-import com.groupdocs.ui.signature.domain.wrapper.OpticalCodeDataWrapper;
+import com.groupdocs.ui.signature.entity.xml.OpticalXmlEntity;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
 
 import java.awt.Color;
@@ -19,10 +19,10 @@ import java.awt.Color;
  * @author Aspose Pty Ltd
  */
 public class BarCodeSigner {
-    private OpticalCodeDataWrapper qrCodeData;
+    private OpticalXmlEntity qrCodeData;
     private SignatureDataWrapper signatureData;
 
-    public BarCodeSigner(OpticalCodeDataWrapper qrCodeData, SignatureDataWrapper signatureData){
+    public BarCodeSigner(OpticalXmlEntity qrCodeData, SignatureDataWrapper signatureData){
         this.qrCodeData = qrCodeData;
         this.signatureData = signatureData;
     }

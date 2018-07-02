@@ -1,26 +1,6 @@
 package com.groupdocs.ui.signature.resources;
 
-import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
-import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
-import com.groupdocs.ui.common.domain.wrapper.LoadedPageWrapper;
-import com.groupdocs.ui.common.resources.Resources;
-import com.groupdocs.ui.common.domain.web.MediaType;
-import com.groupdocs.ui.signature.SignaturesLoader.SignatureLoader;
-import com.groupdocs.ui.signature.Signer.BarCodeSigner;
-import com.groupdocs.ui.signature.Signer.QrCodeSigner;
-import com.groupdocs.ui.signature.Signer.DigitalSigner;
-import com.groupdocs.ui.signature.Signer.ImageSigner;
-import com.groupdocs.ui.signature.Signer.StampSigner;
-import com.groupdocs.ui.signature.Signer.TextSigner;
-import com.groupdocs.ui.signature.domain.wrapper.TextDataWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.OpticalCodeDataWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.StampDataWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.DocumentDescriptionWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.SignedDocumentWrapper;
-import com.groupdocs.ui.signature.domain.wrapper.SignatureFileDescriptionWrapper;
-import com.groupdocs.ui.signature.views.Signature;
+import com.groupdocs.signature.config.SignatureConfig;
 import com.groupdocs.signature.domain.DocumentDescription;
 import com.groupdocs.signature.handler.SignatureHandler;
 import com.groupdocs.signature.licensing.License;
@@ -28,13 +8,27 @@ import com.groupdocs.signature.options.OutputType;
 import com.groupdocs.signature.options.SignatureOptionsCollection;
 import com.groupdocs.signature.options.loadoptions.LoadOptions;
 import com.groupdocs.signature.options.saveoptions.SaveOptions;
-import com.groupdocs.signature.config.SignatureConfig;
-import com.google.gson.Gson;
+import com.groupdocs.ui.common.config.GlobalConfiguration;
+import com.groupdocs.ui.common.domain.web.MediaType;
+import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
+import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
+import com.groupdocs.ui.common.domain.wrapper.LoadedPageWrapper;
+import com.groupdocs.ui.common.resources.Resources;
+import com.groupdocs.ui.signature.signatureloader.SignatureLoader;
+import com.groupdocs.ui.signature.signer.*;
+import com.groupdocs.ui.signature.entity.directory.DataDirectoryEntity;
+import com.groupdocs.ui.signature.domain.wrapper.DocumentDescriptionWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.SignatureFileDescriptionWrapper;
+import com.groupdocs.ui.signature.domain.wrapper.SignedDocumentWrapper;
+import com.groupdocs.ui.signature.entity.xml.OpticalXmlEntity;
+import com.groupdocs.ui.signature.entity.xml.StampXmlEntity;
+import com.groupdocs.ui.signature.entity.xml.TextXmlEntity;
+import com.groupdocs.ui.signature.util.DirectoryUtils;
+import com.groupdocs.ui.signature.views.Signature;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jetty.server.Request;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
 import javax.servlet.MultipartConfigElement;
@@ -45,20 +39,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
-import java.awt.Graphics2D;
-import java.awt.Color;
-import java.io.BufferedOutputStream;
-import java.io.BufferedInputStream;
-import java.io.OutputStream;
-import java.io.InputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.lang.reflect.Type;
+import java.io.*;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -77,16 +62,7 @@ import java.util.Base64;
 @Path(value = "/signature")
 public class SignatureResources extends Resources {
     private final SignatureHandler signatureHandler;
-    private final String signaturesRootFolder = "/SignatureData";
-    private final String stampsRootFolder = "/Stamps";
-    private final String qrRootFolder = "/QrCodes";
-    private final String barCodeRootFolder = "/BarCodes";
-    private final String textRootFolder = "/Text";
-    private final String previewFolder = "/Preview";
-    private final String xmlFolder = "/XML";
-    private final String certificatesFolder = "/Digital";
-    private final String imagesFolder = "/Image";
-    private String outPutPath;
+    private DirectoryUtils directoryUtils;
     private String[] supportedImageFormats = {"bmp", "jpeg", "jpg", "tiff", "tif", "png"};
     /**
      * Constructor
@@ -96,42 +72,19 @@ public class SignatureResources extends Resources {
     public SignatureResources(GlobalConfiguration globalConfiguration) throws UnknownHostException {
         super(globalConfiguration);
 
-        // create total application configuration
+        directoryUtils = new DirectoryUtils(globalConfiguration.getSignature());
+
+        // create signature application configuration
         SignatureConfig config = new SignatureConfig();
-        if(new File(globalConfiguration.getApplication().getLicensePath()).isAbsolute()) {
-            globalConfiguration.getApplication().setLicensePath(globalConfiguration.getApplication().getLicensePath());
-        } else {
-            String licensePath = new File("").getAbsolutePath() + globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getApplication().getLicensePath();
-            globalConfiguration.getApplication().setLicensePath(licensePath);
-        }
-        if(!new File(globalConfiguration.getSignature().getFilesDirectory()).isAbsolute()) {
-            globalConfiguration.getSignature().setFilesDirectory(new File("").getAbsolutePath() + globalConfiguration.getSignature().getFilesDirectory());
-        }
-        String signatureDataPath = "";
-        if(globalConfiguration.getSignature().getDataDirectory() == null || globalConfiguration.getSignature().getDataDirectory().isEmpty()){
-            signatureDataPath = globalConfiguration.getSignature().getFilesDirectory() + signaturesRootFolder;
-        } else {
-            signatureDataPath = globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getSignature().getDataDirectory();
-        }
-        globalConfiguration.getSignature().setDataDirectory(signatureDataPath);
-        createDirectories(signatureDataPath);
-        if(globalConfiguration.getSignature().getOutputDirectory() == null || globalConfiguration.getSignature().getOutputDirectory().isEmpty()){
-            globalConfiguration.getSignature().setOutputDirectory(globalConfiguration.getSignature().getFilesDirectory());
-        } else {
-            String outputDir = globalConfiguration.getSignature().getFilesDirectory() + globalConfiguration.getSignature().getOutputDirectory();
-            globalConfiguration.getSignature().setOutputDirectory(outputDir);
-        }
-        if(!Files.exists(new File(globalConfiguration.getSignature().getOutputDirectory()).toPath())){
-            new File(globalConfiguration.getSignature().getOutputDirectory()).mkdir();
-        }
-        config.setStoragePath(globalConfiguration.getSignature().getFilesDirectory());
-        config.setCertificatesPath(signatureDataPath + certificatesFolder);
-        config.setImagesPath(signatureDataPath + imagesFolder);
-        config.setOutputPath(globalConfiguration.getSignature().getOutputDirectory());
-        outPutPath = globalConfiguration.getSignature().getOutputDirectory();
+        config.setStoragePath(directoryUtils.getFilesDirectory().getPath());
+        config.setCertificatesPath(directoryUtils.getDataDirectory().getCertificateDirectory().getPath());
+        config.setImagesPath(directoryUtils.getDataDirectory().getImageDirectory().getPath());
+        config.setOutputPath(directoryUtils.getOutputDirectory().getPath());
+
         // set GroupDocs license
         License license = new License();
         license.setLicense(globalConfiguration.getApplication().getLicensePath());
+
         // initialize total instance for the Image mode
         signatureHandler = new SignatureHandler(config);
     }
@@ -168,44 +121,40 @@ public class SignatureResources extends Resources {
         try{
             String rootDirectory;
             switch (signatureType) {
-                case "digital":  rootDirectory = signatureHandler.getSignatureConfig().getCertificatesPath();
+                case "digital":  rootDirectory = directoryUtils.getDataDirectory().getCertificateDirectory().getPath();
                     break;
-                case "image": rootDirectory = signatureHandler.getSignatureConfig().getImagesPath();
+                case "image": rootDirectory = directoryUtils.getDataDirectory().getImageDirectory().getPath();
                     break;
-                case "stamp": rootDirectory = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder;
+                case "stamp": rootDirectory = directoryUtils.getDataDirectory().getStampDirectory().getPath();
                     break;
-                case "text": rootDirectory = globalConfiguration.getSignature().getDataDirectory() + textRootFolder;
+                case "text": rootDirectory = directoryUtils.getDataDirectory().getTextDirectory().getPath();
                     break;
-                default:  rootDirectory = signatureHandler.getSignatureConfig().getStoragePath();
+                default:  rootDirectory = directoryUtils.getFilesDirectory().getPath();
                     break;
             }
             // get all the files from a directory
             if(relDirPath == null || relDirPath.isEmpty()){
                 relDirPath = rootDirectory;
             } else {
-                relDirPath = rootDirectory + "/" + relDirPath;
+                relDirPath = rootDirectory + "/" + relDirPath;//TODO String.Format
             }
             SignatureLoader signatureLoader = new SignatureLoader(relDirPath, globalConfiguration);
-            ArrayList<SignatureFileDescriptionWrapper> fileList = new ArrayList<SignatureFileDescriptionWrapper>();
+            ArrayList<SignatureFileDescriptionWrapper> fileList;
             switch (signatureType) {
                 case "digital":  fileList = signatureLoader.LoadFiles();
                     break;
                 case "image": fileList = signatureLoader.LoadImageSignatures();
                     break;
-                case "stamp": fileList = signatureLoader.LoadStampSignatures(previewFolder, xmlFolder);
+                case "stamp": fileList = signatureLoader.LoadStampSignatures(DataDirectoryEntity.DATA_PREVIEW_FOLDER, DataDirectoryEntity.DATA_XML_FOLDER);
                     break;
-                case "text": fileList = signatureLoader.LoadStampSignatures(previewFolder, xmlFolder);
+                case "text": fileList = signatureLoader.LoadStampSignatures(DataDirectoryEntity.DATA_PREVIEW_FOLDER, DataDirectoryEntity.DATA_XML_FOLDER);
                     break;
                 default:  fileList = signatureLoader.LoadFiles();
                     break;
             }
             return objectToJson(fileList);
         }catch (Exception ex){
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(ex);
         }
     }
 
@@ -230,7 +179,7 @@ public class SignatureResources extends Resources {
             DocumentDescription documentDescription;
             // get document info container
             documentDescription = signatureHandler.getDocumentDescription(documentGuid, password);
-            ArrayList<DocumentDescriptionWrapper> pagesDescription = new ArrayList<DocumentDescriptionWrapper>();
+            ArrayList<DocumentDescriptionWrapper> pagesDescription = new ArrayList<>();
             // get info about each document page
             for(int i = 1; i <= documentDescription.getPageCount(); i++) {
                 //initiate custom Document description object
@@ -246,17 +195,7 @@ public class SignatureResources extends Resources {
             // return document description
             return objectToJson(pagesDescription);
         }catch (Exception ex){
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            // set exception message
-            if(ex.getMessage().contains("password") && password.isEmpty()) {
-                exceptionWrapper.setMessage("Password Required");
-            }else if(ex.getMessage().contains("password") && !password.isEmpty()){
-                exceptionWrapper.setMessage("Incorrect password");
-            }else{
-                exceptionWrapper.setMessage(ex.getMessage());
-                exceptionWrapper.setException(ex);
-            }
-            return objectToJson(exceptionWrapper);
+            return generateException(ex, password);
         }
     }
 
@@ -282,18 +221,14 @@ public class SignatureResources extends Resources {
             // get page image
             byte[] bytes = signatureHandler.getPageImage(documentGuid, pageNumber, password, null, 100);
             // encode ByteArray into String
-            String incodedImage = new String(Base64.getEncoder().encode(bytes));
-            loadedPage.setPageImage(incodedImage);
+            String encodedImage = new String(Base64.getEncoder().encode(bytes));
+            loadedPage.setPageImage(encodedImage);
             // return loaded page object
             return objectToJson(loadedPage);
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(ex);
         }
     }
 
@@ -305,7 +240,7 @@ public class SignatureResources extends Resources {
     @GET
     @Path(value = "/downloadDocument")
     public Object downloadDocument(@Context HttpServletRequest request, @Context HttpServletResponse response) throws IOException {
-        int count = 0;
+        int count;
         byte[] buff = new byte[16 * 1024];
         OutputStream out = response.getOutputStream();
         // set response content type
@@ -318,11 +253,11 @@ public class SignatureResources extends Resources {
         response.setHeader("Content-disposition", "attachment; filename=" + fileName);
         BufferedOutputStream outStream = null;
         BufferedInputStream inputStream = null;
-        String pathToDownload = "";
+        String pathToDownload;
         if(signed) {
-            pathToDownload = signatureHandler.getSignatureConfig().getOutputPath() + "/" + fileName;
+            pathToDownload = String.format("%s/%s", directoryUtils.getOutputDirectory().getPath(), fileName);
         } else {
-            pathToDownload = signatureHandler.getSignatureConfig().getStoragePath() + "/" + fileName;
+            pathToDownload = String.format("%s/%s", directoryUtils.getFilesDirectory().getPath(), fileName);
         }
         try {
             // download the document
@@ -335,11 +270,7 @@ public class SignatureResources extends Resources {
         } catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(ex);
         } finally {
             // close streams
             if (inputStream != null)
@@ -372,8 +303,8 @@ public class SignatureResources extends Resources {
             String signatureType = request.getParameter("signatureType");
             // get rewrite mode
             boolean rewrite = Boolean.parseBoolean(request.getParameter("rewrite"));
-            InputStream uploadedInputStream = null;
-            String fileName = "";
+            InputStream uploadedInputStream;
+            String fileName;
             if(documentUrl == null || documentUrl.isEmpty()) {
                 // get the InputStream to store the file
                 uploadedInputStream = filePart.getInputStream();
@@ -390,15 +321,15 @@ public class SignatureResources extends Resources {
                 signatureType = "";
             }
             switch(signatureType){
-                case "digital": documentStoragePath = signatureHandler.getSignatureConfig().getCertificatesPath();
+                case "digital": documentStoragePath = directoryUtils.getDataDirectory().getCertificateDirectory().getPath();
                     break;
-                case "image": documentStoragePath = signatureHandler.getSignatureConfig().getImagesPath();
+                case "image": documentStoragePath = directoryUtils.getDataDirectory().getImageDirectory().getPath();
                     break;
-                default:  documentStoragePath = signatureHandler.getSignatureConfig().getStoragePath();
+                default:  documentStoragePath = directoryUtils.getFilesDirectory().getPath();
                     break;
             }
             // save the file
-            File file = new File(documentStoragePath + "/" + fileName);
+            File file = new File(documentStoragePath + "/" + fileName); //TODO String.Format
             // check rewrite mode
             if(rewrite) {
                 // save file with rewrite if exists
@@ -413,23 +344,19 @@ public class SignatureResources extends Resources {
                 Files.copy(uploadedInputStream, file.toPath());
             }
             SignatureFileDescriptionWrapper uploadedDocument = new SignatureFileDescriptionWrapper();
-            uploadedDocument.setGuid(documentStoragePath + "/" + fileName);
+            uploadedDocument.setGuid(documentStoragePath + "/" + fileName); //TODO String.Format
             if(signatureType.equals("image")){
                 // get page image
                 byte[] bytes = Files.readAllBytes(new File(uploadedDocument.getGuid()).toPath());
                 // encode ByteArray into String
-                String incodedImage = new String(Base64.getEncoder().encode(bytes));
-                uploadedDocument.setImage(incodedImage);
+                String encodedImage = new String(Base64.getEncoder().encode(bytes));
+                uploadedDocument.setImage(encodedImage);
             }
             return objectToJson(uploadedDocument);
         }catch(Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(ex);
         }
     }
 
@@ -449,24 +376,20 @@ public class SignatureResources extends Resources {
             String requestBody = getRequestBody(request);
             // get/set parameters
             String documentGuid = getJsonString(requestBody, "guid");
-            int pageNumber = getJsonInteger(requestBody, "page");
-            String password = getJsonString(requestBody, "password");
+            int pageNumber = getJsonInteger(requestBody, "page"); //TODO not used
+            String password = getJsonString(requestBody, "password"); // TODO not used
             LoadedPageWrapper loadedPage = new LoadedPageWrapper();
             // get page image
             byte[] bytes = Files.readAllBytes( new File(documentGuid).toPath());
             // encode ByteArray into String
-            String incodedImage = new String(Base64.getEncoder().encode(bytes));
-            loadedPage.setPageImage(incodedImage);
+            String encodedImage = new String(Base64.getEncoder().encode(bytes));
+            loadedPage.setPageImage(encodedImage);
             // return loaded page object
             return objectToJson(loadedPage);
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(ex);
         }
     }
 
@@ -490,7 +413,7 @@ public class SignatureResources extends Resources {
             password = getJsonString(requestBody, "password");
             SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
             String signatureGuid = signaturesData[0].getSignatureGuid();
-            // get signied document name
+            // get signed document name
             String signedFileName = new File(documentGuid).getName();
             // initiate signed document wrapper
             SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
@@ -503,7 +426,7 @@ public class SignatureResources extends Resources {
             }
             // initiate digital signer
             DigitalSigner signer = new DigitalSigner(signaturesData[0], password);
-            // prepare sgining options and sign document
+            // prepare signing options and sign document
             switch (signaturesData[0].getDocumentType()){
                 case "Portable Document Format":
                     // sign document
@@ -523,17 +446,7 @@ public class SignatureResources extends Resources {
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            if(ex.getMessage().contains("password") && password.isEmpty()) {
-                exceptionWrapper.setMessage("Password Required");
-            }else if(ex.getMessage().contains("password") && !password.isEmpty()){
-                exceptionWrapper.setMessage("Incorrect password");
-            }else{
-                exceptionWrapper.setMessage(ex.getMessage());
-                exceptionWrapper.setException(ex);
-            }
-            return objectToJson(exceptionWrapper);
+            return generateException(ex, password);
         }
     }
 
@@ -600,17 +513,7 @@ public class SignatureResources extends Resources {
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            if(ex.getMessage().contains("password") && password.isEmpty()) {
-                exceptionWrapper.setMessage("Password Required");
-            }else if(ex.getMessage().contains("password") && !password.isEmpty()){
-                exceptionWrapper.setMessage("Incorrect password");
-            }else{
-                exceptionWrapper.setMessage(ex.getMessage());
-                exceptionWrapper.setException(ex);
-            }
-            return objectToJson(exceptionWrapper);
+            return generateException(ex, password);
         }
     }
 
@@ -624,6 +527,7 @@ public class SignatureResources extends Resources {
     @Path(value = "/signStamp")
     public Object signStamp(@Context HttpServletRequest request, @Context HttpServletResponse response){
         String password = "";
+        String xmlPath = directoryUtils.getDataDirectory().getStampDirectory().getXmlPath();
         try {
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
@@ -643,19 +547,15 @@ public class SignatureResources extends Resources {
             // initiate signed document wrapper
             SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
-            String xmlPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + xmlFolder;
             // mimeType should now be something like "image/png" if the document is image
             if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
                 signaturesData[0].setDocumentType("image");
             }
-            int redColor = 0;
-            int greenColor = 0;
-            int blueColor = 0;
+
             for(int i = 0; i < signaturesData.length; i++) {
-                String stampName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
-                // prepare signing options and sign document
-                XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(xmlPath + "/" + stampName +".xml")));
-                StampDataWrapper[] stampData = (StampDataWrapper[])decoder.readObject();
+                String xmlFileName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
+                // Load xml data
+                StampXmlEntity[] stampData = (StampXmlEntity[]) loadXmlData(xmlPath, xmlFileName);
                 // since stamp ine are added stating from the most outer line we need to reverse the stamp data array
                 ArrayUtils.reverse(stampData);
                 // initiate stamp signer
@@ -685,17 +585,7 @@ public class SignatureResources extends Resources {
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            if(ex.getMessage().contains("password") && password.isEmpty()) {
-                exceptionWrapper.setMessage("Password Required");
-            }else if(ex.getMessage().contains("password") && !password.isEmpty()){
-                exceptionWrapper.setMessage("Incorrect password");
-            }else{
-                exceptionWrapper.setMessage(ex.getMessage());
-                exceptionWrapper.setException(ex);
-            }
-            return objectToJson(exceptionWrapper);
+            return generateException(ex, password);
         }
     }
 
@@ -732,25 +622,25 @@ public class SignatureResources extends Resources {
             SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // get xml files root path
-            String xmlPath = "";
+            String xmlPath;
             if(signatureType.equals("qrCode")) {
-                xmlPath = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder + xmlFolder;
+                xmlPath = directoryUtils.getDataDirectory().getQrCodeDirectory().getXmlPath();
             } else {
-                xmlPath = globalConfiguration.getSignature().getDataDirectory() + barCodeRootFolder + xmlFolder;
+                xmlPath = directoryUtils.getDataDirectory().getBarcodeDirectory().getXmlPath();
             }
             // prepare signing options and sign document
             for(int i = 0; i < signaturesData.length; i++) {
                 // get xml data of the QR-Code
-                String opticalCodeName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
-                XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(xmlPath + "/" + opticalCodeName +".xml")));
-                OpticalCodeDataWrapper opticalCodeData = (OpticalCodeDataWrapper)decoder.readObject();
+                String xmlFileName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
+                // Load xml data
+                OpticalXmlEntity opticalCodeData = (OpticalXmlEntity) loadXmlData(xmlPath, xmlFileName);
                 // check if document type is image
                 if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
                     signaturesData[i].setDocumentType("image");
                 }
                 // initiate QRCode signer object
-                QrCodeSigner qrSigner = null;
-                BarCodeSigner barSigner = null;
+                QrCodeSigner qrSigner;
+                BarCodeSigner barSigner;
                 if(signatureType.equals("qrCode")) {
                      qrSigner = new QrCodeSigner(opticalCodeData, signaturesData[i]);
                     // prepare signing options and sign document
@@ -800,17 +690,7 @@ public class SignatureResources extends Resources {
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            if(ex.getMessage().contains("password") && password.isEmpty()) {
-                exceptionWrapper.setMessage("Password Required");
-            }else if(ex.getMessage().contains("password") && !password.isEmpty()){
-                exceptionWrapper.setMessage("Incorrect password");
-            }else{
-                exceptionWrapper.setMessage(ex.getMessage());
-                exceptionWrapper.setException(ex);
-            }
-            return objectToJson(exceptionWrapper);
+            return generateException(ex, password);
         }
     }
 
@@ -824,6 +704,7 @@ public class SignatureResources extends Resources {
     @Path(value = "/signText")
     public Object signText(@Context HttpServletRequest request, @Context HttpServletResponse response){
         String password = "";
+        String xmlPath = directoryUtils.getDataDirectory().getTextDirectory().getXmlPath();
         try {
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
@@ -845,15 +726,12 @@ public class SignatureResources extends Resources {
             // initiate signed document wrapper
             SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
-            // get xml files root path
-            String xmlPath = "";
-            xmlPath = globalConfiguration.getSignature().getDataDirectory() + textRootFolder + xmlFolder;
             // prepare signing options and sign document
             for(int i = 0; i < signaturesData.length; i++) {
                 // get xml data of the Text signature
-                String textName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
-                XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(xmlPath + "/" + textName +".xml")));
-                TextDataWrapper textData = (TextDataWrapper)decoder.readObject();
+                String xmlFileName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
+                // Load xml data
+                TextXmlEntity textData = (TextXmlEntity) loadXmlData(xmlPath, xmlFileName);
                 // check if document type is image
                 if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
                     signaturesData[i].setDocumentType("image");
@@ -886,17 +764,7 @@ public class SignatureResources extends Resources {
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            if(ex.getMessage().contains("password") && password.isEmpty()) {
-                exceptionWrapper.setMessage("Password Required");
-            }else if(ex.getMessage().contains("password") && !password.isEmpty()){
-                exceptionWrapper.setMessage("Incorrect password");
-            }else{
-                exceptionWrapper.setMessage(ex.getMessage());
-                exceptionWrapper.setException(ex);
-            }
-            return objectToJson(exceptionWrapper);
+            return generateException(ex, password);
         }
     }
 
@@ -918,10 +786,10 @@ public class SignatureResources extends Resources {
             String encodedImage = getJsonString(requestBody, "image").replace("data:image/png;base64,", "");
             FileDescriptionWrapper savedImage = new FileDescriptionWrapper();
             String imageName = "drawn signature.png";
-            if (new File(signatureHandler.getSignatureConfig().getImagesPath() + "/" + imageName).exists()){
-                imageName =  getFreeFileName(signatureHandler.getSignatureConfig().getImagesPath(), imageName).toPath().getFileName().toString();
+            String imagePath = String.format("%s/%s", directoryUtils.getDataDirectory().getImageDirectory().getPath(), imageName);
+            if (new File(imagePath).exists()){
+                imageName =  getFreeFileName(directoryUtils.getDataDirectory().getImageDirectory().getPath(), imageName).toPath().getFileName().toString();
             }
-            String imagePath =  signatureHandler.getSignatureConfig().getImagesPath() + "/" + imageName;
             byte[] decodedImg = Base64.getDecoder().decode(encodedImage.getBytes(StandardCharsets.UTF_8));
             Files.write(new File(imagePath).toPath(), decodedImg);
             savedImage.setGuid(imagePath);
@@ -930,11 +798,7 @@ public class SignatureResources extends Resources {
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(ex);
         }
     }
 
@@ -947,6 +811,8 @@ public class SignatureResources extends Resources {
     @POST
     @Path(value = "/saveStamp")
     public Object saveStamp(@Context HttpServletRequest request, @Context HttpServletResponse response){
+        String previewPath = directoryUtils.getDataDirectory().getStampDirectory().getPreviewPath();
+        String xmlPath = directoryUtils.getDataDirectory().getStampDirectory().getXmlPath();
         try {
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
@@ -954,9 +820,8 @@ public class SignatureResources extends Resources {
             String requestBody = getRequestBody(request);
             // get/set parameters
             String encodedImage = getJsonString(requestBody, "image").replace("data:image/png;base64,", "");
-            StampDataWrapper[] stampData = (StampDataWrapper[]) getJsonObject(requestBody, "stampData", StampDataWrapper[].class);
-            String previewPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + previewFolder;
-            String xmlPath = globalConfiguration.getSignature().getDataDirectory() + stampsRootFolder + xmlFolder;
+            StampXmlEntity[] stampData = (StampXmlEntity[]) getJsonObject(requestBody, "stampData", StampXmlEntity[].class);
+
             String newFileName = "";
             FileDescriptionWrapper savedImage = new FileDescriptionWrapper();
             File file = null;
@@ -977,19 +842,13 @@ public class SignatureResources extends Resources {
             Files.write(file.toPath(), decodedImg);
             savedImage.setGuid(file.toPath().toString());
             // stamp data to xml file saving
-            XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(xmlPath + "/" + newFileName + ".xml")));
-            encoder.writeObject(stampData);
-            encoder.close();
+            saveXmlData(xmlPath, newFileName, stampData);
             // return loaded page object
             return objectToJson(savedImage);
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(ex);
         }
     }
 
@@ -1007,7 +866,7 @@ public class SignatureResources extends Resources {
             setResponseContentType(response, MediaType.APPLICATION_JSON);
             // get request body
             String requestBody = getRequestBody(request);
-            OpticalCodeDataWrapper opticalCodeData = (OpticalCodeDataWrapper) getJsonObject(requestBody, "properties", OpticalCodeDataWrapper.class);
+            OpticalXmlEntity opticalCodeData = (OpticalXmlEntity) getJsonObject(requestBody, "properties", OpticalXmlEntity.class);
             String signatureType = getJsonString(requestBody, "signatureType");
             // initiate signature data wrapper with default values
             SignatureDataWrapper signaturesData = new SignatureDataWrapper();
@@ -1016,28 +875,28 @@ public class SignatureResources extends Resources {
             signaturesData.setLeft(0);
             signaturesData.setTop(0);
             // initiate signer object
-            String previewPath = "";
-            String xmlPath = "";
-            QrCodeSigner qrSigner = null;
-            BarCodeSigner barCodeSigner = null;
+            String previewPath;
+            String xmlPath;
+            QrCodeSigner qrSigner ;
+            BarCodeSigner barCodeSigner;
             // initiate signature options collection
             SignatureOptionsCollection collection = new SignatureOptionsCollection();
             // check optical signature type
             if(signatureType.equals("qrCode")) {
                 qrSigner = new QrCodeSigner(opticalCodeData, signaturesData);
                 // get preview path
-                previewPath = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder + previewFolder;
+                previewPath = directoryUtils.getDataDirectory().getQrCodeDirectory().getPreviewPath();
                 // get xml file path
-                xmlPath = globalConfiguration.getSignature().getDataDirectory() + qrRootFolder + xmlFolder;
-                // generate uniq file names for preview image and xml file
+                xmlPath = directoryUtils.getDataDirectory().getQrCodeDirectory().getXmlPath();
+                // generate unique file names for preview image and xml file
                 collection.add(qrSigner.signImage());
             } else {
                 barCodeSigner = new BarCodeSigner(opticalCodeData, signaturesData);
                 // get preview path
-                previewPath = globalConfiguration.getSignature().getDataDirectory() + barCodeRootFolder + previewFolder;
+                previewPath = directoryUtils.getDataDirectory().getBarcodeDirectory().getPreviewPath();
                 // get xml file path
-                xmlPath = globalConfiguration.getSignature().getDataDirectory() + barCodeRootFolder + xmlFolder;
-                // generate uniq file names for preview image and xml file
+                xmlPath = directoryUtils.getDataDirectory().getBarcodeDirectory().getXmlPath();
+                // generate unique file names for preview image and xml file
                 collection.add(barCodeSigner.signImage());
             }
             File file = null;
@@ -1072,11 +931,9 @@ public class SignatureResources extends Resources {
             g2d.dispose();
             // save BufferedImage to file
             ImageIO.write(bufImage, "png", file);
-            bufImage = null;
+
             // Optical data to xml file saving
-            XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(xmlPath + "/" + fileName + ".xml")));
-            encoder.writeObject(opticalCodeData);
-            encoder.close();
+            saveXmlData(xmlPath, fileName, opticalCodeData);
             // set signing save options
             final SaveOptions saveOptions = new SaveOptions();
             saveOptions.setOutputType(OutputType.String);
@@ -1087,7 +944,7 @@ public class SignatureResources extends Resources {
             // sign generated image with Optical signature
             signatureHandler.sign(file.toPath().toString(), collection, saveOptions);
             // set signed documents path back to correct path
-            signatureHandler.getSignatureConfig().setOutputPath(outPutPath);
+            signatureHandler.getSignatureConfig().setOutputPath(directoryUtils.getOutputDirectory().getPath());
             // set data for response
             opticalCodeData.setImageGuid(file.toPath().toString());
             opticalCodeData.setHeight(200);
@@ -1102,11 +959,7 @@ public class SignatureResources extends Resources {
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            return generateException(ex);
         }
     }
 
@@ -1119,12 +972,14 @@ public class SignatureResources extends Resources {
     @POST
     @Path(value = "/saveText")
     public Object saveText(@Context HttpServletRequest request, @Context HttpServletResponse response){
+        String previewPath = directoryUtils.getDataDirectory().getTextDirectory().getPreviewPath();
+        String xmlPath = directoryUtils.getDataDirectory().getTextDirectory().getXmlPath();
         try {
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
             // get request body
             String requestBody = getRequestBody(request);
-            TextDataWrapper textData = (TextDataWrapper) getJsonObject(requestBody, "properties", TextDataWrapper.class);
+            TextXmlEntity textData = (TextXmlEntity) getJsonObject(requestBody, "properties", TextXmlEntity.class);
             // initiate signature data wrapper with default values
             SignatureDataWrapper signaturesData = new SignatureDataWrapper();
             signaturesData.setImageHeight(textData.getHeight());
@@ -1132,16 +987,10 @@ public class SignatureResources extends Resources {
             signaturesData.setLeft(0);
             signaturesData.setTop(0);
             // initiate signer object
-            String previewPath = "";
-            String xmlPath = "";
             TextSigner textSigner = new TextSigner(textData, signaturesData);
             // initiate signature options collection
             SignatureOptionsCollection collection = new SignatureOptionsCollection();
-            // get preview path
-            previewPath = globalConfiguration.getSignature().getDataDirectory() + textRootFolder + previewFolder;
-            // get xml file path
-            xmlPath = globalConfiguration.getSignature().getDataDirectory() + textRootFolder + xmlFolder;
-            // generate uniq file names for preview image and xml file
+            // generate unique file names for preview image and xml file
             collection.add(textSigner.signImage());
             File file = null;
             File folder = new File(previewPath);
@@ -1175,11 +1024,8 @@ public class SignatureResources extends Resources {
             g2d.dispose();
             // save BufferedImage to file
             ImageIO.write(bufImage, "png", file);
-            bufImage = null;
-            // Text data to xml file saving
-            XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(xmlPath + "/" + fileName + ".xml")));
-            encoder.writeObject(textData);
-            encoder.close();
+            // Save text data to an xml file
+            saveXmlData(xmlPath, fileName, textData);
             // set signing save options
             final SaveOptions saveOptions = new SaveOptions();
             saveOptions.setOutputType(OutputType.String);
@@ -1190,72 +1036,107 @@ public class SignatureResources extends Resources {
             // sign generated image with Text
             signatureHandler.sign(file.toPath().toString(), collection, saveOptions);
             // set signed documents path back to correct path
-            signatureHandler.getSignatureConfig().setOutputPath(outPutPath);
+            signatureHandler.getSignatureConfig().setOutputPath(directoryUtils.getOutputDirectory().getPath());
             // set Text data for response
             textData.setImageGuid(file.toPath().toString());
             // get Text preview as Base64 String
             byte[] bytes = signatureHandler.getPageImage(file.toPath().toString(), 1, "", null, 100);
             // encode ByteArray into String
-            String incodedImage = new String(Base64.getEncoder().encode(bytes));
-            textData.setEncodedImage(incodedImage);
+            String encodedImage = new String(Base64.getEncoder().encode(bytes));
+            textData.setEncodedImage(encodedImage);
             // return loaded page object
             return objectToJson(textData);
         }catch (Exception ex){
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+            return generateException(ex);
+        }
+    }
+
+    /**
+     *
+     * @param ex
+     * @return
+     */
+    private Object generateException(Exception ex){
+        ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+        exceptionWrapper.setMessage(ex.getMessage());
+        exceptionWrapper.setException(ex);
+        return objectToJson(exceptionWrapper);
+    }
+
+    /**
+     *
+     * @param ex
+     * @param password
+     * @return
+     */
+    private Object generateException(Exception ex, String password){
+        ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+        if(ex.getMessage().contains("password") && password.isEmpty()) {
+            exceptionWrapper.setMessage("Password Required");
+        }else if(ex.getMessage().contains("password") && !password.isEmpty()){
+            exceptionWrapper.setMessage("Incorrect password");
+        }else{
             exceptionWrapper.setMessage(ex.getMessage());
             exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+        }
+        return objectToJson(exceptionWrapper);
+    }
+
+    /**
+     *
+     * @param xmlPath
+     * @param xmlFileName
+     * @return
+     */
+    private Object loadXmlData(String xmlPath, String xmlFileName){
+        FileInputStream fileInputStream = null;
+        BufferedInputStream bufferedInputStream = null;
+        try{
+            fileInputStream = new FileInputStream(String.format("%s/%s.xml", xmlPath ,xmlFileName));
+            bufferedInputStream = new BufferedInputStream(fileInputStream);
+            XMLDecoder decoder = new XMLDecoder(bufferedInputStream);
+            return decoder.readObject();
+        }catch (FileNotFoundException ex){
+            ex.printStackTrace();
+            return null;
+        }finally {
+            try {
+                bufferedInputStream.close();
+                fileInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private Object getJsonObject(String json, String key, Type type){
-        Object value = null;
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            Gson gson = new Gson();
-            value = gson.fromJson( jsonObject.get(key).toString(), type);
-        } catch (JSONException e) {
-            e.printStackTrace();
+    /**
+     *
+     * @param xmlPath
+     * @param xmlFileName
+     * @param xmlEntity
+     */
+    private void saveXmlData(String xmlPath, String xmlFileName, Object xmlEntity){
+        FileOutputStream fileOutputStream = null;
+        BufferedOutputStream bufferedOutputStream = null;
+        XMLEncoder encoder = null;
+        try{
+            fileOutputStream = new FileOutputStream(String.format("%s/%s.xml", xmlPath, xmlFileName));
+            bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+            encoder = new XMLEncoder(bufferedOutputStream);
+            encoder.writeObject(xmlEntity);
+        }catch (FileNotFoundException ex){
+            ex.printStackTrace();
+        }finally {
+            try {
+                encoder.close();
+                bufferedOutputStream.close();
+                fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return value;
     }
 
-    private void createDirectories(String rootPath) {
-        try {
-            if (!Files.exists(new File(rootPath).toPath())) {
-                new File(rootPath).mkdir();
-            }
-            if (!Files.exists(new File(rootPath + certificatesFolder).toPath())) {
-                new File(rootPath + certificatesFolder).mkdir();
-            }
-            if (!Files.exists(new File(rootPath + imagesFolder).toPath())) {
-                new File(rootPath + imagesFolder).mkdir();
-            }
-            if (!Files.exists(new File(rootPath + stampsRootFolder).toPath())) {
-                new File(rootPath + stampsRootFolder).mkdir();
-                new File(rootPath + stampsRootFolder + previewFolder).mkdir();
-                new File(rootPath + stampsRootFolder + xmlFolder).mkdir();
-            }
-            if (!Files.exists(new File(rootPath + qrRootFolder).toPath())) {
-                new File(rootPath + qrRootFolder).mkdir();
-                new File(rootPath + qrRootFolder + previewFolder).mkdir();
-                new File(rootPath + qrRootFolder + xmlFolder).mkdir();
-            }
-            if (!Files.exists(new File(rootPath + barCodeRootFolder).toPath())) {
-                new File(rootPath + barCodeRootFolder).mkdir();
-                new File(rootPath + barCodeRootFolder + previewFolder).mkdir();
-                new File(rootPath + barCodeRootFolder + xmlFolder).mkdir();
-            }
-            if (!Files.exists(new File(rootPath + textRootFolder).toPath())) {
-                new File(rootPath + textRootFolder).mkdir();
-                new File(rootPath + textRootFolder + previewFolder).mkdir();
-                new File(rootPath + textRootFolder + xmlFolder).mkdir();
-            }
-        } catch (Exception ex) {
-            throw ex;
-        }
-    }
 }

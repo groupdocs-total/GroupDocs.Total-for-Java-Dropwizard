@@ -1,4 +1,4 @@
-package com.groupdocs.ui.signature.SignaturesLoader;
+package com.groupdocs.ui.signature.signatureloader;
 
 import com.google.common.collect.Ordering;
 import com.groupdocs.ui.common.config.GlobalConfiguration;

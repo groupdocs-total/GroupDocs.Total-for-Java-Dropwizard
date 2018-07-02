@@ -16,14 +16,15 @@ server:
 application:
     # License path
     # Absolute path to GroupDocs license file
-    licensePath:  /License/GroupDocs.Total.Java.lic
+    licensePath:  /Users/Alex/Documents/GroupDocs.Total.Java.lic
 
 
 ################################################
 # GroupDocs.Viewer configurations
 ################################################
 viewer:
-  # Directory where all original files are stored, by default the App_Data folder which is placed in the project root is used
+  # Files directory path
+  # Absolute or relative path to files directory
   filesDirectory: /App_Data/
   # Fonts path
   # Absolute path to custom fonts directory
@@ -75,11 +76,14 @@ viewer:
 # GroupDocs.Signature configurations
 ################################################
 signature:
-  # Directory where all original files are stored, by default the App_Data folder which is placed in the project root is used
+  # Files directory path
+  # Absolute or relative path to files directory
   filesDirectory: /App_Data/
-  # Directory where all signed documents are stored, if empty - will be created inside the filesDirectory
+  # Output directory path
+  # Absolute path to signed files directory
   outputDirectory: ''
-  # Directory where all signature data such as digital certificates, images, stamps etc. are stored, if empty - signatureData directory will be created inside the filesDirectory
+  # Data directory path
+  # Absolute path to signature cache files directory
   dataDirectory: ''
   # Enable/disable text signature
   textSignature: true

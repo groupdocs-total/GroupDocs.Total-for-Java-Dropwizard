@@ -1,10 +1,8 @@
-package com.groupdocs.ui.signature.domain.wrapper;
+package com.groupdocs.ui.signature.entity.xml;
 
-public class TextDataWrapper {
-
-    private String imageGuid;
+public class TextXmlEntity extends XmlEntity{
     private String encodedImage;
-    private String text;
+
     private String backgroundColor = "rgb(0,0,0)";
     private String fontColor = "rgb(0,0,0)";
     private String borderColor = "rgb(0,0,0)";
@@ -12,19 +10,9 @@ public class TextDataWrapper {
     private int borderStyle;
     private int fontSize;
     private int borderWidth;
-    private int width;
-    private int height;
     private Boolean bold;
     private Boolean italic;
     private Boolean underline;
-
-    public String getImageGuid() {
-        return imageGuid;
-    }
-
-    public void setImageGuid(String imageGuid) {
-        this.imageGuid = imageGuid;
-    }
 
     public String getEncodedImage() {
         return encodedImage;
@@ -32,14 +20,6 @@ public class TextDataWrapper {
 
     public void setEncodedImage(String encodedImage) {
         this.encodedImage = encodedImage;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     public String getBackgroundColor() {
@@ -96,22 +76,6 @@ public class TextDataWrapper {
 
     public void setBorderWidth(int borderWidth) {
         this.borderWidth = borderWidth;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
     }
 
     public Boolean getBold() {

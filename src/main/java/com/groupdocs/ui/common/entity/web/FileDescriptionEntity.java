@@ -1,11 +1,11 @@
 package com.groupdocs.ui.common.entity.web;
 
 /**
- * FileDescriptionWrapper
+ * FileDescriptionEntity
  *
  * @author Aspose Pty Ltd
  */
-public class FileDescriptionWrapper {
+public class FileDescriptionEntity {
     private String guid;
     private String name;
     private String docType;

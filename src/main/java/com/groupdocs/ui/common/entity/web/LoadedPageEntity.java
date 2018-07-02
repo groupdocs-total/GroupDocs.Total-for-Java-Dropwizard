@@ -1,11 +1,11 @@
 package com.groupdocs.ui.common.entity.web;
 
 /**
- * LoadedPageWrapper
+ * LoadedPageEntity
  *
  * @author Aspose Pty Ltd
  */
-public class LoadedPageWrapper {
+public class LoadedPageEntity {
     private String pageHtml;
     private String angle;
     private String pageImage;

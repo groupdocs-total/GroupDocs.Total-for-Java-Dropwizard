@@ -2,8 +2,8 @@ package com.groupdocs.ui.common.resources;
 
 import com.google.gson.Gson;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
+import com.groupdocs.ui.common.entity.web.ExceptionEntity;
 import com.groupdocs.ui.common.entity.web.MediaType;
-import com.groupdocs.ui.common.entity.web.ExceptionWrapper;
 import com.groupdocs.ui.viewer.resources.ViewerResources;
 import io.dropwizard.jetty.ConnectorFactory;
 import io.dropwizard.jetty.HttpConnectorFactory;
@@ -231,10 +231,10 @@ public abstract class Resources {
         // set response content type
         setResponseContentType(response, MediaType.APPLICATION_JSON);
 
-        ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
-        exceptionWrapper.setMessage(ex.getMessage());
-        exceptionWrapper.setException(ex);
-        return objectToJson(exceptionWrapper);
+        ExceptionEntity exceptionEntity = new ExceptionEntity();
+        exceptionEntity.setMessage(ex.getMessage());
+        exceptionEntity.setException(ex);
+        return objectToJson(exceptionEntity);
     }
 
     /**
@@ -247,16 +247,16 @@ public abstract class Resources {
         // set response content type
         setResponseContentType(response, MediaType.APPLICATION_JSON);
 
-        ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+        ExceptionEntity exceptionEntity = new ExceptionEntity();
         if(ex.getMessage().contains("password") && password.isEmpty()) {
-            exceptionWrapper.setMessage("Password Required");
+            exceptionEntity.setMessage("Password Required");
         }else if(ex.getMessage().contains("password") && !password.isEmpty()){
-            exceptionWrapper.setMessage("Incorrect password");
+            exceptionEntity.setMessage("Incorrect password");
         }else{
-            exceptionWrapper.setMessage(ex.getMessage());
-            exceptionWrapper.setException(ex);
+            exceptionEntity.setMessage(ex.getMessage());
+            exceptionEntity.setException(ex);
         }
-        return objectToJson(exceptionWrapper);
+        return objectToJson(exceptionEntity);
     }
 
 }

@@ -1,11 +1,11 @@
 package com.groupdocs.ui.common.entity.web;
 
 /**
- * UploadedDocumentWrapper
+ * UploadedDocumentEntity
  *
  * @author Aspose Pty Ltd
  */
-public class UploadedDocumentWrapper {
+public class UploadedDocumentEntity {
     private String guid;
 
     /**

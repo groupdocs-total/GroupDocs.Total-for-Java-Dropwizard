@@ -9,9 +9,9 @@ import com.groupdocs.signature.options.SignatureOptionsCollection;
 import com.groupdocs.signature.options.loadoptions.LoadOptions;
 import com.groupdocs.signature.options.saveoptions.SaveOptions;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
+import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
 import com.groupdocs.ui.common.entity.web.MediaType;
-import com.groupdocs.ui.common.entity.web.FileDescriptionWrapper;
-import com.groupdocs.ui.common.entity.web.LoadedPageWrapper;
+import com.groupdocs.ui.common.entity.web.LoadedPageEntity;
 import com.groupdocs.ui.common.resources.Resources;
 import com.groupdocs.ui.signature.entity.web.DocumentDescriptionEntity;
 import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
@@ -217,7 +217,7 @@ public class SignatureResources extends Resources {
             String documentGuid = getJsonString(requestBody, "guid");
             int pageNumber = getJsonInteger(requestBody, "page");
             String password = getJsonString(requestBody, "password");
-            LoadedPageWrapper loadedPage = new LoadedPageWrapper();
+            LoadedPageEntity loadedPage = new LoadedPageEntity();
             // get page image
             byte[] bytes = signatureHandler.getPageImage(documentGuid, pageNumber, password, null, 100);
             // encode ByteArray into String
@@ -370,7 +370,7 @@ public class SignatureResources extends Resources {
             String requestBody = getRequestBody(request);
             // get/set parameters
             String documentGuid = getJsonString(requestBody, "guid");
-            LoadedPageWrapper loadedPage = new LoadedPageWrapper();
+            LoadedPageEntity loadedPage = new LoadedPageEntity();
             // get page image
             byte[] bytes = Files.readAllBytes( new File(documentGuid).toPath());
             // encode ByteArray into String
@@ -667,7 +667,7 @@ public class SignatureResources extends Resources {
             String requestBody = getRequestBody(request);
             // get/set parameters
             String encodedImage = getJsonString(requestBody, "image").replace("data:image/png;base64,", "");
-            FileDescriptionWrapper savedImage = new FileDescriptionWrapper();
+            FileDescriptionEntity savedImage = new FileDescriptionEntity();
             String imageName = "drawn signature.png";
             String imagePath = String.format("%s/%s", directoryUtils.getDataDirectory().getImageDirectory().getPath(), imageName);
             if (new File(imagePath).exists()){
@@ -704,7 +704,7 @@ public class SignatureResources extends Resources {
             StampXmlEntity[] stampData = (StampXmlEntity[]) getJsonObject(requestBody, "stampData", StampXmlEntity[].class);
 
             String newFileName = "";
-            FileDescriptionWrapper savedImage = new FileDescriptionWrapper();
+            FileDescriptionEntity savedImage = new FileDescriptionEntity();
             File file = null;
             File folder = new File(previewPath);
             File[] listOfFiles = folder.listFiles();

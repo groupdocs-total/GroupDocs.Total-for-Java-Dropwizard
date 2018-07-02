@@ -1,11 +1,11 @@
 package com.groupdocs.ui.common.entity.web;
 
 /**
- * ExceptionWrapper
+ * ExceptionEntity
  *
  * @author Aspose Pty Ltd
  */
-public class ExceptionWrapper {
+public class ExceptionEntity {
     private String message;
     private Exception exception;
 

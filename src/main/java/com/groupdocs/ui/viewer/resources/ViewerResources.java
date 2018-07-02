@@ -1,13 +1,10 @@
 package com.groupdocs.ui.viewer.resources;
 
 import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.common.entity.web.FileDescriptionWrapper;
-import com.groupdocs.ui.common.entity.web.LoadedPageWrapper;
+import com.groupdocs.ui.common.entity.web.*;
 import com.groupdocs.ui.viewer.entity.web.RotatedPageEntity;
-import com.groupdocs.ui.common.entity.web.MediaType;
-import com.groupdocs.ui.common.entity.web.ExceptionWrapper;
+import com.groupdocs.ui.common.entity.web.ExceptionEntity;
 import com.groupdocs.ui.common.resources.Resources;
-import com.groupdocs.ui.common.entity.web.UploadedDocumentWrapper;
 import com.groupdocs.ui.viewer.views.Viewer;
 import com.google.gson.Gson;
 import com.groupdocs.viewer.config.ViewerConfig;
@@ -120,10 +117,10 @@ public class ViewerResources extends Resources {
         try{
             FileListContainer fileListContainer = viewerImageHandler.getFileList(fileListOptions);
 
-            ArrayList<FileDescriptionWrapper> fileList = new ArrayList<>();
+            ArrayList<FileDescriptionEntity> fileList = new ArrayList<>();
             // parse files/folders list
             for(FileDescription fd : fileListContainer.getFiles()){
-                FileDescriptionWrapper fileDescription = new FileDescriptionWrapper();
+                FileDescriptionEntity fileDescription = new FileDescriptionEntity();
                 fileDescription.setGuid(fd.getGuid());
                 // check if current file/folder is temp directory or is hidden
                 if(tempDirectoryName.equals(fd.getName()) || new File(fileDescription.getGuid()).isHidden()) {
@@ -188,16 +185,16 @@ public class ViewerResources extends Resources {
             return objectToJson(documentInfoContainer.getPages());
         }catch (GroupDocsViewerException ex){
             // Set exception message
-            ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+            ExceptionEntity exceptionEntity = new ExceptionEntity();
             if(GroupDocsViewerException.class.isAssignableFrom(InvalidPasswordException.class) && password.isEmpty()) {
-                exceptionWrapper.setMessage("Password Required");
+                exceptionEntity.setMessage("Password Required");
             }else if(GroupDocsViewerException.class.isAssignableFrom(InvalidPasswordException.class) && !password.isEmpty()){
-                exceptionWrapper.setMessage("Incorrect password");
+                exceptionEntity.setMessage("Incorrect password");
             }else{
-                exceptionWrapper.setMessage(ex.getMessage());
+                exceptionEntity.setMessage(ex.getMessage());
             }
-            exceptionWrapper.setException(ex);
-            return objectToJson(exceptionWrapper);
+            exceptionEntity.setException(ex);
+            return objectToJson(exceptionEntity);
         }catch (Exception ex){
             return generateException(response, ex);
         }
@@ -222,7 +219,7 @@ public class ViewerResources extends Resources {
             int pageNumber = getJsonInteger(requestBody, "page");
             boolean htmlMode = getJsonBoolean(requestBody, "htmlMode");
             String password = getJsonString(requestBody, "password");
-            LoadedPageWrapper loadedPage = new LoadedPageWrapper();
+            LoadedPageEntity loadedPage = new LoadedPageEntity();
             String angle;
             // set options
             if(htmlMode) {
@@ -404,7 +401,7 @@ public class ViewerResources extends Resources {
                 // save file with out rewriting
                 Files.copy(uploadedInputStream, file.toPath());
             }
-            UploadedDocumentWrapper uploadedDocument = new UploadedDocumentWrapper();
+            UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity();
             uploadedDocument.setGuid(documentStoragePath + "/" + fileName);
             return objectToJson(uploadedDocument);
         }catch(Exception ex){

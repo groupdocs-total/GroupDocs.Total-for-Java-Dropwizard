@@ -1,10 +1,12 @@
 package com.groupdocs.ui.signature.signer;
 
+import com.groupdocs.signature.options.SignOptions;
 import com.groupdocs.signature.options.digitalsignature.CellsSignDigitalOptions;
 import com.groupdocs.signature.options.digitalsignature.PdfSignDigitalOptions;
 import com.groupdocs.signature.options.digitalsignature.WordsSignDigitalOptions;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
 
+import javax.ws.rs.NotSupportedException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -13,17 +15,17 @@ import java.text.SimpleDateFormat;
  * Signs documents with the stamp signature
  * @author Aspose Pty Ltd
  */
-public class DigitalSigner {
-    private SignatureDataWrapper signatureData;
+public class DigitalSigner extends Signer{
     private String password;
 
     public DigitalSigner(SignatureDataWrapper signatureData, String password){
-        this.signatureData = signatureData;
+        super(signatureData);
         this.password = password;
     }
 
+    @Override
     public PdfSignDigitalOptions signPdf() throws ParseException {
-        // initiate date formater
+        // initiate date formatter
         SimpleDateFormat formatter = new SimpleDateFormat("dd-mm-yy");
         // setup digital signature options
         PdfSignDigitalOptions pdfSignOptions = new PdfSignDigitalOptions(signatureData.getSignatureGuid());
@@ -38,8 +40,14 @@ public class DigitalSigner {
         return pdfSignOptions;
     }
 
+    @Override
+    public SignOptions signImage() throws NotSupportedException {
+        throw new NotSupportedException("This file type is not supported");
+    }
+
+    @Override
     public WordsSignDigitalOptions signWord() throws ParseException {
-        // initiate date formater
+        // initiate date formatter
         SimpleDateFormat formatter = new SimpleDateFormat("dd-mm-yy");
         // setup digital signature options
         WordsSignDigitalOptions wordsSignOptions = new WordsSignDigitalOptions(signatureData.getSignatureGuid());
@@ -52,8 +60,9 @@ public class DigitalSigner {
         return wordsSignOptions;
     }
 
-    public CellsSignDigitalOptions signCell() throws ParseException {
-        // initiate date formater
+    @Override
+    public CellsSignDigitalOptions signCells() throws ParseException {
+        // initiate date formatter
         SimpleDateFormat formatter = new SimpleDateFormat("dd-mm-yy");
         CellsSignDigitalOptions cellsSignOptions = new CellsSignDigitalOptions(signatureData.getSignatureGuid());
         cellsSignOptions.getSignature().setComments(signatureData.getSignatureComment());
@@ -63,5 +72,10 @@ public class DigitalSigner {
         cellsSignOptions.setPassword(password);
         cellsSignOptions.setSignAllPages(true);
         return cellsSignOptions;
+    }
+
+    @Override
+    public SignOptions signSlides() throws NotSupportedException, ParseException {
+        throw new NotSupportedException("This file type is not supported");
     }
 }

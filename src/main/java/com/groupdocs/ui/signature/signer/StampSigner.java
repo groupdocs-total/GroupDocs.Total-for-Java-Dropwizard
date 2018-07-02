@@ -18,15 +18,15 @@ import java.awt.Color;
  * Signs documents with the stamp signature
  * @author Aspose Pty Ltd
  */
-public class StampSigner {
+public class StampSigner extends Signer{
     private StampXmlEntity[] stampData;
-    private SignatureDataWrapper signatureData;
 
     public StampSigner(StampXmlEntity[] stampData, SignatureDataWrapper signatureData){
-     this.stampData = stampData;
-     this.signatureData = signatureData;
+        super(signatureData);
+        this.stampData = stampData;
     }
 
+    @Override
     public PdfStampSignOptions signPdf(){
         // setup options
         PdfStampSignOptions pdfSignOptions = new PdfStampSignOptions();
@@ -95,6 +95,7 @@ public class StampSigner {
         return pdfSignOptions;
     }
 
+    @Override
     public ImagesStampSignOptions signImage(){
         // setup options
         ImagesStampSignOptions imageSignOptions = new ImagesStampSignOptions();
@@ -159,6 +160,7 @@ public class StampSigner {
         return imageSignOptions;
     }
 
+    @Override
     public WordsStampSignOptions signWord(){
         // setup options
         WordsStampSignOptions wordsSignOptions = new WordsStampSignOptions();
@@ -223,7 +225,8 @@ public class StampSigner {
         return wordsSignOptions;
     }
 
-    public CellsStampSignOptions signCell(){
+    @Override
+    public CellsStampSignOptions signCells(){
         // setup options
         CellsStampSignOptions cellsSignOptions = new CellsStampSignOptions();
         cellsSignOptions.setHeight(signatureData.getImageHeight());
@@ -287,6 +290,7 @@ public class StampSigner {
         return cellsSignOptions;
     }
 
+    @Override
     public SlidesStampSignOptions signSlides(){
         // setup options
         SlidesStampSignOptions slidesSignOptions = new SlidesStampSignOptions();
@@ -351,11 +355,4 @@ public class StampSigner {
         return slidesSignOptions;
     }
 
-    private Color getColor(String rgbColor){
-        String[] colors = rgbColor.split(",");
-        int redColor = Integer.parseInt(colors[0].replaceAll("\\D+", ""));
-        int greenColor = Integer.parseInt(colors[1].replaceAll("\\D+", ""));
-        int blueColor = Integer.parseInt(colors[2].replaceAll("\\D+", ""));
-        return new Color(redColor, greenColor, blueColor);
-    }
 }

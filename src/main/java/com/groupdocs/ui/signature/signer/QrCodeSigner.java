@@ -17,15 +17,16 @@ import java.awt.Color;
  * Signs documents with the stamp signature
  * @author Aspose Pty Ltd
  */
-public class QrCodeSigner {
+public class QrCodeSigner extends Signer{
     private OpticalXmlEntity qrCodeData;
-    private SignatureDataWrapper signatureData;
+
 
     public QrCodeSigner(OpticalXmlEntity qrCodeData, SignatureDataWrapper signatureData){
+        super(signatureData);
         this.qrCodeData = qrCodeData;
-        this.signatureData = signatureData;
     }
 
+    @Override
     public PdfQRCodeSignOptions signPdf(){
         // setup options
         PdfQRCodeSignOptions signOptions = new PdfQRCodeSignOptions(qrCodeData.getText());
@@ -47,6 +48,7 @@ public class QrCodeSigner {
         return signOptions;
     }
 
+    @Override
     public ImagesQRCodeSignOptions signImage(){
         // setup options
         ImagesQRCodeSignOptions signOptions = new ImagesQRCodeSignOptions(qrCodeData.getText());
@@ -69,6 +71,7 @@ public class QrCodeSigner {
         return signOptions;
     }
 
+    @Override
     public WordsQRCodeSignOptions signWord(){
         // setup options
         WordsQRCodeSignOptions signOptions = new WordsQRCodeSignOptions(qrCodeData.getText());
@@ -90,6 +93,7 @@ public class QrCodeSigner {
         return signOptions;
     }
 
+    @Override
     public CellsQRCodeSignOptions signCells(){
         // setup options
         CellsQRCodeSignOptions signOptions = new CellsQRCodeSignOptions(qrCodeData.getText());
@@ -111,6 +115,7 @@ public class QrCodeSigner {
         return signOptions;
     }
 
+    @Override
     public SlidesQRCodeSignOptions signSlides(){
         // setup options
         SlidesQRCodeSignOptions signOptions = new SlidesQRCodeSignOptions(qrCodeData.getText());
@@ -132,11 +137,4 @@ public class QrCodeSigner {
         return signOptions;
     }
 
-    private Color getColor(String rgbColor){
-        String[] colors = rgbColor.split(",");
-        int redColor = Integer.parseInt(colors[0].replaceAll("\\D+", ""));
-        int greenColor = Integer.parseInt(colors[1].replaceAll("\\D+", ""));
-        int blueColor = Integer.parseInt(colors[2].replaceAll("\\D+", ""));
-        return new Color(redColor, greenColor, blueColor);
-    }
 }

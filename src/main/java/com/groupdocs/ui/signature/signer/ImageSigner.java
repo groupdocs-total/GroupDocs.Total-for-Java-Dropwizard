@@ -12,14 +12,13 @@ import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
  * Signs documents with the stamp signature
  * @author Aspose Pty Ltd
  */
-public class ImageSigner {
-    private SignatureDataWrapper signatureData;
+public class ImageSigner extends Signer{
 
     public ImageSigner(SignatureDataWrapper signatureData){
-   
-     this.signatureData = signatureData;
+        super(signatureData);
     }
 
+    @Override
     public PdfSignImageOptions signPdf(){
         // setup options
         // setup image signature options
@@ -34,6 +33,7 @@ public class ImageSigner {
         return pdfSignOptions;
     }
 
+    @Override
     public ImagesSignImageOptions signImage(){
         // setup image signature options with relative path - image file stores in config.ImagesPath folder
         ImagesSignImageOptions imageSignOptions = new ImagesSignImageOptions(signatureData.getSignatureGuid());
@@ -46,6 +46,7 @@ public class ImageSigner {
         return imageSignOptions;
     }
 
+    @Override
     public WordsSignImageOptions signWord(){
         // setup image signature options with relative path - image file stores in config.ImagesPath folder
         WordsSignImageOptions wordsSignOptions = new WordsSignImageOptions(signatureData.getSignatureGuid());
@@ -58,7 +59,8 @@ public class ImageSigner {
         return wordsSignOptions;
     }
 
-    public CellsSignImageOptions signCell(){
+    @Override
+    public CellsSignImageOptions signCells(){
         // setup image signature options
         CellsSignImageOptions cellsSignOptions = new CellsSignImageOptions(signatureData.getSignatureGuid());
         // image position
@@ -71,6 +73,7 @@ public class ImageSigner {
         return cellsSignOptions;
     }
 
+    @Override
     public SlidesSignImageOptions signSlides(){
         // setup image signature options with relative path - image file stores in config.ImagesPath folder
         SlidesSignImageOptions slidesSignOptions = new SlidesSignImageOptions(signatureData.getSignatureGuid());

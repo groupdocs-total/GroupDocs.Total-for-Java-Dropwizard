@@ -14,16 +14,16 @@ import com.groupdocs.ui.common.domain.wrapper.ExceptionWrapper;
 import com.groupdocs.ui.common.domain.wrapper.FileDescriptionWrapper;
 import com.groupdocs.ui.common.domain.wrapper.LoadedPageWrapper;
 import com.groupdocs.ui.common.resources.Resources;
-import com.groupdocs.ui.signature.signatureloader.SignatureLoader;
-import com.groupdocs.ui.signature.signer.*;
-import com.groupdocs.ui.signature.entity.directory.DataDirectoryEntity;
 import com.groupdocs.ui.signature.domain.wrapper.DocumentDescriptionWrapper;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureDataWrapper;
 import com.groupdocs.ui.signature.domain.wrapper.SignatureFileDescriptionWrapper;
 import com.groupdocs.ui.signature.domain.wrapper.SignedDocumentWrapper;
+import com.groupdocs.ui.signature.entity.directory.DataDirectoryEntity;
 import com.groupdocs.ui.signature.entity.xml.OpticalXmlEntity;
 import com.groupdocs.ui.signature.entity.xml.StampXmlEntity;
 import com.groupdocs.ui.signature.entity.xml.TextXmlEntity;
+import com.groupdocs.ui.signature.signatureloader.SignatureLoader;
+import com.groupdocs.ui.signature.signer.*;
 import com.groupdocs.ui.signature.util.DirectoryUtils;
 import com.groupdocs.ui.signature.views.Signature;
 import org.apache.commons.io.FilenameUtils;
@@ -49,6 +49,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -154,7 +155,7 @@ public class SignatureResources extends Resources {
             }
             return objectToJson(fileList);
         }catch (Exception ex){
-            return generateException(ex);
+            return generateException(response, ex);
         }
     }
 
@@ -195,7 +196,7 @@ public class SignatureResources extends Resources {
             // return document description
             return objectToJson(pagesDescription);
         }catch (Exception ex){
-            return generateException(ex, password);
+            return generateException(response, ex, password);
         }
     }
 
@@ -226,9 +227,7 @@ public class SignatureResources extends Resources {
             // return loaded page object
             return objectToJson(loadedPage);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex);
+            return generateException(response, ex);
         }
     }
 
@@ -268,9 +267,7 @@ public class SignatureResources extends Resources {
             }
             return outStream;
         } catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex);
+            return generateException(response, ex);
         } finally {
             // close streams
             if (inputStream != null)
@@ -354,9 +351,7 @@ public class SignatureResources extends Resources {
             }
             return objectToJson(uploadedDocument);
         }catch(Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex);
+            return generateException(response, ex);
         }
     }
 
@@ -376,8 +371,6 @@ public class SignatureResources extends Resources {
             String requestBody = getRequestBody(request);
             // get/set parameters
             String documentGuid = getJsonString(requestBody, "guid");
-            int pageNumber = getJsonInteger(requestBody, "page"); //TODO not used
-            String password = getJsonString(requestBody, "password"); // TODO not used
             LoadedPageWrapper loadedPage = new LoadedPageWrapper();
             // get page image
             byte[] bytes = Files.readAllBytes( new File(documentGuid).toPath());
@@ -387,9 +380,7 @@ public class SignatureResources extends Resources {
             // return loaded page object
             return objectToJson(loadedPage);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex);
+            return generateException(response, ex);
         }
     }
 
@@ -412,14 +403,15 @@ public class SignatureResources extends Resources {
             String documentGuid = getJsonString(requestBody, "guid");
             password = getJsonString(requestBody, "password");
             SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
-            String signatureGuid = signaturesData[0].getSignatureGuid();
             // get signed document name
             String signedFileName = new File(documentGuid).getName();
             // initiate signed document wrapper
             SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
+
             final SaveOptions saveOptions = new SaveOptions();
             saveOptions.setOutputType(OutputType.String);
             saveOptions.setOutputFileName(signedFileName);
+
             LoadOptions loadOptions = new LoadOptions();
             if(password != null && !password.isEmpty()) {
                 loadOptions.setPassword(password);
@@ -438,15 +430,13 @@ public class SignatureResources extends Resources {
                     break;
                 case "Microsoft Excel":
                     // sign document
-                    signedDocument.setGuid(signatureHandler.sign(documentGuid, signer.signCell(), loadOptions, saveOptions).toString());
+                    signedDocument.setGuid(signatureHandler.sign(documentGuid, signer.signCells(), loadOptions, saveOptions).toString());
                     break;
             }
             // return loaded page object
             return objectToJson(signedDocument);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex, password);
+            return generateException(response, ex, password);
         }
     }
 
@@ -469,15 +459,7 @@ public class SignatureResources extends Resources {
             String documentGuid = getJsonString(requestBody, "guid");
             password = getJsonString(requestBody, "password");
             SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
-            final SaveOptions saveOptions = new SaveOptions();
-            saveOptions.setOutputType(OutputType.String);
-            saveOptions.setOutputFileName(new File(documentGuid).getName());
-            LoadOptions loadOptions = new LoadOptions();
-            if (password != null && !password.isEmpty()) {
-                loadOptions.setPassword(password);
-            }
-            // initiate signed document wrapper
-            SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
+
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // set signature password if required
             for(int i = 0; i < signaturesData.length; i++) {
@@ -488,32 +470,12 @@ public class SignatureResources extends Resources {
                 // initiate image signer object
                 ImageSigner signer = new ImageSigner(signaturesData[i]);
                 // prepare signing options and sign document
-                switch (signaturesData[i].getDocumentType()) {
-                    case "Portable Document Format":
-                        signsCollection.add(signer.signPdf());
-                        break;
-                    case "Microsoft Word":
-                        signsCollection.add(signer.signWord());
-                        break;
-                    case "Microsoft PowerPoint":
-                        signsCollection.add(signer.signSlides());
-                        break;
-                    case "image":
-                        signsCollection.add(signer.signImage());
-                        break;
-                    case "Microsoft Excel":
-                        signsCollection.add(signer.signCell());
-                        break;
-                }
+                addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer); //TODO test this call
             }
-            // sign the document
-            signedDocument.setGuid(signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions).toString());
             // return loaded page object
-            return objectToJson(signedDocument);
+            return signDocument(documentGuid, password, signsCollection);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex, password);
+            return generateException(response, ex, password);
         }
     }
 
@@ -537,15 +499,7 @@ public class SignatureResources extends Resources {
             String documentGuid = getJsonString(requestBody, "guid");
             password = getJsonString(requestBody, "password");
             SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
-            final SaveOptions saveOptions = new SaveOptions();
-            saveOptions.setOutputType(OutputType.String);
-            saveOptions.setOutputFileName(new File(documentGuid).getName());
-            LoadOptions loadOptions = new LoadOptions();
-            if (password != null && !password.isEmpty()) {
-                loadOptions.setPassword(password);
-            }
-            // initiate signed document wrapper
-            SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
+
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // mimeType should now be something like "image/png" if the document is image
             if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
@@ -560,32 +514,13 @@ public class SignatureResources extends Resources {
                 ArrayUtils.reverse(stampData);
                 // initiate stamp signer
                 StampSigner signer = new StampSigner(stampData, signaturesData[i]);
-                switch (signaturesData[0].getDocumentType()) {
-                    case "Portable Document Format":
-                        signsCollection.add(signer.signPdf());
-                        break;
-                    case "Microsoft Word":
-                        signsCollection.add(signer.signWord());
-                        break;
-                    case "Microsoft PowerPoint":
-                        signsCollection.add(signer.signSlides());
-                        break;
-                    case "image":
-                        signsCollection.add(signer.signImage());
-                        break;
-                    case "Microsoft Excel":
-                        signsCollection.add(signer.signCell());
-                        break;
-                }
+                // prepare signing options and sign document
+                addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer); //TODO test this call
             }
-            // sign the document
-            signedDocument.setGuid(signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions).toString());
             // return loaded page object
-            return objectToJson(signedDocument);
+            return signDocument(documentGuid, password, signsCollection);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex, password);
+            return generateException(response, ex, password);
         }
     }
 
@@ -609,25 +544,10 @@ public class SignatureResources extends Resources {
             password = getJsonString(requestBody, "password");
             SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
             String signatureType = signaturesData[0].getSignatureType();
-            // set signed document save options
-            final SaveOptions saveOptions = new SaveOptions();
-            saveOptions.setOutputType(OutputType.String);
-            saveOptions.setOutputFileName(new File(documentGuid).getName());
-            // set document password if required
-            LoadOptions loadOptions = new LoadOptions();
-            if (password != null && !password.isEmpty()) {
-                loadOptions.setPassword(password);
-            }
-            // initiate signed document wrapper
-            SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
+
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // get xml files root path
-            String xmlPath;
-            if(signatureType.equals("qrCode")) {
-                xmlPath = directoryUtils.getDataDirectory().getQrCodeDirectory().getXmlPath();
-            } else {
-                xmlPath = directoryUtils.getDataDirectory().getBarcodeDirectory().getXmlPath();
-            }
+            String xmlPath = (signatureType.equals("qrCode")) ? directoryUtils.getDataDirectory().getQrCodeDirectory().getXmlPath() : directoryUtils.getDataDirectory().getBarcodeDirectory().getXmlPath();
             // prepare signing options and sign document
             for(int i = 0; i < signaturesData.length; i++) {
                 // get xml data of the QR-Code
@@ -639,58 +559,14 @@ public class SignatureResources extends Resources {
                     signaturesData[i].setDocumentType("image");
                 }
                 // initiate QRCode signer object
-                QrCodeSigner qrSigner;
-                BarCodeSigner barSigner;
-                if(signatureType.equals("qrCode")) {
-                     qrSigner = new QrCodeSigner(opticalCodeData, signaturesData[i]);
-                    // prepare signing options and sign document
-                    switch (signaturesData[i].getDocumentType()) {
-                        case "Portable Document Format":
-                            signsCollection.add(qrSigner.signPdf());
-                            break;
-                        case "Microsoft Word":
-                            signsCollection.add(qrSigner.signWord());
-                            break;
-                        case "Microsoft PowerPoint":
-                            signsCollection.add(qrSigner.signSlides());
-                            break;
-                        case "image":
-                            signsCollection.add(qrSigner.signImage());
-                            break;
-                        case "Microsoft Excel":
-                            signsCollection.add(qrSigner.signCells());
-                            break;
-                    }
-                } else {
-                    barSigner = new BarCodeSigner(opticalCodeData, signaturesData[i]);
-                    // prepare signing options and sign document
-                    switch (signaturesData[i].getDocumentType()) {
-                        case "Portable Document Format":
-                            signsCollection.add(barSigner.signPdf());
-                            break;
-                        case "Microsoft Word":
-                            signsCollection.add(barSigner.signWord());
-                            break;
-                        case "Microsoft PowerPoint":
-                            signsCollection.add(barSigner.signSlides());
-                            break;
-                        case "image":
-                            signsCollection.add(barSigner.signImage());
-                            break;
-                        case "Microsoft Excel":
-                            signsCollection.add(barSigner.signCells());
-                            break;
-                    }
-                }
+                Signer signer = (signatureType.equals("qrCode")) ? new QrCodeSigner(opticalCodeData, signaturesData[i]) : new BarCodeSigner(opticalCodeData, signaturesData[i]);
+                // prepare signing options and sign document
+                addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer); //TODO test this call
             }
-            // sign the document
-            signedDocument.setGuid(signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions).toString());
             // return loaded page object
-            return objectToJson(signedDocument);
+            return signDocument(documentGuid, password, signsCollection);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex, password);
+            return generateException(response, ex, password);
         }
     }
 
@@ -714,58 +590,66 @@ public class SignatureResources extends Resources {
             String documentGuid = getJsonString(requestBody, "guid");
             password = getJsonString(requestBody, "password");
             SignatureDataWrapper[] signaturesData = (SignatureDataWrapper[]) getJsonObject(requestBody, "signaturesData", SignatureDataWrapper[].class);
-            // set signed document save options
-            final SaveOptions saveOptions = new SaveOptions();
-            saveOptions.setOutputType(OutputType.String);
-            saveOptions.setOutputFileName(new File(documentGuid).getName());
-            // set document password if required
-            LoadOptions loadOptions = new LoadOptions();
-            if (password != null && !password.isEmpty()) {
-                loadOptions.setPassword(password);
-            }
-            // initiate signed document wrapper
-            SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
+
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // prepare signing options and sign document
             for(int i = 0; i < signaturesData.length; i++) {
                 // get xml data of the Text signature
                 String xmlFileName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
                 // Load xml data
-                TextXmlEntity textData = (TextXmlEntity) loadXmlData(xmlPath, xmlFileName);
+                TextXmlEntity textData = (TextXmlEntity) loadXmlData(xmlPath, xmlFileName); //TODO
                 // check if document type is image
                 if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
                     signaturesData[i].setDocumentType("image");
                 }
                 // initiate QRCode signer object
-                TextSigner textSigner = new TextSigner(textData, signaturesData[i]);
+                TextSigner signer = new TextSigner(textData, signaturesData[i]); //TODO
                 // prepare signing options and sign document
-                switch (signaturesData[i].getDocumentType()) {
-                    case "Portable Document Format":
-                        signsCollection.add(textSigner.signPdf());
-                        break;
-                    case "Microsoft Word":
-                        signsCollection.add(textSigner.signWord());
-                        break;
-                    case "Microsoft PowerPoint":
-                        signsCollection.add(textSigner.signSlides());
-                        break;
-                    case "image":
-                        signsCollection.add(textSigner.signImage());
-                        break;
-                    case "Microsoft Excel":
-                        signsCollection.add(textSigner.signCells());
-                        break;
-                }
+                addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer); //TODO test this call
             }
-            // sign the document
-            signedDocument.setGuid(signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions).toString());
             // return loaded page object
-            return objectToJson(signedDocument);
+            return signDocument(documentGuid, password, signsCollection);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex, password);
+            return generateException(response, ex, password);
         }
+    }
+
+    private void addSignOptions(String documentType, SignatureOptionsCollection signsCollection, Signer signer) throws ParseException {
+        switch (documentType) {
+            case "Portable Document Format":
+                signsCollection.add(signer.signPdf());
+                break;
+            case "Microsoft Word":
+                signsCollection.add(signer.signWord());
+                break;
+            case "Microsoft PowerPoint":
+                signsCollection.add(signer.signSlides());
+                break;
+            case "image":
+                signsCollection.add(signer.signImage());
+                break;
+            case "Microsoft Excel":
+                signsCollection.add(signer.signCells());
+                break;
+        }
+    }
+
+    private Object signDocument(String documentGuid, String password, SignatureOptionsCollection signsCollection) throws Exception {
+        // set save options
+        final SaveOptions saveOptions = new SaveOptions();
+        saveOptions.setOutputType(OutputType.String);
+        saveOptions.setOutputFileName(new File(documentGuid).getName());
+
+        // set password
+        LoadOptions loadOptions = new LoadOptions();
+        if (password != null && !password.isEmpty()) {
+            loadOptions.setPassword(password);
+        }
+
+        // sign document
+        SignedDocumentWrapper signedDocument = new SignedDocumentWrapper();
+        signedDocument.setGuid(signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions).toString());
+        return objectToJson(signedDocument);
     }
 
     /**
@@ -796,9 +680,7 @@ public class SignatureResources extends Resources {
             // return loaded page object
             return objectToJson(savedImage);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex);
+            return generateException(response, ex);
         }
     }
 
@@ -846,9 +728,7 @@ public class SignatureResources extends Resources {
             // return loaded page object
             return objectToJson(savedImage);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex);
+            return generateException(response, ex);
         }
     }
 
@@ -957,9 +837,7 @@ public class SignatureResources extends Resources {
             // return loaded page object
             return objectToJson(opticalCodeData);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex);
+            return generateException(response, ex);
         }
     }
 
@@ -1047,9 +925,7 @@ public class SignatureResources extends Resources {
             // return loaded page object
             return objectToJson(textData);
         }catch (Exception ex){
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            return generateException(ex);
+            return generateException(response, ex);
         }
     }
 
@@ -1058,7 +934,10 @@ public class SignatureResources extends Resources {
      * @param ex
      * @return
      */
-    private Object generateException(Exception ex){
+    private Object generateException(HttpServletResponse response, Exception ex){
+        // set response content type
+        setResponseContentType(response, MediaType.APPLICATION_JSON);
+
         ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
         exceptionWrapper.setMessage(ex.getMessage());
         exceptionWrapper.setException(ex);
@@ -1071,7 +950,10 @@ public class SignatureResources extends Resources {
      * @param password
      * @return
      */
-    private Object generateException(Exception ex, String password){
+    private Object generateException(HttpServletResponse response, Exception ex, String password){
+        // set response content type
+        setResponseContentType(response, MediaType.APPLICATION_JSON);
+
         ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
         if(ex.getMessage().contains("password") && password.isEmpty()) {
             exceptionWrapper.setMessage("Password Required");

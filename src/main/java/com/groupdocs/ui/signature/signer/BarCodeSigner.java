@@ -18,15 +18,15 @@ import java.awt.Color;
  * Signs documents with the stamp signature
  * @author Aspose Pty Ltd
  */
-public class BarCodeSigner {
+public class BarCodeSigner extends Signer{
     private OpticalXmlEntity qrCodeData;
-    private SignatureDataWrapper signatureData;
 
     public BarCodeSigner(OpticalXmlEntity qrCodeData, SignatureDataWrapper signatureData){
+        super(signatureData);
         this.qrCodeData = qrCodeData;
-        this.signatureData = signatureData;
     }
 
+    @Override
     public PdfBarcodeSignOptions signPdf(){
         // setup options
         PdfBarcodeSignOptions signOptions = new PdfBarcodeSignOptions(qrCodeData.getText());
@@ -48,6 +48,7 @@ public class BarCodeSigner {
         return signOptions;
     }
 
+    @Override
     public ImagesBarcodeSignOptions signImage(){
         // setup options
         ImagesBarcodeSignOptions signOptions = new ImagesBarcodeSignOptions(qrCodeData.getText());
@@ -70,6 +71,7 @@ public class BarCodeSigner {
         return signOptions;
     }
 
+    @Override
     public WordsBarcodeSignOptions signWord(){
         // setup options
         WordsBarcodeSignOptions signOptions = new WordsBarcodeSignOptions(qrCodeData.getText());
@@ -91,6 +93,7 @@ public class BarCodeSigner {
         return signOptions;
     }
 
+    @Override
     public CellsBarcodeSignOptions signCells(){
         // setup options
         CellsBarcodeSignOptions signOptions = new CellsBarcodeSignOptions(qrCodeData.getText());
@@ -112,6 +115,7 @@ public class BarCodeSigner {
         return signOptions;
     }
 
+    @Override
     public SlidesBarcodeSignOptions signSlides(){
         // setup options
         SlidesBarcodeSignOptions signOptions = new SlidesBarcodeSignOptions(qrCodeData.getText());
@@ -131,13 +135,5 @@ public class BarCodeSigner {
             signOptions.setBorderDashStyle(qrCodeData.getBorderStyle());
         }
         return signOptions;
-    }
-
-    private Color getColor(String rgbColor){
-        String[] colors = rgbColor.split(",");
-        int redColor = Integer.parseInt(colors[0].replaceAll("\\D+", ""));
-        int greenColor = Integer.parseInt(colors[1].replaceAll("\\D+", ""));
-        int blueColor = Integer.parseInt(colors[2].replaceAll("\\D+", ""));
-        return new Color(redColor, greenColor, blueColor);
     }
 }

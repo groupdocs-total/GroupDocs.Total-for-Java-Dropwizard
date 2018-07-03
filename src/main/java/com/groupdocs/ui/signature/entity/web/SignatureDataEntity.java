@@ -1,5 +1,10 @@
 package com.groupdocs.ui.signature.entity.web;
 
+/**
+ * SignatureDataEntity
+ *
+ * @author Aspose Pty Ltd
+ */
 public class SignatureDataEntity {
     private String reason;
     private String  contact;

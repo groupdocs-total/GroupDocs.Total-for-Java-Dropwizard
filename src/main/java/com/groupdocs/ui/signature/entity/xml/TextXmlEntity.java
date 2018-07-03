@@ -1,5 +1,10 @@
 package com.groupdocs.ui.signature.entity.xml;
 
+/**
+ * TextXmlEntity
+ *
+ * @author Aspose Pty Ltd
+ */
 public class TextXmlEntity extends XmlEntity{
     private String encodedImage;
 

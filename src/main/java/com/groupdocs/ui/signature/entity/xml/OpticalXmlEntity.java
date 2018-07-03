@@ -1,5 +1,10 @@
 package com.groupdocs.ui.signature.entity.xml;
 
+/**
+ * OpticalXmlEntity
+ *
+ * @author Aspose Pty Ltd
+ */
 public class OpticalXmlEntity extends XmlEntity {
     private String borderColor = "rgb(0,0,0)";
     private String encodedImage;

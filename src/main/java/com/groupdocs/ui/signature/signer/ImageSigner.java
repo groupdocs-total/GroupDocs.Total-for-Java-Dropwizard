@@ -8,16 +8,24 @@ import com.groupdocs.signature.options.imagesignature.CellsSignImageOptions;
 import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 
 /**
- * StampSigner
- * Signs documents with the stamp signature
- * @author Aspose Pty Ltd
+ * ImageSigner
+ * Signs documents with the image signature
+  * @author Aspose Pty Ltd
  */
 public class ImageSigner extends Signer{
 
+    /**
+     * Constructor
+     * @param signatureData
+     */
     public ImageSigner(SignatureDataEntity signatureData){
         super(signatureData);
     }
 
+    /**
+     * Add image signature data to pdf sign options
+     * @return PdfSignImageOptions
+     */
     @Override
     public PdfSignImageOptions signPdf(){
         // setup options
@@ -33,6 +41,10 @@ public class ImageSigner extends Signer{
         return pdfSignOptions;
     }
 
+    /**
+     * Add image signature data to image sign options
+     * @return ImageSignImageOptions
+     */
     @Override
     public ImagesSignImageOptions signImage(){
         // setup image signature options with relative path - image file stores in config.ImagesPath folder
@@ -46,6 +58,10 @@ public class ImageSigner extends Signer{
         return imageSignOptions;
     }
 
+    /**
+     * Add image signature data to words sign options
+     * @return WordsSignImageOptions
+     */
     @Override
     public WordsSignImageOptions signWord(){
         // setup image signature options with relative path - image file stores in config.ImagesPath folder
@@ -59,6 +75,10 @@ public class ImageSigner extends Signer{
         return wordsSignOptions;
     }
 
+    /**
+     * Add image signature data to cells sign options
+     * @return CellsSignImageOptions
+     */
     @Override
     public CellsSignImageOptions signCells(){
         // setup image signature options
@@ -73,6 +93,10 @@ public class ImageSigner extends Signer{
         return cellsSignOptions;
     }
 
+    /**
+     * Add image signature data to slides sign options
+     * @return SlidesSignImageOptions
+     */
     @Override
     public SlidesSignImageOptions signSlides(){
         // setup image signature options with relative path - image file stores in config.ImagesPath folder

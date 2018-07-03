@@ -12,18 +12,27 @@ import com.groupdocs.ui.signature.entity.xml.OpticalXmlEntity;
 import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 
 /**
- * StampSigner
- * Signs documents with the stamp signature
+ * BarCodeSigner
+ * Signs documents with the BarCode signature
  * @author Aspose Pty Ltd
  */
 public class BarCodeSigner extends Signer{
     private OpticalXmlEntity qrCodeData;
 
+    /**
+     * Constructor
+     * @param qrCodeData OpticalXmlEntity
+     * @param signatureData SignatureDataEntity
+     */
     public BarCodeSigner(OpticalXmlEntity qrCodeData, SignatureDataEntity signatureData){
         super(signatureData);
         this.qrCodeData = qrCodeData;
     }
 
+    /**
+     * Add BarCode signature data to pdf sign options
+     * @return PdfBarcodeSignOptions
+     */
     @Override
     public PdfBarcodeSignOptions signPdf(){
         // setup options
@@ -46,6 +55,10 @@ public class BarCodeSigner extends Signer{
         return signOptions;
     }
 
+    /**
+     * Add BarCode signature data to image sign options
+     * @return ImageBarcodeSignOptions
+     */
     @Override
     public ImagesBarcodeSignOptions signImage(){
         // setup options
@@ -69,6 +82,10 @@ public class BarCodeSigner extends Signer{
         return signOptions;
     }
 
+    /**
+     * Add BarCode signature data to words sign options
+     * @return WordsBarcodeSignOptions
+     */
     @Override
     public WordsBarcodeSignOptions signWord(){
         // setup options
@@ -91,6 +108,10 @@ public class BarCodeSigner extends Signer{
         return signOptions;
     }
 
+    /**
+     * Add BarCode signature data to cells sign options
+     * @return CellsBarcodeSignOptions
+     */
     @Override
     public CellsBarcodeSignOptions signCells(){
         // setup options
@@ -113,6 +134,10 @@ public class BarCodeSigner extends Signer{
         return signOptions;
     }
 
+    /**
+     * Add BarCode signature data to slides sign options
+     * @return SlidesBarcodeSignOptions
+     */
     @Override
     public SlidesBarcodeSignOptions signSlides(){
         // setup options

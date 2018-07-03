@@ -1,5 +1,10 @@
 package com.groupdocs.ui.signature.entity.xml;
 
+/**
+ * XmlEntity
+ *
+ * @author Aspose Pty Ltd
+ */
 public abstract class XmlEntity {
     private String imageGuid;
     private String text;

@@ -2,6 +2,11 @@ package com.groupdocs.ui.signature.entity.web;
 
 import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
 
+/**
+ * SignatureFileDescriptionEntity
+ *
+ * @author Aspose Pty Ltd
+ */
 public class SignatureFileDescriptionEntity extends FileDescriptionEntity {
     private String image;
 

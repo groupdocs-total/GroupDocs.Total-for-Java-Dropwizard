@@ -1,10 +1,18 @@
 package com.groupdocs.ui.signature.entity.directory;
 
 import com.groupdocs.ui.signature.config.SignatureConfiguration;
-import com.groupdocs.ui.signature.entity.directory.DataDirectoryEntity;
 
+/**
+ * ImageDataDirectoryEntity
+ *
+ * @author Aspose Pty Ltd
+ */
 public class ImageDataDirectoryEntity extends DataDirectoryEntity {
 
+    /**
+     * Constructor
+     * @param signatureConfiguration signature configuration object
+     */
     public ImageDataDirectoryEntity(SignatureConfiguration signatureConfiguration){
         super(signatureConfiguration, "/Image");
     }

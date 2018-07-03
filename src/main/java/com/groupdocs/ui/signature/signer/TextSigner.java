@@ -17,18 +17,27 @@ import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 import com.groupdocs.ui.signature.entity.xml.TextXmlEntity;
 
 /**
- * StampSigner
+ * TextSigner
  * Signs documents with the stamp signature
  * @author Aspose Pty Ltd
  */
 public class TextSigner extends Signer{
     private TextXmlEntity textData;
 
+    /**
+     * Constructor
+     * @param textData
+     * @param signatureData
+     */
     public TextSigner(TextXmlEntity textData, SignatureDataEntity signatureData){
         super(signatureData);
         this.textData = textData;
     }
 
+    /**
+     * Add text signature data to pdf sign options
+     * @return PdfSignTextOptions
+     */
     @Override
     public PdfSignTextOptions signPdf(){
         PdfSignTextOptions signOptions = new PdfSignTextOptions(textData.getText());
@@ -70,6 +79,10 @@ public class TextSigner extends Signer{
         return signOptions;
     }
 
+    /**
+     * Add text signature data to image sign options
+     * @return ImagesSignTextOptions
+     */
     @Override
     public ImagesSignTextOptions signImage(){
         ImagesSignTextOptions signOptions = new ImagesSignTextOptions(textData.getText());
@@ -106,11 +119,13 @@ public class TextSigner extends Signer{
         signOptions.setBorderColor(getColor(textData.getBorderColor()));
         signOptions.setBorderDashStyle(textData.getBorderStyle());
         signOptions.setBorderWeight(textData.getBorderWidth());
-        // type of implementation
-
         return signOptions;
     }
 
+    /**
+     * Add text signature data to words sign options
+     * @return WordsSignTextOptions
+     */
     @Override
     public WordsSignTextOptions signWord(){
         WordsSignTextOptions signOptions = new WordsSignTextOptions(textData.getText());
@@ -147,11 +162,13 @@ public class TextSigner extends Signer{
         signOptions.setBorderColor(getColor(textData.getBorderColor()));
         signOptions.setBorderDashStyle(textData.getBorderStyle());
         signOptions.setBorderWeight(textData.getBorderWidth());
-        // type of implementation
-
         return signOptions;
     }
 
+    /**
+     * Add text signature data to cells sign options
+     * @return CellsSignTextOptions
+     */
     @Override
     public CellsSignTextOptions signCells(){
         CellsSignTextOptions signOptions = new CellsSignTextOptions(textData.getText());
@@ -190,11 +207,13 @@ public class TextSigner extends Signer{
         signOptions.setBorderDashStyle(textData.getBorderStyle());
         signOptions.setBorderWeight(textData.getBorderWidth());
         signOptions.setBorderVisiblity(true);
-        // type of implementation
-
         return signOptions;
     }
 
+    /**
+     * Add text signature data to slides sign options
+     * @return SlidesSignTextOptions
+     */
     @Override
     public SlidesSignTextOptions signSlides(){
         SlidesSignTextOptions signOptions = new SlidesSignTextOptions(textData.getText());
@@ -231,8 +250,6 @@ public class TextSigner extends Signer{
         // setup border settings
         signOptions.setBorderColor(getColor(textData.getBorderColor()));
         signOptions.setBorderWeight(textData.getBorderWidth());
-        // type of implementation
-
         return signOptions;
     }
 }

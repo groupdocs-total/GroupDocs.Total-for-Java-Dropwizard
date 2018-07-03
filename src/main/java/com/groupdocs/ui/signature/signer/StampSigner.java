@@ -19,11 +19,20 @@ import com.groupdocs.ui.signature.entity.xml.StampXmlEntity;
 public class StampSigner extends Signer{
     private StampXmlEntity[] stampData;
 
+    /**
+     * Constructor
+     * @param stampData
+     * @param signatureData
+     */
     public StampSigner(StampXmlEntity[] stampData, SignatureDataEntity signatureData){
         super(signatureData);
         this.stampData = stampData;
     }
 
+    /**
+     * Add stamp signature data to pdf sign options
+     * @return PdfStampSignOptions
+     */
     @Override
     public PdfStampSignOptions signPdf(){
         // setup options
@@ -93,6 +102,10 @@ public class StampSigner extends Signer{
         return pdfSignOptions;
     }
 
+    /**
+     * Add stamp signature data to image sign options
+     * @return ImageStampSignOptions
+     */
     @Override
     public ImagesStampSignOptions signImage(){
         // setup options
@@ -158,6 +171,10 @@ public class StampSigner extends Signer{
         return imageSignOptions;
     }
 
+    /**
+     * Add stamp signature data to words sign options
+     * @return WordsStampSignOptions
+     */
     @Override
     public WordsStampSignOptions signWord(){
         // setup options
@@ -223,6 +240,10 @@ public class StampSigner extends Signer{
         return wordsSignOptions;
     }
 
+    /**
+     * Add stamp signature data to cells sign options
+     * @return CellsStampSignOptions
+     */
     @Override
     public CellsStampSignOptions signCells(){
         // setup options
@@ -288,6 +309,10 @@ public class StampSigner extends Signer{
         return cellsSignOptions;
     }
 
+    /**
+     * Add stamp signature data to slides sign options
+     * @return SlidesStampSignOptions
+     */
     @Override
     public SlidesStampSignOptions signSlides(){
         // setup options

@@ -4,10 +4,18 @@ import java.io.File;
 import java.util.Comparator;
 
 /**
- * Compare and sort files by name
+ * FileNameComparator
+ * Compare and sort file names alphabetically
+ * @author Aspose Pty Ltd
  */
 public class FileNameComparator implements Comparator<File> {
 
+    /**
+     * Compare two file names
+     * @param file1
+     * @param file2
+     * @return int
+     */
     @Override
     public int compare(File file1, File file2) {
 

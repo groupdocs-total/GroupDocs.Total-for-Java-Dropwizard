@@ -22,7 +22,13 @@ import com.groupdocs.ui.signature.entity.xml.OpticalXmlEntity;
 import com.groupdocs.ui.signature.entity.xml.StampXmlEntity;
 import com.groupdocs.ui.signature.entity.xml.TextXmlEntity;
 import com.groupdocs.ui.signature.signatureloader.SignatureLoader;
-import com.groupdocs.ui.signature.signer.*;
+import com.groupdocs.ui.signature.signer.BarCodeSigner;
+import com.groupdocs.ui.signature.signer.DigitalSigner;
+import com.groupdocs.ui.signature.signer.ImageSigner;
+import com.groupdocs.ui.signature.signer.QrCodeSigner;
+import com.groupdocs.ui.signature.signer.StampSigner;
+import com.groupdocs.ui.signature.signer.TextSigner;
+import com.groupdocs.ui.signature.signer.Signer;
 import com.groupdocs.ui.signature.util.directory.DirectoryUtils;
 import com.groupdocs.ui.signature.views.Signature;
 import org.apache.commons.io.FilenameUtils;
@@ -38,11 +44,20 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
-import java.io.*;
+import java.io.IOException;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -54,7 +69,7 @@ import java.util.Arrays;
 import java.util.Base64;
 
 /**
- * Signature
+ * SignatureResources
  *
  * @author Aspose Pty Ltd
  */
@@ -234,6 +249,7 @@ public class SignatureResources extends Resources {
      * Download document
      * @param request
      * @param response
+     * @return document
      */
     @GET
     @Path(value = "/downloadDocument")
@@ -358,7 +374,7 @@ public class SignatureResources extends Resources {
      * Get signature image stream - temporarlly workaround used until release of the GroupDocs.Signature 18.5, after release will be removed
      * @param request
      * @param response
-     * @return document page
+     * @return signature image
      */
     @POST
     @Path(value = "/loadSignatureImage")
@@ -613,6 +629,13 @@ public class SignatureResources extends Resources {
         }
     }
 
+    /**
+     * Add current signature options to signs collection
+     * @param documentType
+     * @param signsCollection
+     * @param signer
+     * @throws ParseException
+     */
     private void addSignOptions(String documentType, SignatureOptionsCollection signsCollection, Signer signer) throws ParseException {
         switch (documentType) {
             case "Portable Document Format":
@@ -633,6 +656,14 @@ public class SignatureResources extends Resources {
         }
     }
 
+    /**
+     * Sign document
+     * @param documentGuid
+     * @param password
+     * @param signsCollection
+     * @return signed document
+     * @throws Exception
+     */
     private Object signDocument(String documentGuid, String password, SignatureOptionsCollection signsCollection) throws Exception {
         // set save options
         final SaveOptions saveOptions = new SaveOptions();
@@ -655,7 +686,7 @@ public class SignatureResources extends Resources {
      * Save signature image stream
      * @param request
      * @param response
-     * @return document page
+     * @return image signature
      */
     @POST
     @Path(value = "/saveImage")
@@ -672,6 +703,7 @@ public class SignatureResources extends Resources {
             String imagePath = String.format("%s/%s", directoryUtils.getDataDirectory().getImageDirectory().getPath(), imageName);
             if (new File(imagePath).exists()){
                 imageName =  getFreeFileName(directoryUtils.getDataDirectory().getImageDirectory().getPath(), imageName).toPath().getFileName().toString();
+                imagePath = String.format("%s/%s", directoryUtils.getDataDirectory().getImageDirectory().getPath(), imageName);
             }
             byte[] decodedImg = Base64.getDecoder().decode(encodedImage.getBytes(StandardCharsets.UTF_8));
             Files.write(new File(imagePath).toPath(), decodedImg);
@@ -735,7 +767,7 @@ public class SignatureResources extends Resources {
      * Save Optical signature data
      * @param request
      * @param response
-     * @return stamp
+     * @return optical signature
      */
     @POST
     @Path(value = "/saveOpticalCode")
@@ -844,7 +876,7 @@ public class SignatureResources extends Resources {
      * Save signature text
      * @param request
      * @param response
-     * @return stamp
+     * @return text signature
      */
     @POST
     @Path(value = "/saveText")
@@ -932,7 +964,7 @@ public class SignatureResources extends Resources {
      *
      * @param xmlPath
      * @param xmlFileName
-     * @return
+     * @return signature data
      */
     private Object loadXmlData(String xmlPath, String xmlFileName){
         FileInputStream fileInputStream = null;

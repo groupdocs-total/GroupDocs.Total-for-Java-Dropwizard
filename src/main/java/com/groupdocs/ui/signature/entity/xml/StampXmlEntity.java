@@ -1,5 +1,10 @@
 package com.groupdocs.ui.signature.entity.xml;
 
+/**
+ * StampXmlEntity
+ *
+ * @author Aspose Pty Ltd
+ */
 public class StampXmlEntity extends XmlEntity{
     private String textExpansion;
     private String font;

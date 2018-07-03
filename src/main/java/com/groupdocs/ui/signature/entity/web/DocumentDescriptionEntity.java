@@ -1,5 +1,10 @@
 package com.groupdocs.ui.signature.entity.web;
 
+/**
+ * DocumentDescriptionEntity
+ *
+ * @author Aspose Pty Ltd
+ */
 public class DocumentDescriptionEntity {
     private double Width;
     private double Height;

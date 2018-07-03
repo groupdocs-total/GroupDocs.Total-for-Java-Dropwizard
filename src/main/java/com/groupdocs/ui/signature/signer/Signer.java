@@ -4,20 +4,29 @@ import com.groupdocs.signature.options.SignOptions;
 import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 
 import javax.ws.rs.NotSupportedException;
-import java.awt.*;
+import java.awt.Color;
 import java.text.ParseException;
 
+/**
+ * Signer
+ * Abstract class contains general description for the signing functionality
+ * @author Aspose Pty Ltd
+ */
 public abstract class Signer {
     protected SignatureDataEntity signatureData;
 
+    /**
+     * Constructor
+     * @param signatureData
+     */
     public Signer(SignatureDataEntity signatureData){
         this.signatureData = signatureData;
     }
 
     /**
-     *
+     * Converts RGB color to java.awt.Color
      * @param rgbColor
-     * @return
+     * @return Color
      */
     protected Color getColor(String rgbColor){
         String[] colors = rgbColor.split(",");

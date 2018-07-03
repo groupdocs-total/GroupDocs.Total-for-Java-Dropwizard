@@ -11,18 +11,27 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 /**
- * StampSigner
- * Signs documents with the stamp signature
+ * DigitalSigner
+ * Signs documents with the digital signature
  * @author Aspose Pty Ltd
  */
 public class DigitalSigner extends Signer{
     private String password;
 
+    /**
+     * Constructor
+     * @param signatureData
+     * @param password
+     */
     public DigitalSigner(SignatureDataEntity signatureData, String password){
         super(signatureData);
         this.password = password;
     }
 
+    /**
+     * Add digital signature data to pdf sign options
+     * @return PdfSignDigitalOptions
+     */
     @Override
     public PdfSignDigitalOptions signPdf() throws ParseException {
         // initiate date formatter
@@ -40,11 +49,19 @@ public class DigitalSigner extends Signer{
         return pdfSignOptions;
     }
 
+    /**
+     * Sign image with digital signature currently not supported
+     * @throws NotSupportedException
+     */
     @Override
     public SignOptions signImage() throws NotSupportedException {
         throw new NotSupportedException("This file type is not supported");
     }
 
+    /**
+     * Add digital signature data to words sign options
+     * @return WordsSignDigitalOptions
+     */
     @Override
     public WordsSignDigitalOptions signWord() throws ParseException {
         // initiate date formatter
@@ -60,6 +77,10 @@ public class DigitalSigner extends Signer{
         return wordsSignOptions;
     }
 
+    /**
+     * Add digital signature data to cells sign options
+     * @return CellsSignDigitalOptions
+     */
     @Override
     public CellsSignDigitalOptions signCells() throws ParseException {
         // initiate date formatter
@@ -74,6 +95,10 @@ public class DigitalSigner extends Signer{
         return cellsSignOptions;
     }
 
+    /**
+     * Sign slides with digital signature currently not supported
+     * @throws NotSupportedException
+     */
     @Override
     public SignOptions signSlides() throws NotSupportedException, ParseException {
         throw new NotSupportedException("This file type is not supported");

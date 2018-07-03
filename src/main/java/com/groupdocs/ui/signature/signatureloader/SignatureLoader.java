@@ -119,6 +119,13 @@ public class SignatureLoader {
         }
     }
 
+    /**
+     * Load stamp signatures
+     * @param previewFolder
+     * @param xmlFolder
+     * @return ArrayList<SignatureFileDescriptionEntity>
+     * @throws IOException
+     */
     public ArrayList<SignatureFileDescriptionEntity> LoadStampSignatures(String previewFolder, String xmlFolder) throws IOException {
         String imagesPath = path + previewFolder;
         String xmlPath = path + xmlFolder;

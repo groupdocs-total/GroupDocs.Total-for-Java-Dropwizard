@@ -1,9 +1,12 @@
 package com.groupdocs.ui.viewer.resources;
 
 import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.common.entity.web.*;
-import com.groupdocs.ui.viewer.entity.web.RotatedPageEntity;
 import com.groupdocs.ui.common.entity.web.ExceptionEntity;
+import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
+import com.groupdocs.ui.common.entity.web.MediaType;
+import com.groupdocs.ui.common.entity.web.LoadedPageEntity;
+import com.groupdocs.ui.common.entity.web.UploadedDocumentEntity;
+import com.groupdocs.ui.viewer.entity.web.RotatedPageEntity;
 import com.groupdocs.ui.common.resources.Resources;
 import com.groupdocs.ui.viewer.views.Viewer;
 import com.google.gson.Gson;

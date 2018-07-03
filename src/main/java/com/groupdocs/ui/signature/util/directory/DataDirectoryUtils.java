@@ -1,10 +1,20 @@
 package com.groupdocs.ui.signature.util.directory;
 
 import com.groupdocs.ui.signature.config.SignatureConfiguration;
-import com.groupdocs.ui.signature.entity.directory.*;
+import com.groupdocs.ui.signature.entity.directory.BarcodeDataDirectoryEntity;
+import com.groupdocs.ui.signature.entity.directory.CertificateDataDirectoryEntity;
+import com.groupdocs.ui.signature.entity.directory.ImageDataDirectoryEntity;
+import com.groupdocs.ui.signature.entity.directory.QrCodeDataDirectoryEntity;
+import com.groupdocs.ui.signature.entity.directory.StampDataDirectoryEntity;
+import com.groupdocs.ui.signature.entity.directory.TextDataDirectoryEntity;
 
 import java.io.File;
 
+/**
+ * DataDirectoryUtils
+ * Compare and sort file types - folders first
+ * @author Aspose Pty Ltd
+ */
 public class DataDirectoryUtils implements IDirectoryUtils{
     private final String DATA_FOLDER = "/SignatureData";
     private SignatureConfiguration signatureConfiguration;
@@ -16,6 +26,10 @@ public class DataDirectoryUtils implements IDirectoryUtils{
     private BarcodeDataDirectoryEntity barcodeDirectory;
     private TextDataDirectoryEntity textDirectory;
 
+    /**
+     * Constructor
+     * @param signatureConfiguration
+     */
     public DataDirectoryUtils(SignatureConfiguration signatureConfiguration) {
         this.signatureConfiguration = signatureConfiguration;
 
@@ -50,55 +64,107 @@ public class DataDirectoryUtils implements IDirectoryUtils{
         new File(textDirectory.getPreviewPath()).mkdirs();
     }
 
+    /**
+     * Get data directory
+     * @return data directory path
+     */
     @Override
     public String getPath(){
         return signatureConfiguration.getDataDirectory();
     }
 
+    /**
+     * Get certificates directory
+     * @return CertificateDataDirectoryEntity
+     */
     public CertificateDataDirectoryEntity getCertificateDirectory() {
         return certificateDirectory;
     }
 
+    /**
+     * Set certificates directory
+     * @param certificateDirectory
+     */
     public void setCertificateDirectory(CertificateDataDirectoryEntity certificateDirectory) {
         this.certificateDirectory = certificateDirectory;
     }
 
+    /**
+     * Get images directory
+     * @return ImageDataDirectoryEntity
+     */
     public ImageDataDirectoryEntity getImageDirectory() {
         return imageDirectory;
     }
 
+    /**
+     * Set images directory
+     * @param imageDirectory
+     */
     public void setImageDirectory(ImageDataDirectoryEntity imageDirectory) {
         this.imageDirectory = imageDirectory;
     }
 
+    /**
+     * Get stamps directory
+     * @return StampDataDirectoryEntity
+     */
     public StampDataDirectoryEntity getStampDirectory() {
         return stampDirectory;
     }
 
+    /**
+     * Set stamps directory
+     * @param stampDirectory
+     */
     public void setStampDirectory(StampDataDirectoryEntity stampDirectory) {
         this.stampDirectory = stampDirectory;
     }
 
+    /**
+     * Get Qr-Code directory
+     * @return QrCodeDataDirectoryEntity
+     */
     public QrCodeDataDirectoryEntity getQrCodeDirectory() {
         return qrCodeDirectory;
     }
 
+    /**
+     * Set Qr-Code directory
+     * @param qrCodeDirectory
+     */
     public void setQrCodeDirectory(QrCodeDataDirectoryEntity qrCodeDirectory) {
         this.qrCodeDirectory = qrCodeDirectory;
     }
 
+    /**
+     * Get BarCode directory
+     * @return BarcodeDataDirectoryEntity
+     */
     public BarcodeDataDirectoryEntity getBarcodeDirectory() {
         return barcodeDirectory;
     }
 
+    /**
+     * Set BarCode directory
+     * @param barcodeDirectory
+     */
     public void setBarcodeDirectory(BarcodeDataDirectoryEntity barcodeDirectory) {
         this.barcodeDirectory = barcodeDirectory;
     }
 
+    /**
+     * Get text signature directory
+     * @return TextDataDirectoryEntity
+     */
     public TextDataDirectoryEntity getTextDirectory() {
         return textDirectory;
     }
 
+    /**
+     * Set text signature directory
+     * @param textDirectory
+     */
     public void setTextDirectory(TextDataDirectoryEntity textDirectory) {
         this.textDirectory = textDirectory;
     }

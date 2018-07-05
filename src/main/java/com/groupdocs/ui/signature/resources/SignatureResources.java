@@ -151,7 +151,7 @@ public class SignatureResources extends Resources {
             if(relDirPath == null || relDirPath.isEmpty()){
                 relDirPath = rootDirectory;
             } else {
-                relDirPath = rootDirectory + "/" + relDirPath;//TODO String.Format
+                relDirPath = String.format("%s/%s", rootDirectory, relDirPath);
             }
             SignatureLoader signatureLoader = new SignatureLoader(relDirPath, globalConfiguration);
             ArrayList<SignatureFileDescriptionEntity> fileList;
@@ -301,6 +301,7 @@ public class SignatureResources extends Resources {
     @POST
     @Path(value = "/uploadDocument")
     public Object uploadDocument(@Context HttpServletRequest request, @Context HttpServletResponse response) {
+        InputStream uploadedInputStream = null;
         try {
             // set multipart configuration
             MultipartConfigElement multipartConfigElement = new MultipartConfigElement((String) null);
@@ -315,7 +316,6 @@ public class SignatureResources extends Resources {
             String signatureType = request.getParameter("signatureType");
             // get rewrite mode
             boolean rewrite = Boolean.parseBoolean(request.getParameter("rewrite"));
-            InputStream uploadedInputStream;
             String fileName;
             if(documentUrl == null || documentUrl.isEmpty()) {
                 // get the InputStream to store the file
@@ -341,7 +341,8 @@ public class SignatureResources extends Resources {
                     break;
             }
             // save the file
-            File file = new File(documentStoragePath + "/" + fileName); //TODO String.Format
+            String filePath =  String.format("%s/%s", documentStoragePath, fileName);
+            File file = new File(filePath);
             // check rewrite mode
             if(rewrite) {
                 // save file with rewrite if exists
@@ -356,17 +357,24 @@ public class SignatureResources extends Resources {
                 Files.copy(uploadedInputStream, file.toPath());
             }
             SignatureFileDescriptionEntity uploadedDocument = new SignatureFileDescriptionEntity();
-            uploadedDocument.setGuid(documentStoragePath + "/" + fileName); //TODO String.Format
+            uploadedDocument.setGuid(documentStoragePath + "/" + fileName);
             if(signatureType.equals("image")){
                 // get page image
                 byte[] bytes = Files.readAllBytes(new File(uploadedDocument.getGuid()).toPath());
                 // encode ByteArray into String
                 String encodedImage = new String(Base64.getEncoder().encode(bytes));
                 uploadedDocument.setImage(encodedImage);
+                bytes = null;
             }
             return objectToJson(uploadedDocument);
         }catch(Exception ex){
             return generateException(response, ex);
+        } finally {
+            try {
+                uploadedInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -478,14 +486,18 @@ public class SignatureResources extends Resources {
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // set signature password if required
             for(int i = 0; i < signaturesData.length; i++) {
-                // check if document type is image
-                if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
-                    signaturesData[i].setDocumentType("image");
+                if(signaturesData[i].getDeleted()){
+                    continue;
+                } else {
+                    // check if document type is image
+                    if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
+                        signaturesData[i].setDocumentType("image");
+                    }
+                    // initiate image signer object
+                    ImageSigner signer = new ImageSigner(signaturesData[i]);
+                    // prepare signing options and sign document
+                    addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer);
                 }
-                // initiate image signer object
-                ImageSigner signer = new ImageSigner(signaturesData[i]);
-                // prepare signing options and sign document
-                addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer); //TODO test this call
             }
             // return loaded page object
             return signDocument(documentGuid, password, signsCollection);
@@ -522,15 +534,19 @@ public class SignatureResources extends Resources {
             }
 
             for(int i = 0; i < signaturesData.length; i++) {
-                String xmlFileName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
-                // Load xml data
-                StampXmlEntity[] stampData = (StampXmlEntity[]) loadXmlData(xmlPath, xmlFileName);
-                // since stamp ine are added stating from the most outer line we need to reverse the stamp data array
-                ArrayUtils.reverse(stampData);
-                // initiate stamp signer
-                StampSigner signer = new StampSigner(stampData, signaturesData[i]);
-                // prepare signing options and sign document
-                addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer); //TODO test this call
+                if(signaturesData[i].getDeleted()){
+                    continue;
+                } else {
+                    String xmlFileName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
+                    // Load xml data
+                    StampXmlEntity[] stampData = (StampXmlEntity[]) loadXmlData(xmlPath, xmlFileName);
+                    // since stamp ine are added stating from the most outer line we need to reverse the stamp data array
+                    ArrayUtils.reverse(stampData);
+                    // initiate stamp signer
+                    StampSigner signer = new StampSigner(stampData, signaturesData[i]);
+                    // prepare signing options and sign document
+                    addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer);
+                }
             }
             // return loaded page object
             return signDocument(documentGuid, password, signsCollection);
@@ -565,18 +581,22 @@ public class SignatureResources extends Resources {
             String xmlPath = (signatureType.equals("qrCode")) ? directoryUtils.getDataDirectory().getQrCodeDirectory().getXmlPath() : directoryUtils.getDataDirectory().getBarcodeDirectory().getXmlPath();
             // prepare signing options and sign document
             for(int i = 0; i < signaturesData.length; i++) {
-                // get xml data of the QR-Code
-                String xmlFileName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
-                // Load xml data
-                OpticalXmlEntity opticalCodeData = (OpticalXmlEntity) loadXmlData(xmlPath, xmlFileName);
-                // check if document type is image
-                if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
-                    signaturesData[i].setDocumentType("image");
+                if(signaturesData[i].getDeleted()){
+                    continue;
+                } else {
+                    // get xml data of the QR-Code
+                    String xmlFileName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
+                    // Load xml data
+                    OpticalXmlEntity opticalCodeData = (OpticalXmlEntity) loadXmlData(xmlPath, xmlFileName);
+                    // check if document type is image
+                    if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
+                        signaturesData[i].setDocumentType("image");
+                    }
+                    // initiate QRCode signer object
+                    Signer signer = (signatureType.equals("qrCode")) ? new QrCodeSigner(opticalCodeData, signaturesData[i]) : new BarCodeSigner(opticalCodeData, signaturesData[i]);
+                    // prepare signing options and sign document
+                    addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer);
                 }
-                // initiate QRCode signer object
-                Signer signer = (signatureType.equals("qrCode")) ? new QrCodeSigner(opticalCodeData, signaturesData[i]) : new BarCodeSigner(opticalCodeData, signaturesData[i]);
-                // prepare signing options and sign document
-                addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer); //TODO test this call
             }
             // return loaded page object
             return signDocument(documentGuid, password, signsCollection);
@@ -609,18 +629,22 @@ public class SignatureResources extends Resources {
             SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
             // prepare signing options and sign document
             for(int i = 0; i < signaturesData.length; i++) {
-                // get xml data of the Text signature
-                String xmlFileName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
-                // Load xml data
-                TextXmlEntity textData = (TextXmlEntity) loadXmlData(xmlPath, xmlFileName); //TODO
-                // check if document type is image
-                if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
-                    signaturesData[i].setDocumentType("image");
+                if(signaturesData[i].getDeleted()){
+                    continue;
+                } else {
+                    // get xml data of the Text signature
+                    String xmlFileName = FilenameUtils.removeExtension(new File(signaturesData[i].getSignatureGuid()).getName());
+                    // Load xml data
+                    TextXmlEntity textData = (TextXmlEntity) loadXmlData(xmlPath, xmlFileName);
+                    // check if document type is image
+                    if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
+                        signaturesData[i].setDocumentType("image");
+                    }
+                    // initiate QRCode signer object
+                    TextSigner signer = new TextSigner(textData, signaturesData[i]);
+                    // prepare signing options and sign document
+                    addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer);
                 }
-                // initiate QRCode signer object
-                TextSigner signer = new TextSigner(textData, signaturesData[i]); //TODO
-                // prepare signing options and sign document
-                addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer); //TODO test this call
             }
             // return loaded page object
             return signDocument(documentGuid, password, signsCollection);
@@ -707,6 +731,7 @@ public class SignatureResources extends Resources {
             }
             byte[] decodedImg = Base64.getDecoder().decode(encodedImage.getBytes(StandardCharsets.UTF_8));
             Files.write(new File(imagePath).toPath(), decodedImg);
+            decodedImg = null;
             savedImage.setGuid(imagePath);
             // return loaded page object
             return objectToJson(savedImage);
@@ -754,6 +779,7 @@ public class SignatureResources extends Resources {
             file.createNewFile();
             Files.write(file.toPath(), decodedImg);
             savedImage.setGuid(file.toPath().toString());
+            decodedImg = null;
             // stamp data to xml file saving
             saveXmlData(xmlPath, newFileName, stampData);
             // return loaded page object
@@ -772,6 +798,7 @@ public class SignatureResources extends Resources {
     @POST
     @Path(value = "/saveOpticalCode")
     public Object saveOpticalCode(@Context HttpServletRequest request, @Context HttpServletResponse response){
+        BufferedImage bufImage = null;
         try {
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
@@ -832,7 +859,7 @@ public class SignatureResources extends Resources {
                 }
             }
             // generate empty image for future signing with Optical signature, such approach required to get QR-Code as image
-            BufferedImage bufImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
+            bufImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
             // Create a graphics contents on the buffered image
             Graphics2D g2d = bufImage.createGraphics();
             // Draw graphics
@@ -864,11 +891,16 @@ public class SignatureResources extends Resources {
             byte[] bytes = signatureHandler.getPageImage(file.toPath().toString(), 1, "", null, 100);
             // encode ByteArray into String
             String incodedImage = new String(Base64.getEncoder().encode(bytes));
+            bytes = null;
             opticalCodeData.setEncodedImage(incodedImage);
             // return loaded page object
             return objectToJson(opticalCodeData);
         }catch (Exception ex){
             return generateException(response, ex);
+        } finally {
+            if(bufImage != null){
+                bufImage.flush();
+            }
         }
     }
 
@@ -883,6 +915,8 @@ public class SignatureResources extends Resources {
     public Object saveText(@Context HttpServletRequest request, @Context HttpServletResponse response){
         String previewPath = directoryUtils.getDataDirectory().getTextDirectory().getPreviewPath();
         String xmlPath = directoryUtils.getDataDirectory().getTextDirectory().getXmlPath();
+        BufferedImage bufImage = null;
+        File file = null;
         try {
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
@@ -901,7 +935,6 @@ public class SignatureResources extends Resources {
             SignatureOptionsCollection collection = new SignatureOptionsCollection();
             // generate unique file names for preview image and xml file
             collection.add(textSigner.signImage());
-            File file = null;
             File folder = new File(previewPath);
             File[] listOfFiles = folder.listFiles();
             String fileName = "";
@@ -923,7 +956,7 @@ public class SignatureResources extends Resources {
                 }
             }
             // generate empty image for future signing with Text, such approach required to get Text as image
-            BufferedImage bufImage = new BufferedImage(signaturesData.getImageWidth(), signaturesData.getImageHeight(), BufferedImage.TYPE_INT_ARGB);
+            bufImage = new BufferedImage(signaturesData.getImageWidth(), signaturesData.getImageHeight(), BufferedImage.TYPE_INT_ARGB);
             // Create a graphics contents on the buffered image
             Graphics2D g2d = bufImage.createGraphics();
             // Draw graphics
@@ -952,11 +985,16 @@ public class SignatureResources extends Resources {
             byte[] bytes = signatureHandler.getPageImage(file.toPath().toString(), 1, "", null, 100);
             // encode ByteArray into String
             String encodedImage = new String(Base64.getEncoder().encode(bytes));
+            bytes = null;
             textData.setEncodedImage(encodedImage);
             // return loaded page object
             return objectToJson(textData);
         }catch (Exception ex){
             return generateException(response, ex);
+        } finally {
+            if(bufImage != null){
+                bufImage.flush();
+            }
         }
     }
 

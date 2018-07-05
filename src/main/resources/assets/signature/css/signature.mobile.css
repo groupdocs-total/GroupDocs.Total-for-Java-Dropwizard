@@ -1,5 +1,10 @@
-@media (max-width: 1024px){
-    #gd-btn-signature-value, #gd-btn-download-value {
+@media (max-width: 1024px) {
+    .gd-modal-dialog {
+		width: 100% !important;
+		height: 100% !important;
+	}
+	
+	#gd-btn-signature-value, #gd-btn-download-value {
         top: 78px;
     }
 
@@ -11,51 +16,77 @@
         font-size: 171px;
     }
 
-    .gd-browse-signatures {
-        left: 31% !important;
-        top: calc(100% - 56%) !important;
+	.gd-signature-information-review div {
+		font-size: 52px !important;
+	}
+
+	.gd-browse-signatures {
+        left: 31%;
+		top: calc(100% - 76%);
         font-size: 37px !important;
         position: absolute !important;
+		width: 388px;
     }
 
     .gd-browse-signatures i {
-        top: -153px;
-        left: 102px;
+		top: -148px;
+		left: 109px;
+		font-size: 161px;		
     }
 
     .gd-draw-signatures {
-        top: calc(100% - 38%) !important;
+        top: calc(100% - 48%) !important;
         left: 33%;
         font-size: 37px !important;
         position: absolute !important;
+		width: 336px;
     }
 
     .gd-draw-signatures i {
-        top: -152px;
-        left: 75px;
+        top: -143px;
+		left: 88px;
+		font-size: 161px;
     }
 
     .gd-upload-signatures {
-        left: 31% !important;
-        top: calc(100% - 74%) !important;
+        left: 4% !important;
+		top: calc(100% - 82%) !important;
         font-size: 37px !important;
         position: absolute !important;
+		width: 379px;
     }
 
     .gd-upload-signatures i {
         top: -163px;
         left: 102px;
+		font-size: 161px;
     }
+
+	#gd-signature-upload-input {
+		height: 181px;
+		top: -138px;
+	}
 
     .gd-signing-label {
         top: 79px;
     }
 
-    .gd-signing-label label {
+	.gd-pages-label {
+		position: absolute !important;
+		top: 33% !important;
+		left: 94px !important;
+		font-size: 59px !important;	
+	}
+	
+	#gd-text-size-label {
+		width: 150px !important;
+	}
+	
+    .gd-signing-label div {
         font-size: 57px !important;
     }
 
-    .gd-signing-label label i {
+    .gd-signing-label div i {
         font-size: 36px !important;
         left: 68px;
     }
@@ -88,7 +119,7 @@
         margin-top: -69px;
     }
 
-    #gd-signing-footer label{
+    #gd-signing-footer div {
         top: 27px !important;
         font-size: 56px !important;
     }
@@ -122,26 +153,47 @@
     }
 
     #gd-draw-optical, #gd-draw-text {
-        width: 93%;
-        height: 31%;
+        width: 97%;
+		height: 24%;
     }
 
     #gd-text-params-container {
         width: 94% !important;
         height: 51% !important;
-    }
-
-    #gd-text-border-table label, #gd-text-table label, #gd-text-font-properties-table label {
-        font-size: 40px !important;
-    }
+    }   
 
     .gd-text-params input[type="text"] {
         width: 100% !important;
         height: 81px !important;
         font-size: 58px;
     }
+	 
+	#gd-text-border-table div, #gd-qr-text-table div, #gd-qr-border-table div {
+		font-size: 40px !important;
+	}
+ 
+	#gd-qr-border-table div {
+		margin-right: 26px;
+	}
 
-    #gd-text-border-table label, #gd-text-table label, #gd-text-font-properties-table label {
+	.gd-optical-label {
+		width: 246px;
+	}
+
+	#gd-text-border-width-div {
+		width: 260px;
+	}
+
+	.gd-text-checkbox {
+		margin-left: 24px;
+	}
+	 
+	.gd-text-checkboxes {
+		width: 439px !important;
+		margin-top: -54px !important;
+	}
+
+    #gd-text-table div {
         font-size: 40px !important;
         width: 330px !important;
     }
@@ -162,17 +214,32 @@
     }
 
     .gd-text-params input[type="checkbox"] {
-        width: 75px;
-        height: 75px;
+        width: 46px;
+		height: 46px;
     }
+
+	.gd-text-helper:before {		
+		left: 22px !important;
+		top: 35px !important;		
+		width: 41px !important;
+		height: 41px !important;		
+	}
+
+	.gd-text-helper:after {		
+		width: 28px !important;
+		height: 16px !important;		
+		top: 48px !important;
+		left: 33px !important;
+	}
 
     #gd-text-font {
         width: 257px !important;
     }
 
     #gd-text-preview-container {
-        left: calc(100% - 80%) !important;
-        top: 855px !important;
+        left: calc(100% - 86%) !important;
+		top: 336px !important;
+		zoom: 3;
     }
 
     #gd-text-preview-container > img {
@@ -180,18 +247,25 @@
     }
 
     .bcPicker-palette {
-        width: 492px !important;;
+        width: 286px !important;;
     }
 
+	.gd-text-params .gd-text-color-picker {
+		margin-right: 30px !important;
+	}
+	
     .bcPicker-palette > .bcPicker-color {
         width: 62px !important;;
         height: 57px !important;;
     }
 
     .gd-border-style-wrapper {
-        width: 508px !important;
+        width: 344px !important;
     }
 
+	.gd-optical-border-style-wrapper {
+		width: 395px !important;
+	}
     .gd-border-style-select {
         width: 100%;
         -webkit-appearance: menulist-button;
@@ -218,22 +292,47 @@
         min-width: 305px;
     }
 
-    #gd-sign-section label {
-        font-size: 11px;
-        top: calc(100% - 43%);
+    #gd-sign-section div {
+        font-size: 11px;       
     }
 
     #gd-all-pages {
-        top: calc(100% - 66.5%) !important;
-        left: 359px !important;
+		top: calc(100% - 67.5%) !important;
+		left: 307px !important;
     }
 
-    #gd-all-pages label {
+    #gd-all-pages div {
         font-size: 47px !important;
-        height: 79px;
-        padding-top: 7px;
+		height: 128px;
+		padding-top: 7px;
     }
 
+	.gd-pages-diapason {
+		position: absolute;
+		top: 12%;
+		width: 540px;
+		left: 52%;
+	}
+
+	.gd-pages input {
+		width: 127px;
+		margin-right: 27px;
+		font-size: 44px;
+		margin-left: 14px;
+	}
+
+	.gd-signature-name, .gd-all-pages-label {		
+		font-size: 56px !important;
+	}
+	
+	#gd-radio-diapason {
+		top: 123px;
+	}
+
+	#gd-pages-select-radio label:last-child {
+	    margin-top: 31px;
+	}
+	
     .gd-pages-dropdown-content a {
         font-size: 46px;
     }
@@ -244,13 +343,13 @@
         top: calc(100% - 26%);
     }
 
-    #gd-signing-footer label:last-child {
+    #gd-signing-footer div:last-child {
         left: calc(100% - 181px);
     }
 
     #gd-modal-signed {
         top: 127px !important;
-        font-size: 45px;
+        font-size: 45px !important;
     }
 
     .gd-signature-name {
@@ -282,11 +381,7 @@
 
     .gd-qr-params h3 {
         font-size: 36px !important;
-    }
-
-    #gd-qr-text-table thead td, #gd-qr-border-table thead td, #gd-qr-border-table i {
-        font-size: 44px !important;
-    }
+    }    
 
     .gd-qr-params input[type="text"] {
         width: 100% !important;

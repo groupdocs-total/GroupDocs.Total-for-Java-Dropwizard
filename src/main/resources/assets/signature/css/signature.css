@@ -10,13 +10,17 @@ FIX DOCUMENT PAGE POSITION FOR IMAGE SIGNATURE
     cursor: not-allowed !important;
 }
 #gd-header-logo {
-    background-image: url(/assets/signature/images/logo.png) !important;
+    background-image: url('../images/logo.png') !important;
 }
 /*
 ******************************************
 MODAL
 ******************************************
 */
+.gd-modal-dialog {   
+    width: 700px !important;
+    height: 500px !important;
+}
 #gd-open-signature {
     right: -15px;
     background-color: #25c2d4;
@@ -25,57 +29,51 @@ MODAL
     width: 100%;
     height: 100%;
 }
-#gd-sign-section label {
-    border-radius: 0px;
-    color: #777777;
-    display: inline-block;
-    text-align: center;
-    font-size: 11px;
-    top: calc(100% - 43%);
-}
 .gd-upload-signatures {
-    left: calc(100% - 76%);
-    position: relative;
+    margin-left: 29%;
 }
-.gd-browse-signatures {
-    left: calc(100% - 64%);
-    position: relative;
+.gd-modal-buttons {
+	position: initial;
+    display: inline-grid;
+    font-size: 14px;
+    width: 146px;
+	cursor: pointer;
+	margin-top: 208px;
+    text-align: center;
 }
-.gd-draw-signatures {
-    left: calc(100% - 66%);
-    position: relative;
-}
-#gd-sign-section label i {
-    font-size: 88px;
+.gd-draw-signatures i, .gd-upload-signatures i, .gd-browse-signatures i {   
+    font-size: 72px;
     color: #808080;
-    position: absolute;
-    cursor: pointer;
+    position: inherit;
 }
-.gd-upload-signatures i {
-    top: -88px;
-    left: 14px;
-}
-.gd-browse-signatures i {
-    top: -80px;
-    left: 16px;
-}
-.gd-draw-signatures i {
-    top: -77px;
-    left: 11px;
+.gd-browse-signatures{
+    margin-left: 14px;
 }
 .gd-signing-label {
     position: absolute;
     top: 36px;
     left: 27px;
 }
-.gd-signing-label label {
+.gd-signing-label div {
     font-size: 20px !important;
+	display: inline-grid;
 }
-.gd-signing-label label i {
+.gd-signing-label div i {
     font-size: 14px !important;
     color: #959da5;
     left: 20px;
     width: max-content;
+
+}
+#gd-signature-upload-input{
+	opacity: 0;
+	position: absolute;
+	cursor: pointer;
+    width: inherit;
+}
+#gd-signature-upload-input::-webkit-file-upload-button{
+	height: 88px;
+    cursor: pointer;	
 }
 /*
 ******************************************
@@ -91,14 +89,14 @@ SIGNING MODAL FOOTER
     height: 50px;
     display: none;
 }
-#gd-signing-footer label{
+#gd-signing-footer div{
     font-size: 19px;
     top: 14px !important;
     left: 37px;
     position: absolute;
     cursor: pointer;
 }
-#gd-signing-footer label:last-child{
+#gd-signing-footer div:last-child{
     left: calc(100% - 90px);
 }
 .gd-signing-disabled {
@@ -108,7 +106,7 @@ SIGNING MODAL FOOTER
 .gd-modal-pagination{
     position: absolute;
     top: 21px;
-    left: calc(100% - 64%);
+    left: calc(100% - 58%);
     text-align: center;
 }
 .gd-modal-pagination li {
@@ -158,11 +156,17 @@ BROWSE SIGNATURES SLIDE
 */
 #gd-signatures{
     position: absolute;
-    top: calc(100% - 306px);
-    left: 45px;
-    width: 507px;
-    height: 240px;
+    top: 90px;
+    left: 28px;
+    width: 93%;
+    height: 365px;
     overflow-y: auto;
+}
+.gd-digital-signature {
+	border-style: solid;
+    border-width: 1px;
+    border-color: #cccccc;
+    background-color: #e5e5e5;  
 }
 .gd-signature i {
     margin-left: 17px;
@@ -177,20 +181,14 @@ BROWSE SIGNATURES SLIDE
 .gd-signature .fa-level-up {
     margin-left: 23px;
 }
-.gd-signature, .gd-signature-thumbnail{
-    border-style: solid;
-    border-width: 1px;
-    border-color: #cccccc;
-    background-color: #e5e5e5;
-    margin-top: 10px;
-}
 .gd-signature-thumbnail {
     background-color: #ffffff;
-    width: 150px;
-    height: 150px;
-    display: inline-block;
-    margin-right: 13px;
+    width: 152px;
+    height: 152px;
+    display: inline-block;   
     cursor: pointer;
+    padding-top: 2px;
+	margin-right: 6px;	
 }
 .gd-signature-thumbnail label {
     margin-left: 5px !important;
@@ -240,9 +238,6 @@ BROWSE SIGNATURES SLIDE
     color: #3e4e5a;
 }
 
-.gd-signature-radio:checked + .gd-signature-name, .gd-signature-radio:checked + .gd-all-pages-label{
-    color: #ffffff !important;
-}
 /*
 ******************************************
 DRAW IMAGE SLIDE
@@ -253,9 +248,9 @@ DRAW IMAGE SLIDE
     background-color: #ffffff;
     position: absolute;
     top: calc(100% - 81%);
-    left: 27px;
-    width: 539px;
-    height: 257px;
+	left: 12px;
+    width: 95%;
+    height: 324px;
 }
 .csg-preview{
     top: -8px !important;
@@ -268,8 +263,8 @@ ADDITIONAL SIGNATURE INFORMATION SLIDE
 */
 .gd-signature-information {
     position: absolute;
-    top: calc(100% - 302px);
-    left: 47px;
+	top: calc(100% - 376px);
+    left: 23px;
     width: 88%;
 }
 .gd-signature-information input {
@@ -315,15 +310,17 @@ SIGNATURE INFORMATION REVIEW SLIDE
 ******************************************
 */
 .gd-signature-information-review {
-    position: absolute;
-    top: calc(100% - 319px);
-    left: 47px;
+	position: absolute;
+    top: calc(100% - 412px);
+    left: 26px;
+    height: 67%;
 }
 .gd-signature-information-review label {
     display: -webkit-box !important;
-    color: #3e4e5a !important;
-    margin-top: 25px;
+    color: #3e4e5a !important; 
     font-size: 14px !important;
+	float: left;
+    margin-right: 5px;
 }
 .gd-signature-information-review i {
     font-size: 14px !important;
@@ -335,6 +332,10 @@ SIGNATURE INFORMATION REVIEW SLIDE
     top: 20px;
     left: 35px;
 }
+.gd-signature-information-review div {
+    margin-top: 25px;
+}
+
 /*
 ******************************************
 SIGNATURE IMAGE
@@ -358,6 +359,13 @@ SIGNATURE IMAGE
     top: -22px;
     right: 20px;
 }
+.gd-image-edit{
+	display: none;
+	position: absolute;
+    top: -25px;
+    right: 0;
+    color: #3e4e5a;
+}
 .gd-image-apply > i {
     color: #008000;
 }
@@ -372,44 +380,39 @@ SIGNATURE IMAGE
 SIGNATURE IMAGE PAGE SELECTING STEP
 ******************************************
 */
-.gd-drop-button {
-    background-color: #3e4e5a;
-    color: #ffffff;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
+#gd-pages-select-radio {
+	display: inline-grid;
 }
-.gd-pages-dropdown {
+#gd-radio-diapason {
+	top: 39px;
+}
+.gd-pages-label {
+	position: absolute;
+    top: 212px;
+    left: 147px;
+}
+.gd-pages {
     position: absolute;
     display: inline-block;
-    top: calc(100% - 66%);
-    left: 46px;
+    top: calc(100% - 146%);
+    left: 59%;
+    height: 250px;
 }
-.gd-pages-dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f1f1f1;
-    min-width: 160px;
-    z-index: 1;
-    overflow-y: auto;
-    max-height: 150px;
+.gd-pages input {
+	width: 72px;
+	margin-right: 10px;
+	font-size: 19px;
 }
-.gd-pages-dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-}
-.gd-pages-dropdown-content a:hover {
-    background-color: #ddd
-}
-.gd-pages-dropdown:hover .gd-pages-dropdown-content {
-    display: block;
+.gd-pages-diapason {
+	position: absolute;
+    top: 4%;
+    width: 256px;
+    left: 52%;
 }
 #gd-all-pages{
     position: absolute;
-    top: calc(100% - 67%);
-    left: 179px;
+    top: calc(100% - 59%);
+    left: 29%;
 }
 /*
 ******************************************

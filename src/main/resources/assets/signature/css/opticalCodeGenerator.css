@@ -23,18 +23,16 @@
 
 #gd-qr-params-container {
     background-color: #e2e2e2;
-    width: 250px;
-    height: calc(100% - 20px);
+    width: 100%;
+    height: 50%;
     padding: 10px;
 }
 
-.gd-qr-params {
-    background-color: #f7f7f7;
+.gd-qr-params {      
     padding: 15px 20px;
     margin-bottom: 10px;
-    position: relative;
-    border: 1px solid #ddd;
-    height: 217px;
+    position: relative;  
+    height: 100%;
 }
 
 .gd-qr-params h3 {
@@ -43,7 +41,7 @@
     font-weight: 300;
     font-size: 12px;
     margin: 0;
-    margin-top: 15px;
+    margin-top: -5px;
 }
 
 .gd-qr-params > div {
@@ -62,40 +60,23 @@
     width: 120px;
 }
 
+#gd-qr-text-table td {
+	padding-left: 25px;
+}
+
 .gd-qr-params .gd-qr-color-picker {
     width: 75px;
     height: 27px;
-    border: 1px solid #dcdcdc;
-    margin-right: 10px;
+    border: 1px solid #dcdcdc;	
 }
 
 .gd-qr-params table {
-    margin-bottom: 13px;
+	margin-top: 20px;
     margin-left: -13px;
 }
 
-#gd-qr-text-table thead td {
-    float: left;
-    font-size: 12px;
-    padding-top: 5px;
-    color: #808080
-}
-
-#gd-qr-border-table thead td {
-    font-size: 12px;
-    padding-top: 10px;
-    text-align: left;
-    color: #808080;
-}
-
-#gd-qr-border-table i {
-    font-size: 12px;
-    color: #808080;
-    font-style: unset;
-}
-
-#gd-qr-border-table td {
-    text-align: left;
+.gd-optical-label {
+    font-size: 13px;	
 }
 
 .gd-border-style-wrapper {
@@ -117,10 +98,10 @@
 
 #gd-qr-preview-container {
     position: absolute;
-    left: calc(100% - 217px);
+    left: calc(100% - 425px);
     width: calc(100% - 320px);
     height: 100%;
-    top: calc(100% - 172px);
+    top: calc(100% - 109px);
 }
 
 .gd-qr-preview {

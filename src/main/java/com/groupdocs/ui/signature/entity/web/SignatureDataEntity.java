@@ -21,6 +21,7 @@ public class SignatureDataEntity {
     private int imageWidth;
     private int imageHeight;
     private int angle;
+    private Boolean deleted;
 
     public int getPageNumber() {
         return pageNumber;
@@ -140,5 +141,13 @@ public class SignatureDataEntity {
 
     public void setSignatureGuid(String signatureGuid) {
         this.signatureGuid = signatureGuid;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

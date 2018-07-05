@@ -76,7 +76,8 @@
 }
 
 .gd-optical-label {
-    font-size: 13px;	
+    font-size: 13px;
+    text-align: left;	
 }
 
 .gd-border-style-wrapper {

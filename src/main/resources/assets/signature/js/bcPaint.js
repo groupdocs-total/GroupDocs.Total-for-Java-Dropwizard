@@ -34,7 +34,7 @@ $(document).ready(function(){
 							canvasPane 		: $('<canvas id="bcPaintCanvas"></canvas>'),
 							bottom 			: $('<div id="bcPaint-bottom"></div>'),
 							buttonReset 	: $('<button id="bcPaint-reset">Reset</button>'),
-							buttonSave		: $('<button id="bcPaint-export">Export</button>')
+							buttonSave		: $('<button id="bcPaint-export">Save</button>')
 						},
 		paintCanvas,
 		paintContext;

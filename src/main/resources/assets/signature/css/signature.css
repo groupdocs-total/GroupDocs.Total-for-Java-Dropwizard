@@ -106,7 +106,7 @@ SIGNING MODAL FOOTER
 .gd-modal-pagination{
     position: absolute;
     top: 21px;
-    left: calc(100% - 58%);
+    left: 42%;
     text-align: center;
 }
 .gd-modal-pagination li {
@@ -189,6 +189,8 @@ BROWSE SIGNATURES SLIDE
     cursor: pointer;
     padding-top: 2px;
 	margin-right: 6px;	
+	border-style: solid;
+    border-width: 1px;
 }
 .gd-signature-thumbnail label {
     margin-left: 5px !important;
@@ -248,7 +250,7 @@ DRAW IMAGE SLIDE
     background-color: #ffffff;
     position: absolute;
     top: calc(100% - 81%);
-	left: 12px;
+	left: 16px;
     width: 95%;
     height: 324px;
 }

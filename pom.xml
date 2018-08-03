@@ -6,7 +6,7 @@
 
     <groupId>com.groupdocs.ui</groupId>
     <artifactId>total</artifactId>
-    <version>0.2.6</version>
+    <version>0.2.7</version>
     <packaging>jar</packaging>
 
     <name>GroupDocs.Total Dropwizard</name>
@@ -21,7 +21,7 @@
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
             <version>1.3.0</version>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-views-freemarker</artifactId>
@@ -75,10 +75,16 @@
         </dependency>
         <dependency>
             <groupId>com.groupdocs</groupId>
+            <artifactId>groupdocs-annotation</artifactId>
+            <version>18.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.groupdocs</groupId>
             <artifactId>groupdocs-viewer</artifactId>
             <version>17.5.0</version>
             <type>jar</type>
         </dependency>
+
     </dependencies>
 
     <build>

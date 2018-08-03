@@ -33,9 +33,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="">
-                            <img src="assets/total/images/groupdocs-annotation-d.png"/>
-                            <div class="coming-soon">
+                        <a href="annotation">
+                            <img src="assets/total/images/groupdocs-annotation.png"/>
+                            <div>
                                 <h5>GroupDocs</h5>
                                 <h6>Annotation</h6>
                             </div>

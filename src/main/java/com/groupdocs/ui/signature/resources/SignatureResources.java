@@ -13,7 +13,7 @@ import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
 import com.groupdocs.ui.common.entity.web.MediaType;
 import com.groupdocs.ui.common.entity.web.LoadedPageEntity;
 import com.groupdocs.ui.common.resources.Resources;
-import com.groupdocs.ui.signature.entity.web.DocumentDescriptionEntity;
+import com.groupdocs.ui.common.entity.web.DocumentDescriptionEntity;
 import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 import com.groupdocs.ui.signature.entity.web.SignatureFileDescriptionEntity;
 import com.groupdocs.ui.signature.entity.web.SignedDocumentEntity;
@@ -640,7 +640,7 @@ public class SignatureResources extends Resources {
                     if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
                         signaturesData[i].setDocumentType("image");
                     }
-                    // initiate QRCode signer object
+                    // initiate Text signer object
                     TextSigner signer = new TextSigner(textData, signaturesData[i]);
                     // prepare signing options and sign document
                     addSignOptions(signaturesData[i].getDocumentType(), signsCollection, signer);

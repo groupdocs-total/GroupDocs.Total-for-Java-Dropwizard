@@ -101,3 +101,47 @@ signature:
   downloadOriginal: true
   # Enable/disable signed document downloading
   downloadSigned: true
+
+################################################
+# GroupDocs.Annotation configurations
+################################################
+annotation:
+  # Files directory path
+  # Absolute or relative path to files directory
+  filesDirectory: /App_Data/
+  # Output directory path
+  # Absolute path to annotated files directory
+  outputDirectory: ''
+  # Fonts path
+  # Absolute path to custom fonts directory
+  fontsDirectory: ''
+  # Enable/disable Text annotation
+  textAnnotation: true
+  # Enable/disable Area annotation
+  areaAnnotation: true
+  # Enable/disable Point annotation
+  pointAnnotation: true
+  # Enable/disable TextStrikeout annotation
+  textStrikeoutAnnotation: true
+  # Enable/disable Polyline annotation
+  polylineAnnotation: true
+  # Enable/disable TextField annotation
+  textFieldAnnotation: true
+  # Enable/disable Watermark annotation
+  watermarkAnnotation: true
+  # Enable/disable TextReplacement annotation
+  textReplacementAnnotation: true
+  # Enable/disable Arrow annotation
+  arrowAnnotation: true
+  # Enable/disable TextRedaction annotation
+  textRedactionAnnotation: true
+  # Enable/disable ResourcesRedaction annotation
+  resourcesRedactionAnnotation: true
+  # Enable/disable TextUnderline annotation
+  textUnderlineAnnotation: true
+  # Enable/disable Distance annotation
+  distanceAnnotation: true
+  # Enable/disable original document downloading
+  downloadOriginal: true
+  # Enable/disable signed document downloading
+  downloadAnnotated: true

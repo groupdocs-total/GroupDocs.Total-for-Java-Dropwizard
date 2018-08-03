@@ -1,5 +1,5 @@
 # GroupDocs.Total for Java Dropwizard Example
-###### version 0.2.6
+###### version 0.2.7
 
 
 ## System Requirements
@@ -59,6 +59,41 @@ Coming soon
 - Draw stamp signature
 - Generate bar code signature
 - Generate qr code signature
+- Print document
+- Smooth page navigation
+- Smooth document scrolling
+- Preload pages for faster document rendering
+- Multi-language support for displaying errors
+- Cross-browser support (Safari, Chrome, Opera, Firefox)
+- Cross-platform support (Windows, Linux, MacOS)
+#### GroupDocs.Annotation
+- Clean, modern and intuitive design
+- Easily switchable colour theme (create your own colour theme in 5 minutes)
+- Responsive design
+- Mobile support (open application on any mobile device)
+- Support over 50 documents and image formats
+- Image mode
+- Fully customizable navigation panel
+- Annotate password protected documents
+- Download original documents
+- Download annotated documents
+- Upload documents
+- Annotate document with such annotation types: 
+   * Text
+   * Area
+   * Point
+   * TextStrikeout
+   * Polyline
+   * TextField
+   * Watermark
+   * TextReplacement
+   * Arrow
+   * TextRedaction
+   * ResourcesRedaction
+   * TextUnderline
+   * Distance
+- Draw annotation over the document page
+- Add comment or reply
 - Print document
 - Smooth page navigation
 - Smooth document scrolling

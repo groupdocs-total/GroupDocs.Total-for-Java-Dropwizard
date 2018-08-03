@@ -18,7 +18,7 @@ import com.groupdocs.ui.signature.entity.xml.TextXmlEntity;
 
 /**
  * TextSigner
- * Signs documents with the stamp signature
+ * Signs documents with the text signature
  * @author Aspose Pty Ltd
  */
 public class TextSigner extends Signer{

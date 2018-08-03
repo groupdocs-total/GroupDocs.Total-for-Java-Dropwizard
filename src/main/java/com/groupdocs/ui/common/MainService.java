@@ -5,6 +5,7 @@ import com.groupdocs.ui.common.health.TemplateHealthCheck;
 import com.groupdocs.ui.signature.resources.SignatureResources;
 import com.groupdocs.ui.total.resources.TotalResources;
 import com.groupdocs.ui.viewer.resources.ViewerResources;
+import com.groupdocs.ui.annotation.resources.AnnotationResources;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
@@ -54,6 +55,7 @@ public class MainService extends Application<GlobalConfiguration> {
         environment.jersey().register(new ViewerResources(globalConfiguration));
         environment.jersey().register(new SignatureResources(globalConfiguration));
         environment.jersey().register(new TotalResources(globalConfiguration));
+        environment.jersey().register(new AnnotationResources(globalConfiguration));
 
         // Add dummy health check to get rid of console warnings
         // TODO: implement health check

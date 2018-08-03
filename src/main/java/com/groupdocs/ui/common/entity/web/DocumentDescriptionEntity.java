@@ -1,4 +1,4 @@
-package com.groupdocs.ui.signature.entity.web;
+package com.groupdocs.ui.common.entity.web;
 
 /**
  * DocumentDescriptionEntity

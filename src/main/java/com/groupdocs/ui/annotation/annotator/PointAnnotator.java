@@ -65,6 +65,7 @@ public class PointAnnotator extends Annotator{
             Date date = format.parse(annotationData.getComments()[i].getTime());
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
+            reply.setUserName(annotationData.getComments()[i].getUserName());
             replyes[i] = reply;
         }
         pointAnnotation.setReplies(replyes);
@@ -105,6 +106,7 @@ public class PointAnnotator extends Annotator{
             Date date = format.parse(annotationData.getComments()[i].getTime());
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
+            reply.setUserName(annotationData.getComments()[i].getUserName());
             replyes[i] = reply;
         }
         pointAnnotation.setReplies(replyes);
@@ -132,6 +134,7 @@ public class PointAnnotator extends Annotator{
             Date date = format.parse(annotationData.getComments()[i].getTime());
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
+            reply.setUserName(annotationData.getComments()[i].getUserName());
             replyes[i] = reply;
         }
         pointAnnotation.setReplies(replyes);

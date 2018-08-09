@@ -11,11 +11,7 @@ import com.groupdocs.annotation.domain.containers.FileTreeContainer;
 import com.groupdocs.annotation.domain.options.FileTreeOptions;
 import com.groupdocs.annotation.domain.options.ImageOptions;
 import com.groupdocs.annotation.handler.AnnotationImageHandler;
-import com.groupdocs.ui.annotation.annotator.Annotator;
-import com.groupdocs.ui.annotation.annotator.AreaAnnotator;
-import com.groupdocs.ui.annotation.annotator.PointAnnotator;
-import com.groupdocs.ui.annotation.annotator.TexStrikeoutAnnotator;
-import com.groupdocs.ui.annotation.annotator.TextAnnotator;
+import com.groupdocs.ui.annotation.annotator.*;
 import com.groupdocs.ui.annotation.entity.web.AnnotatedDocumentEntity;
 import com.groupdocs.ui.annotation.entity.web.AnnotationDataEntity;
 import com.groupdocs.ui.annotation.entity.web.TextRowEntity;
@@ -462,6 +458,9 @@ public class AnnotationResources extends Resources {
                 break;
             case "textStrikeout":
                 annotator = new TexStrikeoutAnnotator(annotationData);
+                break;
+            case "polyline":
+                annotator = new PolylineAnnotator(annotationData);
                 break;
         }
         return annotator;

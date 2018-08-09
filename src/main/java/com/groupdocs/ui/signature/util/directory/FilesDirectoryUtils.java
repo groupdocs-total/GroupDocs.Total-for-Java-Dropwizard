@@ -18,11 +18,6 @@ public class FilesDirectoryUtils implements IDirectoryUtils {
      */
     public FilesDirectoryUtils(SignatureConfiguration signatureConfiguration){
         this.signatureConfiguration = signatureConfiguration;
-
-        // set files directory
-        if(!new File(signatureConfiguration.getFilesDirectory()).exists()) {
-            signatureConfiguration.setFilesDirectory(new File("").getAbsolutePath() + signatureConfiguration.getFilesDirectory());
-        }
     }
 
     /**

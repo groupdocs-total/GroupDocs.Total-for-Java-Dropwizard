@@ -25,7 +25,7 @@ application:
 viewer:
   # Files directory path
   # Absolute or relative path to files directory
-  filesDirectory: /App_Data/
+  filesDirectory: ''
   # Fonts path
   # Absolute path to custom fonts directory
   fontsDirectory: ''
@@ -78,7 +78,7 @@ viewer:
 signature:
   # Files directory path
   # Absolute or relative path to files directory
-  filesDirectory: /App_Data/
+  filesDirectory: ''
   # Output directory path
   # Absolute path to signed files directory
   outputDirectory: ''

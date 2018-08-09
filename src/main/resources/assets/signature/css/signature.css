@@ -17,7 +17,7 @@ FIX DOCUMENT PAGE POSITION FOR IMAGE SIGNATURE
 MODAL
 ******************************************
 */
-.gd-modal-dialog {   
+.gd-signature-modal-dialog {   
     width: 700px !important;
     height: 500px !important;
 }

@@ -78,6 +78,7 @@ $(document).ready(function(){
         } else {
             signature.signatureType = "digital";
             toggleModalDialog(true, 'Digital Signature', getHtmlDigitalSign());
+            $(".gd-modal-dialog").addClass("gd-signature-modal-dialog");
             loadSignaturesTree('', openSigningFirstStepModal);
         }
     });
@@ -91,6 +92,7 @@ $(document).ready(function(){
         } else {
             signature.signatureType = "image";
             toggleModalDialog(true, 'Image Signature', getHtmlImageSign());
+            $(".gd-modal-dialog").addClass("gd-signature-modal-dialog");
             loadSignaturesTree('', openSigningFirstStepModal);
         }
     });
@@ -104,6 +106,7 @@ $(document).ready(function(){
         } else {
             signature.signatureType = "stamp";
             toggleModalDialog(true, 'Stamp Signature', getHtmlImageSign());
+            $(".gd-modal-dialog").addClass("gd-signature-modal-dialog");
             loadSignaturesTree('', openSigningFirstStepModal);
         }
     });
@@ -123,6 +126,7 @@ $(document).ready(function(){
             }
 
             toggleModalDialog(true, "Optical Signature", getHtmlImageSign());
+            $(".gd-modal-dialog").addClass("gd-signature-modal-dialog");
             loadSignaturesTree('', function(){
                 $('#modalDialog .gd-modal-title').text("Signing Document");
                 $("#gd-signature-select-step").remove();
@@ -151,6 +155,7 @@ $(document).ready(function(){
         } else {
             signature.signatureType = "text";
             toggleModalDialog(true, 'Text Signature', getHtmlTextSign());
+            $(".gd-modal-dialog").addClass("gd-signature-modal-dialog");
             loadSignaturesTree('', openSigningFirstStepModal);
         }
     });
@@ -454,6 +459,10 @@ $(document).ready(function(){
 		$("#gd-radio-diapason").prop("checked", true);
     });
 
+    $('#gd-btn-upload').on('click', function (e) {
+        $(".gd-modal-dialog").removeClass("gd-signature-modal-dialog");
+    });
+
 });
 
 /*
@@ -481,7 +490,7 @@ function loadSignaturesTree(dir, callback) {
         success: function(returnedData) {
             if(returnedData.message != undefined){
                 // open error popup
-                toggleModalDialog(false, "");
+                toggleModalDialog(false, "");              
                 printMessage(returnedData.message);
                 return;
             }
@@ -593,7 +602,7 @@ function uploadSignature(file, index, url) {
         processData: false,
         success: function(returnedData) {
             if(returnedData.message != undefined){
-                toggleModalDialog(false, "");
+                toggleModalDialog(false, "");              
                 // open error popup
                 printMessage(returnedData.message);
                 return;
@@ -1384,13 +1393,13 @@ function loadSignatureImage() {
 		contentType: 'application/json',
 		success: function(returnedData) {
 			if(returnedData.message != undefined){
-				toggleModalDialog(false, "");
+			    toggleModalDialog(false, "");			
 				// open error popup
 				printMessage(returnedData.message);
 				return;
 			}
 			// when ajax is done insert loaded image into the document page
-			toggleModalDialog(false, "");
+			toggleModalDialog(false, "");			
 			var signatureGuid = "";
 			var signatureType = "";			
 			var width = 0;

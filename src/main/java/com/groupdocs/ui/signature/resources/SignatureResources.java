@@ -12,6 +12,7 @@ import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
 import com.groupdocs.ui.common.entity.web.MediaType;
 import com.groupdocs.ui.common.entity.web.LoadedPageEntity;
+import com.groupdocs.ui.common.exception.TotalGroupDocsException;
 import com.groupdocs.ui.common.resources.Resources;
 import com.groupdocs.ui.signature.entity.web.DocumentDescriptionEntity;
 import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
@@ -43,6 +44,7 @@ import javax.servlet.http.Part;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -67,6 +69,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * SignatureResources
@@ -79,6 +82,7 @@ public class SignatureResources extends Resources {
     private final SignatureHandler signatureHandler;
     private DirectoryUtils directoryUtils;
     private String[] supportedImageFormats = {"bmp", "jpeg", "jpg", "tiff", "tif", "png"};
+
     /**
      * Constructor
      * @param globalConfiguration global configuration object
@@ -122,7 +126,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/loadFileTree")
-    public Object loadFileTree(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<SignatureFileDescriptionEntity> loadFileTree(@Context HttpServletRequest request, @Context HttpServletResponse response){
         // set response content type
         setResponseContentType(response, MediaType.APPLICATION_JSON);
         // get request body
@@ -154,7 +159,7 @@ public class SignatureResources extends Resources {
                 relDirPath = String.format("%s/%s", rootDirectory, relDirPath);
             }
             SignatureLoader signatureLoader = new SignatureLoader(relDirPath, globalConfiguration);
-            ArrayList<SignatureFileDescriptionEntity> fileList;
+            List<SignatureFileDescriptionEntity> fileList;
             switch (signatureType) {
                 case "digital":  fileList = signatureLoader.LoadFiles();
                     break;
@@ -167,9 +172,9 @@ public class SignatureResources extends Resources {
                 default:  fileList = signatureLoader.LoadFiles();
                     break;
             }
-            return objectToJson(fileList);
+            return fileList;
         }catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -181,7 +186,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/loadDocumentDescription")
-    public Object loadDocumentDescription(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<DocumentDescriptionEntity> loadDocumentDescription(@Context HttpServletRequest request, @Context HttpServletResponse response){
         // set response content type
         setResponseContentType(response, MediaType.APPLICATION_JSON);
         String password = "";
@@ -194,7 +200,7 @@ public class SignatureResources extends Resources {
             DocumentDescription documentDescription;
             // get document info container
             documentDescription = signatureHandler.getDocumentDescription(documentGuid, password);
-            ArrayList<DocumentDescriptionEntity> pagesDescription = new ArrayList<>();
+            List<DocumentDescriptionEntity> pagesDescription = new ArrayList<>();
             // get info about each document page
             for(int i = 1; i <= documentDescription.getPageCount(); i++) {
                 //initiate custom Document description object
@@ -208,9 +214,9 @@ public class SignatureResources extends Resources {
                 pagesDescription.add(description);
             }
             // return document description
-            return objectToJson(pagesDescription);
+            return pagesDescription;
         }catch (Exception ex){
-            return generateException(response, ex, password);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -222,7 +228,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/loadDocumentPage")
-    public Object loadDocumentPage(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public LoadedPageEntity loadDocumentPage(@Context HttpServletRequest request, @Context HttpServletResponse response){
         try {
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
@@ -239,9 +246,9 @@ public class SignatureResources extends Resources {
             String encodedImage = new String(Base64.getEncoder().encode(bytes));
             loadedPage.setPageImage(encodedImage);
             // return loaded page object
-            return objectToJson(loadedPage);
+            return loadedPage;
         }catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -253,7 +260,8 @@ public class SignatureResources extends Resources {
      */
     @GET
     @Path(value = "/downloadDocument")
-    public Object downloadDocument(@Context HttpServletRequest request, @Context HttpServletResponse response) throws IOException {
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public void downloadDocument(@Context HttpServletRequest request, @Context HttpServletResponse response) throws IOException {
         int count;
         byte[] buff = new byte[16 * 1024];
         OutputStream out = response.getOutputStream();
@@ -280,9 +288,8 @@ public class SignatureResources extends Resources {
             while ((count = inputStream.read(buff)) != -1) {
                 outStream.write(buff, 0, count);
             }
-            return outStream;
         } catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         } finally {
             // close streams
             if (inputStream != null)
@@ -300,7 +307,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/uploadDocument")
-    public Object uploadDocument(@Context HttpServletRequest request, @Context HttpServletResponse response) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public SignatureFileDescriptionEntity uploadDocument(@Context HttpServletRequest request, @Context HttpServletResponse response) {
         InputStream uploadedInputStream = null;
         try {
             // set multipart configuration
@@ -366,9 +374,9 @@ public class SignatureResources extends Resources {
                 uploadedDocument.setImage(encodedImage);
                 bytes = null;
             }
-            return objectToJson(uploadedDocument);
+            return uploadedDocument;
         }catch(Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         } finally {
             try {
                 uploadedInputStream.close();
@@ -386,7 +394,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/loadSignatureImage")
-    public Object loadSignatureImage(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public LoadedPageEntity loadSignatureImage(@Context HttpServletRequest request, @Context HttpServletResponse response){
         try {
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
@@ -401,9 +410,9 @@ public class SignatureResources extends Resources {
             String encodedImage = new String(Base64.getEncoder().encode(bytes));
             loadedPage.setPageImage(encodedImage);
             // return loaded page object
-            return objectToJson(loadedPage);
+            return loadedPage;
         }catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -415,7 +424,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/signDigital")
-    public Object signDigital(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public SignedDocumentEntity signDigital(@Context HttpServletRequest request, @Context HttpServletResponse response){
         String password = "";
         try {
             // set response content type
@@ -457,9 +467,9 @@ public class SignatureResources extends Resources {
                     break;
             }
             // return loaded page object
-            return objectToJson(signedDocument);
+            return signedDocument;
         }catch (Exception ex){
-            return generateException(response, ex, password);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -471,7 +481,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/signImage")
-    public Object signImage(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public SignedDocumentEntity signImage(@Context HttpServletRequest request, @Context HttpServletResponse response){
         String password = "";
         try {
             // set response content type
@@ -502,7 +513,7 @@ public class SignatureResources extends Resources {
             // return loaded page object
             return signDocument(documentGuid, password, signsCollection);
         }catch (Exception ex){
-            return generateException(response, ex, password);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -514,7 +525,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/signStamp")
-    public Object signStamp(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public SignedDocumentEntity signStamp(@Context HttpServletRequest request, @Context HttpServletResponse response){
         String password = "";
         String xmlPath = directoryUtils.getDataDirectory().getStampDirectory().getXmlPath();
         try {
@@ -551,7 +563,7 @@ public class SignatureResources extends Resources {
             // return loaded page object
             return signDocument(documentGuid, password, signsCollection);
         }catch (Exception ex){
-            return generateException(response, ex, password);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -563,7 +575,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/signOptical")
-    public Object signOptical(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public SignedDocumentEntity signOptical(@Context HttpServletRequest request, @Context HttpServletResponse response){
         String password = "";
         try {
             // set response content type
@@ -601,7 +614,7 @@ public class SignatureResources extends Resources {
             // return loaded page object
             return signDocument(documentGuid, password, signsCollection);
         }catch (Exception ex){
-            return generateException(response, ex, password);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -613,7 +626,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/signText")
-    public Object signText(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public SignedDocumentEntity signText(@Context HttpServletRequest request, @Context HttpServletResponse response){
         String password = "";
         String xmlPath = directoryUtils.getDataDirectory().getTextDirectory().getXmlPath();
         try {
@@ -649,7 +663,7 @@ public class SignatureResources extends Resources {
             // return loaded page object
             return signDocument(documentGuid, password, signsCollection);
         }catch (Exception ex){
-            return generateException(response, ex, password);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -688,7 +702,7 @@ public class SignatureResources extends Resources {
      * @return signed document
      * @throws Exception
      */
-    private Object signDocument(String documentGuid, String password, SignatureOptionsCollection signsCollection) throws Exception {
+    private SignedDocumentEntity signDocument(String documentGuid, String password, SignatureOptionsCollection signsCollection) throws Exception {
         // set save options
         final SaveOptions saveOptions = new SaveOptions();
         saveOptions.setOutputType(OutputType.String);
@@ -703,7 +717,7 @@ public class SignatureResources extends Resources {
         // sign document
         SignedDocumentEntity signedDocument = new SignedDocumentEntity();
         signedDocument.setGuid(signatureHandler.sign(documentGuid, signsCollection, loadOptions, saveOptions).toString());
-        return objectToJson(signedDocument);
+        return signedDocument;
     }
 
     /**
@@ -714,7 +728,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/saveImage")
-    public Object saveImage(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public FileDescriptionEntity saveImage(@Context HttpServletRequest request, @Context HttpServletResponse response){
         try {
             // set response content type
             setResponseContentType(response, MediaType.APPLICATION_JSON);
@@ -734,9 +749,9 @@ public class SignatureResources extends Resources {
             decodedImg = null;
             savedImage.setGuid(imagePath);
             // return loaded page object
-            return objectToJson(savedImage);
+            return savedImage;
         }catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -748,7 +763,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/saveStamp")
-    public Object saveStamp(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public FileDescriptionEntity saveStamp(@Context HttpServletRequest request, @Context HttpServletResponse response){
         String previewPath = directoryUtils.getDataDirectory().getStampDirectory().getPreviewPath();
         String xmlPath = directoryUtils.getDataDirectory().getStampDirectory().getXmlPath();
         try {
@@ -783,9 +799,9 @@ public class SignatureResources extends Resources {
             // stamp data to xml file saving
             saveXmlData(xmlPath, newFileName, stampData);
             // return loaded page object
-            return objectToJson(savedImage);
+            return savedImage;
         }catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -797,7 +813,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/saveOpticalCode")
-    public Object saveOpticalCode(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public OpticalXmlEntity saveOpticalCode(@Context HttpServletRequest request, @Context HttpServletResponse response){
         BufferedImage bufImage = null;
         try {
             // set response content type
@@ -894,9 +911,9 @@ public class SignatureResources extends Resources {
             bytes = null;
             opticalCodeData.setEncodedImage(incodedImage);
             // return loaded page object
-            return objectToJson(opticalCodeData);
+            return opticalCodeData;
         }catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         } finally {
             if(bufImage != null){
                 bufImage.flush();
@@ -912,7 +929,8 @@ public class SignatureResources extends Resources {
      */
     @POST
     @Path(value = "/saveText")
-    public Object saveText(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(MediaType.APPLICATION_JSON)
+    public TextXmlEntity saveText(@Context HttpServletRequest request, @Context HttpServletResponse response){
         String previewPath = directoryUtils.getDataDirectory().getTextDirectory().getPreviewPath();
         String xmlPath = directoryUtils.getDataDirectory().getTextDirectory().getXmlPath();
         BufferedImage bufImage = null;
@@ -988,9 +1006,9 @@ public class SignatureResources extends Resources {
             bytes = null;
             textData.setEncodedImage(encodedImage);
             // return loaded page object
-            return objectToJson(textData);
+            return textData;
         }catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         } finally {
             if(bufImage != null){
                 bufImage.flush();

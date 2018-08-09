@@ -3,7 +3,7 @@
  * Copyright (c) 2001-2018 Aspose Pty Ltd
  * Licensed under MIT
  * @author Aspose Pty Ltd
- * @version 1.0.0
+ * @version 1.1.0
  */
 
  /*
@@ -426,9 +426,15 @@ NAV BAR CONTROLS
 		var page = parseInt($(this).attr('id').split('-')[3]);
 		var pagesAttr = $('#gd-page-num').text().split('/');
 		// get last page number
-    	var lastPageNumber = parseInt(pagesAttr[1]);
-		appendHtmlContent(page, documentGuid, "", documentData[page - 1].width, documentData[page - 1].height);
-		appendHtmlContent(page + 1, documentGuid, "", documentData[page].width, documentData[page].height);
+		var lastPageNumber = parseInt(pagesAttr[1]);
+		
+		if(page == lastPageNumber){
+		    appendHtmlContent(page, documentGuid, "", documentData[page - 2].width, documentData[page - 2].height);
+		    appendHtmlContent(page, documentGuid, "", documentData[page - 1].width, documentData[page - 1].height);
+		} else {
+		    appendHtmlContent(page, documentGuid, "", documentData[page - 1].width, documentData[page - 1].height);
+		    appendHtmlContent(page + 1, documentGuid, "", documentData[page].width, documentData[page].height);
+		}
 		// set navigation to current page
 		setNavigationPageValues(page, lastPageNumber);
 		scrollToPage(page);
@@ -1238,7 +1244,7 @@ function printMessage(message){
 function scrollToPage(pageNumber){
     // get zoom value
     var zoomValue = $('#gd-panzoom').css('zoom');
-    if(zoomValue == 'undefined'){
+    if(typeof zoomValue == 'undefined'){
 		zoomValue = 100;
     }else{
 		zoomValue = zoomValue * 100;

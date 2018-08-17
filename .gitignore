@@ -1,4 +1,8 @@
-/target
-/App_Data/temp
-/App_Data/SignatureData
-/App_Data/Output
+.idea/*
+*.iml
+*.ipr
+*.iws
+target/*
+.DS_Store
+vs.bin
+App_Data/*

@@ -24,7 +24,7 @@ application:
 ################################################
 viewer:
   # Files directory path
-  # Absolute or relative path to files directory
+  # Absolute path to files directory
   filesDirectory: 'C:/GroupDocs/Documents/Viewer/'
   # Fonts path
   # Absolute path to custom fonts directory
@@ -77,7 +77,7 @@ viewer:
 ################################################
 signature:
   # Files directory path
-  # Absolute or relative path to files directory
+  # Absolute path to files directory
   filesDirectory: 'C:/GroupDocs/Documents/Signature/'
   # Output directory path
   # Absolute path to signed files directory

@@ -3,11 +3,7 @@ package com.groupdocs.ui.signature.signer;
 import com.groupdocs.signature.domain.barcodes.BarcodeTypes;
 import com.groupdocs.signature.domain.enums.HorizontalAlignment;
 import com.groupdocs.signature.domain.enums.VerticalAlignment;
-import com.groupdocs.signature.options.barcodesignature.CellsBarcodeSignOptions;
-import com.groupdocs.signature.options.barcodesignature.WordsBarcodeSignOptions;
-import com.groupdocs.signature.options.barcodesignature.ImagesBarcodeSignOptions;
-import com.groupdocs.signature.options.barcodesignature.PdfBarcodeSignOptions;
-import com.groupdocs.signature.options.barcodesignature.SlidesBarcodeSignOptions;
+import com.groupdocs.signature.options.barcodesignature.*;
 import com.groupdocs.ui.signature.entity.xml.OpticalXmlEntity;
 import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 
@@ -46,13 +42,17 @@ public class BarCodeSigner extends Signer{
         signOptions.setLeft(signatureData.getLeft());
         signOptions.setDocumentPageNumber(signatureData.getPageNumber());
         signOptions.setRotationAngle(signatureData.getAngle());
+        fillBorders(signOptions);
+        return signOptions;
+    }
+
+    private void fillBorders(BarcodeSignOptions signOptions) {
         if(qrCodeData.getBorderWidth() != 0){
             signOptions.setBorderVisiblity(true);
             signOptions.setBorderColor(getColor(qrCodeData.getBorderColor()));
             signOptions.setBorderWeight(qrCodeData.getBorderWidth());
             signOptions.setBorderDashStyle(qrCodeData.getBorderStyle());
         }
-        return signOptions;
     }
 
     /**
@@ -73,12 +73,7 @@ public class BarCodeSigner extends Signer{
         if(signatureData.getAngle() != 0) {
             signOptions.setRotationAngle(signatureData.getAngle());
         }
-        if(qrCodeData.getBorderWidth() != 0){
-            signOptions.setBorderVisiblity(true);
-            signOptions.setBorderColor(getColor(qrCodeData.getBorderColor()));
-            signOptions.setBorderWeight(qrCodeData.getBorderWidth());
-            signOptions.setBorderDashStyle(qrCodeData.getBorderStyle());
-        }
+        fillBorders(signOptions);
         return signOptions;
     }
 
@@ -99,12 +94,7 @@ public class BarCodeSigner extends Signer{
         signOptions.setLeft(signatureData.getLeft());
         signOptions.setDocumentPageNumber(signatureData.getPageNumber());
         signOptions.setRotationAngle(signatureData.getAngle());
-        if(qrCodeData.getBorderWidth() != 0){
-            signOptions.setBorderVisiblity(true);
-            signOptions.setBorderColor(getColor(qrCodeData.getBorderColor()));
-            signOptions.setBorderWeight(qrCodeData.getBorderWidth());
-            signOptions.setBorderDashStyle(qrCodeData.getBorderStyle());
-        }
+        fillBorders(signOptions);
         return signOptions;
     }
 
@@ -125,12 +115,7 @@ public class BarCodeSigner extends Signer{
         signOptions.setLeft(signatureData.getLeft());
         signOptions.setDocumentPageNumber(signatureData.getPageNumber());
         signOptions.setRotationAngle(signatureData.getAngle());
-        if(qrCodeData.getBorderWidth() != 0){
-            signOptions.setBorderVisiblity(true);
-            signOptions.setBorderColor(getColor(qrCodeData.getBorderColor()));
-            signOptions.setBorderWeight(qrCodeData.getBorderWidth());
-            signOptions.setBorderDashStyle(qrCodeData.getBorderStyle());
-        }
+        fillBorders(signOptions);
         return signOptions;
     }
 
@@ -151,12 +136,7 @@ public class BarCodeSigner extends Signer{
         signOptions.setLeft(signatureData.getLeft());
         signOptions.setDocumentPageNumber(signatureData.getPageNumber());
         signOptions.setRotationAngle(signatureData.getAngle());
-        if(qrCodeData.getBorderWidth() != 0){
-            signOptions.setBorderVisiblity(true);
-            signOptions.setBorderColor(getColor(qrCodeData.getBorderColor()));
-            signOptions.setBorderWeight(qrCodeData.getBorderWidth());
-            signOptions.setBorderDashStyle(qrCodeData.getBorderStyle());
-        }
+        fillBorders(signOptions);
         return signOptions;
     }
 }

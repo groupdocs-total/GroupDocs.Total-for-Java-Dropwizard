@@ -1,11 +1,17 @@
 package com.groupdocs.ui.signature.entity.xml;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * TextXmlEntity
  *
  * @author Aspose Pty Ltd
  */
-public class TextXmlEntity extends XmlEntity{
+@XmlRootElement(name="TextXmlEntity", namespace="TextXmlEntity")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class TextXmlEntity extends XmlEntity {
     private String encodedImage;
 
     private String backgroundColor = "rgb(0,0,0)";

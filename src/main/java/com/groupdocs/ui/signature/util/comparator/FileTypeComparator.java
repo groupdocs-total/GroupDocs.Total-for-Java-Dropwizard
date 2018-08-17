@@ -10,6 +10,8 @@ import java.util.Comparator;
  */
 public class FileTypeComparator implements Comparator<File> {
 
+    public static FileTypeComparator instance = new FileTypeComparator();
+
     /**
      * Compare two file types
      * @param file1

@@ -2,19 +2,18 @@ package com.groupdocs.ui.signature.signatureloader;
 
 import com.google.common.collect.Ordering;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
+import com.groupdocs.ui.signature.entity.web.SignatureFileDescriptionEntity;
 import com.groupdocs.ui.signature.util.comparator.FileNameComparator;
 import com.groupdocs.ui.signature.util.comparator.FileTypeComparator;
-import com.groupdocs.ui.signature.entity.web.SignatureFileDescriptionEntity;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * SignatureLoader
@@ -37,39 +36,23 @@ public class SignatureLoader {
 
     /**
      * Load image signatures
-     * @return ArrayList<SignatureFileDescriptionEntity>
+     * @return List<SignatureFileDescriptionEntity>
      * @throws IOException
      */
-    public ArrayList<SignatureFileDescriptionEntity> LoadImageSignatures() throws IOException {
+    public List<SignatureFileDescriptionEntity> loadImageSignatures() throws IOException {
         File directory = new File(path);
-        File[] fList = directory.listFiles();
-        ArrayList<SignatureFileDescriptionEntity> fileList = new ArrayList<SignatureFileDescriptionEntity>();
-        List<File> filesList = new ArrayList<>();
+        List<SignatureFileDescriptionEntity> fileList = new ArrayList<>();
+        List<File> filesList = Arrays.asList(directory.listFiles());
         try {
-            for (File file : fList) {
-                filesList.add(file);
-            }
-            fList = null;
             // sort list of files and folders
-            Collections.sort(filesList, Ordering.from(new FileTypeComparator()).compound(new FileNameComparator()));
+            filesList = Ordering.from(FileTypeComparator.instance).compound(FileNameComparator.instance).sortedCopy(filesList);
             for (File file : filesList) {
                 // check if current file/folder is hidden
                 if (file.isHidden() || file.toPath().equals(new File(globalConfiguration.getSignature().getDataDirectory()).toPath())) {
                     // ignore current file and skip to next one
                     continue;
                 } else {
-                    SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
-                    fileDescription.setGuid(file.getAbsolutePath());
-                    fileDescription.setName(file.getName());
-                    // set is directory true/false
-                    fileDescription.setDirectory(file.isDirectory());
-                    // set file size
-                    fileDescription.setSize(file.length());
-                    // get image Base64 incoded String
-                    FileInputStream fileInputStreamReader = new FileInputStream(file);
-                    byte[] bytes = new byte[(int) file.length()];
-                    fileInputStreamReader.read(bytes);
-                    fileDescription.setImage(Base64.getEncoder().encodeToString(bytes));
+                    SignatureFileDescriptionEntity fileDescription = getSignatureFileDescriptionEntity(file, false);
                     // add object to array list
                     fileList.add(fileDescription);
                 }
@@ -82,33 +65,23 @@ public class SignatureLoader {
 
     /**
      * Load digital signatures or documents for signing
-     * @return ArrayList<SignatureFileDescriptionEntity>
+     * @return List<SignatureFileDescriptionEntity>
+     * @throws IOException
      */
-    public ArrayList<SignatureFileDescriptionEntity> LoadFiles() {
+    public List<SignatureFileDescriptionEntity> loadFiles() throws IOException {
         File directory = new File(path);
-        File[] fList = directory.listFiles();
-        ArrayList<SignatureFileDescriptionEntity> fileList = new ArrayList<SignatureFileDescriptionEntity>();
-        List<File> filesList = new ArrayList<>();
+        List<SignatureFileDescriptionEntity> fileList = new ArrayList<>();
+        List<File> filesList = Arrays.asList(directory.listFiles());
         try {
-            for (File file : fList) {
-                filesList.add(file);
-            }
-            fList = null;
             // sort list of files and folders
-            Collections.sort(filesList, Ordering.from(new FileTypeComparator()).compound(new FileNameComparator()));
+            filesList = Ordering.from(FileTypeComparator.instance).compound(FileNameComparator.instance).sortedCopy(filesList);
             for (File file : filesList) {
                 // check if current file/folder is hidden
                 if (file.isHidden() || file.toPath().equals(new File(globalConfiguration.getSignature().getDataDirectory()).toPath())) {
                     // ignore current file and skip to next one
                     continue;
                 } else {
-                    SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
-                    fileDescription.setGuid(file.getAbsolutePath());
-                    fileDescription.setName(file.getName());
-                    // set is directory true/false
-                    fileDescription.setDirectory(file.isDirectory());
-                    // set file size
-                    fileDescription.setSize(file.length());
+                    SignatureFileDescriptionEntity fileDescription = getSignatureFileDescriptionEntity(file, false);
                     // add object to array list
                     fileList.add(fileDescription);
                 }
@@ -123,21 +96,20 @@ public class SignatureLoader {
      * Load stamp signatures
      * @param previewFolder
      * @param xmlFolder
-     * @return ArrayList<SignatureFileDescriptionEntity>
+     * @return List<SignatureFileDescriptionEntity>
      * @throws IOException
      */
-    public ArrayList<SignatureFileDescriptionEntity> LoadStampSignatures(String previewFolder, String xmlFolder) throws IOException {
+    public List<SignatureFileDescriptionEntity> loadStampSignatures(String previewFolder, String xmlFolder) throws IOException {
         String imagesPath = path + previewFolder;
         String xmlPath = path + xmlFolder;
         File images = new File(imagesPath);
-        ArrayList<SignatureFileDescriptionEntity> fileList = new ArrayList<SignatureFileDescriptionEntity>();
+        List<SignatureFileDescriptionEntity> fileList = new ArrayList<>();
         try {
             if(images.listFiles() != null) {
-                List<File> imageFiles = new ArrayList<File>(Arrays.asList(images.listFiles()));
+                List<File> imageFiles = Arrays.asList(images.listFiles());
                 File xmls = new File(xmlPath);
-                List<File> xmlFiles = new ArrayList<File>(Arrays.asList(xmls.listFiles()));
+                List<File> xmlFiles = Arrays.asList(xmls.listFiles());
                 List<File> filesList = new ArrayList<>();
-                int counter = 0;
                 for (File image : imageFiles) {
                     for (File xmlFile : xmlFiles) {
                         if (FilenameUtils.removeExtension(xmlFile.getName()).equals(FilenameUtils.removeExtension(image.getName()))) {
@@ -145,30 +117,15 @@ public class SignatureLoader {
                         }
                     }
                 }
-                images = null;
-                xmls = null;
-                xmlFiles = null;
-                imageFiles = null;
                 // sort list of files and folders
-                Collections.sort(filesList, Ordering.from(new FileTypeComparator()).compound(new FileNameComparator()));
+                filesList = Ordering.from(FileTypeComparator.instance).compound(FileNameComparator.instance).sortedCopy(filesList);
                 for (File file : filesList) {
                     // check if current file/folder is hidden
                     if (file.isHidden() || file.toPath().equals(new File(globalConfiguration.getSignature().getDataDirectory()).toPath())) {
                         // ignore current file and skip to next one
                         continue;
                     } else {
-                        SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
-                        fileDescription.setGuid(file.getAbsolutePath());
-                        fileDescription.setName(file.getName());
-                        // set is directory true/false
-                        fileDescription.setDirectory(file.isDirectory());
-                        // set file size
-                        fileDescription.setSize(file.length());
-                        // get image Base64 incoded String
-                        FileInputStream fileInputStreamReader = new FileInputStream(file);
-                        byte[] bytes = new byte[(int) file.length()];
-                        fileInputStreamReader.read(bytes);
-                        fileDescription.setImage(Base64.getEncoder().encodeToString(bytes));
+                        SignatureFileDescriptionEntity fileDescription = getSignatureFileDescriptionEntity(file, true);
                         // add object to array list
                         fileList.add(fileDescription);
                     }
@@ -178,5 +135,31 @@ public class SignatureLoader {
         } catch (Exception ex){
             throw ex;
         }
+    }
+
+    /**
+     * Create file description
+     *
+     * @param file file
+     * @param withImage set image
+     * @return signature file description
+     * @throws IOException
+     */
+    private SignatureFileDescriptionEntity getSignatureFileDescriptionEntity(File file, boolean withImage) throws IOException {
+        SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
+        fileDescription.setGuid(file.getAbsolutePath());
+        fileDescription.setName(file.getName());
+        // set is directory true/false
+        fileDescription.setDirectory(file.isDirectory());
+        // set file size
+        fileDescription.setSize(file.length());
+        if (withImage) {
+            // get image Base64 encoded String
+            FileInputStream fileInputStreamReader = new FileInputStream(file);
+            byte[] bytes = new byte[(int) file.length()];
+            fileInputStreamReader.read(bytes);
+            fileDescription.setImage(Base64.getEncoder().encodeToString(bytes));
+        }
+        return fileDescription;
     }
 }

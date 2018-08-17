@@ -1,11 +1,17 @@
 package com.groupdocs.ui.signature.entity.xml;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * StampXmlEntity
  *
  * @author Aspose Pty Ltd
  */
-public class StampXmlEntity extends XmlEntity{
+@XmlRootElement(name="StampXmlEntity", namespace="StampXmlEntity")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class StampXmlEntity extends XmlEntity {
     private String textExpansion;
     private String font;
     private String textColor = "rgb(0,0,0)";

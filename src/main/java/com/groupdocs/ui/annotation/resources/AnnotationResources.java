@@ -11,11 +11,9 @@ import com.groupdocs.annotation.domain.containers.FileTreeContainer;
 import com.groupdocs.annotation.domain.options.FileTreeOptions;
 import com.groupdocs.annotation.domain.options.ImageOptions;
 import com.groupdocs.annotation.handler.AnnotationImageHandler;
-import com.groupdocs.ui.annotation.annotator.Annotator;
-import com.groupdocs.ui.annotation.annotator.AreaAnnotator;
-import com.groupdocs.ui.annotation.annotator.PointAnnotator;
-import com.groupdocs.ui.annotation.annotator.TexStrikeoutAnnotator;
-import com.groupdocs.ui.annotation.annotator.TextAnnotator;
+import com.groupdocs.ui.annotation.annotator.*;
+import com.groupdocs.ui.annotation.entity.request.AnnotateDocumentRequest;
+import com.groupdocs.ui.annotation.entity.request.TextCoordinatesRequest;
 import com.groupdocs.ui.annotation.entity.web.AnnotatedDocumentEntity;
 import com.groupdocs.ui.annotation.entity.web.AnnotationDataEntity;
 import com.groupdocs.ui.annotation.entity.web.TextRowEntity;
@@ -23,22 +21,26 @@ import com.groupdocs.ui.annotation.util.directory.DirectoryUtils;
 import com.groupdocs.ui.annotation.views.Annotation;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
-import com.groupdocs.ui.common.entity.web.MediaType;
 import com.groupdocs.ui.common.entity.web.UploadedDocumentEntity;
 import com.groupdocs.ui.common.entity.web.LoadedPageEntity;
 import com.groupdocs.ui.common.entity.web.DocumentDescriptionEntity;
+import com.groupdocs.ui.common.entity.web.request.FileTreeRequest;
+import com.groupdocs.ui.common.entity.web.request.LoadDocumentPageRequest;
+import com.groupdocs.ui.common.entity.web.request.LoadDocumentRequest;
+import com.groupdocs.ui.common.exception.TotalGroupDocsException;
 import com.groupdocs.ui.common.resources.Resources;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.server.Request;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import java.io.InputStream;
 import java.io.IOException;
@@ -57,6 +59,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
+import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
 /**
  * AnnotationResources
@@ -105,32 +111,29 @@ public class AnnotationResources extends Resources {
 
     /**
      * Get files and directories
-     * @param request
-     * @param response
+     * @param fileTreeRequest request's object with specified path
      * @return files and directories list
      */
     @POST
     @Path(value = "/loadFileTree")
-    public Object loadFileTree(@Context HttpServletRequest request, @Context HttpServletResponse response){
-        // set response content type
-        setResponseContentType(response, MediaType.APPLICATION_JSON);
-        // get request body
-        String requestBody = getRequestBody(request);
-        String relDirPath = getJsonString(requestBody, "path");
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public List<FileDescriptionEntity> loadFileTree(FileTreeRequest fileTreeRequest) {
+        String relDirPath = fileTreeRequest.getPath();
         // get file list from storage path
         FileTreeOptions fileListOptions = new FileTreeOptions(relDirPath);
         // get temp directory name
-        String tempDirectoryName =  new com.groupdocs.annotation.domain.config.AnnotationConfig().getTempFolderName();
-        try{
+        String tempDirectoryName = new com.groupdocs.annotation.domain.config.AnnotationConfig().getTempFolderName();
+        try {
             FileTreeContainer fileListContainer = annotationImageHandler.loadFileTree(fileListOptions);
 
             ArrayList<FileDescriptionEntity> fileList = new ArrayList<>();
             // parse files/folders list
-            for(FileDescription fd : fileListContainer.getFileTree()){
+            for (FileDescription fd : fileListContainer.getFileTree()) {
                 FileDescriptionEntity fileDescription = new FileDescriptionEntity();
                 fileDescription.setGuid(fd.getGuid());
                 // check if current file/folder is temp directory or is hidden
-                if(tempDirectoryName.toLowerCase().equals(fd.getName()) || new File(fileDescription.getGuid()).isHidden()) {
+                if (tempDirectoryName.toLowerCase().equals(fd.getName()) || new File(fileDescription.getGuid()).isHidden()) {
                     // ignore current file and skip to next one
                     continue;
                 } else {
@@ -146,34 +149,29 @@ public class AnnotationResources extends Resources {
                 // add object to array list
                 fileList.add(fileDescription);
             }
-            return objectToJson(fileList);
-        }catch (Exception ex){
-            return generateException(response, ex);
+            return fileList;
+        } catch (Exception ex) {
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
     /**
      * Get document description
-     * @param request
-     * @param response
      * @return document description
      */
     @POST
     @Path(value = "/loadDocumentDescription")
-    public Object loadDocumentDescription(@Context HttpServletRequest request, @Context HttpServletResponse response){
-        // set response content type
-        setResponseContentType(response, MediaType.APPLICATION_JSON);
-        String password = "";
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public List<DocumentDescriptionEntity> loadDocumentDescription(LoadDocumentRequest loadDocumentRequest){
         try {
-            // get request body
-            String requestBody = getRequestBody(request);
             // get/set parameters
-            String documentGuid = getJsonString(requestBody, "guid");
-            password = getJsonString(requestBody, "password");
+            String documentGuid = loadDocumentRequest.getGuid();
+            String password = loadDocumentRequest.getPassword();
             DocumentInfoContainer documentDescription;
             // get document info container
             documentDescription = annotationImageHandler.getDocumentInfo(new File(documentGuid).getName(), password);
-            ArrayList<DocumentDescriptionEntity> pagesDescription = new ArrayList<>();
+            List<DocumentDescriptionEntity> pagesDescription = new ArrayList<>();
             // get info about each document page
             for(int i = 0; i < documentDescription.getPages().size(); i++) {
                 //initiate custom Document description object
@@ -185,30 +183,26 @@ public class AnnotationResources extends Resources {
                 pagesDescription.add(description);
             }
             // return document description
-            return objectToJson(pagesDescription);
+            return pagesDescription;
         }catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
     /**
      * Get document page
-     * @param request
-     * @param response
      * @return document page
      */
     @POST
     @Path(value = "/loadDocumentPage")
-    public Object loadDocumentPage(@Context HttpServletRequest request, @Context HttpServletResponse response){
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public LoadedPageEntity loadDocumentPage(LoadDocumentPageRequest loadDocumentPageRequest){
         try {
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // get request body
-            String requestBody = getRequestBody(request);
             // get/set parameters
-            String documentGuid = getJsonString(requestBody, "guid");
-            int pageNumber = getJsonInteger(requestBody, "page");
-            String password = getJsonString(requestBody, "password");
+            String documentGuid = loadDocumentPageRequest.getGuid();
+            int pageNumber = loadDocumentPageRequest.getPage();
+            String password = loadDocumentPageRequest.getPassword();
             LoadedPageEntity loadedPage = new LoadedPageEntity();
             // set options
             ImageOptions imageOptions = new ImageOptions();
@@ -219,49 +213,43 @@ public class AnnotationResources extends Resources {
                 imageOptions.setPassword(password);
             }
             // get page image
-            byte[] bytes = IOUtils.toByteArray(annotationImageHandler.getPages(documentGuid, imageOptions).get(0).getStream());
+            byte[] bytes = IOUtils.toByteArray(annotationImageHandler.getPages(new File(documentGuid).getName(), imageOptions).get(0).getStream());
             // encode ByteArray into String
             String incodedImage = new String(Base64.getEncoder().encode(bytes));
             loadedPage.setPageImage(incodedImage);
             // return loaded page object
-            return objectToJson(loadedPage);
+            return loadedPage;
         }catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
     /**
      * Download document
-     * @param request
+     * @param documentGuid path to document parameter
      * @param response
-     * @return document
      */
     @GET
     @Path(value = "/downloadDocument")
-    public Object downloadDocument(@Context HttpServletRequest request, @Context HttpServletResponse response) throws IOException {
+    @Produces(APPLICATION_OCTET_STREAM)
+    public void downloadDocument(@QueryParam("path") String documentGuid, @Context HttpServletResponse response) throws IOException {
         int count;
         byte[] buff = new byte[16 * 1024];
         OutputStream out = response.getOutputStream();
-        // set response content type
-        setResponseContentType(response, MediaType.APPLICATION_OCTET_STREAM);
-        // get document path
-        String documentGuid = request.getParameter("path");
         String fileName = new File(documentGuid).getName();
         // set response content disposition
         response.setHeader("Content-disposition", "attachment; filename=" + fileName);
         BufferedOutputStream outStream = null;
         BufferedInputStream inputStream = null;
-        String pathToDownload = String.format("%s/%s", globalConfiguration.getAnnotation().getFilesDirectory(), fileName);
         try {
             // download the document
-            inputStream = new BufferedInputStream(new FileInputStream(pathToDownload));
+            inputStream = new BufferedInputStream(new FileInputStream(documentGuid));
             outStream = new BufferedOutputStream(out);
             while ((count = inputStream.read(buff)) != -1) {
                 outStream.write(buff, 0, count);
             }
-            return outStream;
         } catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         } finally {
             // close streams
             if (inputStream != null)
@@ -273,49 +261,43 @@ public class AnnotationResources extends Resources {
 
     /**
      * Upload document
-     * @param request
-     * @param response
+     * @param inputStream file content
+     * @param fileDetail file description
+     * @param documentUrl url for document
+     * @param rewrite flag for rewriting file
      * @return uploaded document object (the object contains uploaded document guid)
      */
     @POST
     @Path(value = "/uploadDocument")
-    public Object uploadDocument(@Context HttpServletRequest request, @Context HttpServletResponse response) {
+    @Produces(APPLICATION_JSON)
+    @Consumes(MULTIPART_FORM_DATA)
+    public UploadedDocumentEntity uploadDocument(@FormDataParam("file") InputStream inputStream,
+                                                 @FormDataParam("file") FormDataContentDisposition fileDetail,
+                                                 @FormDataParam("url") String documentUrl,
+                                                 @FormDataParam("rewrite") Boolean rewrite) {
         InputStream uploadedInputStream = null;
         try {
-            // set multipart configuration
-            MultipartConfigElement multipartConfigElement = new MultipartConfigElement((String) null);
-            request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, multipartConfigElement);
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // get the file chosen by the user
-            Part filePart = request.getPart("file");
-            // get document URL
-            String documentUrl = request.getParameter("url");
-            // get rewrite mode
-            boolean rewrite = Boolean.parseBoolean(request.getParameter("rewrite"));
             String fileName;
-            if(documentUrl == null || documentUrl.isEmpty()) {
+            if (StringUtils.isEmpty(documentUrl)) {
                 // get the InputStream to store the file
-                uploadedInputStream = filePart.getInputStream();
-                fileName = filePart.getSubmittedFileName();
+                uploadedInputStream = inputStream;
+                fileName = fileDetail.getFileName();
             } else {
                 // get the InputStream from the URL
                 URL url =  new URL(documentUrl);
                 uploadedInputStream = url.openStream();
                 fileName = FilenameUtils.getName(url.getPath());
             }
-            // get signatures storage path
-            String documentStoragePath = globalConfiguration.getAnnotation().getFilesDirectory();
+            // get documents storage path
+            String documentStoragePath = globalConfiguration.getViewer().getFilesDirectory();
             // save the file
-            String filePath =  String.format("%s/%s", documentStoragePath, fileName);
-            File file = new File(filePath);
+            File file = new File(documentStoragePath + File.separator + fileName);
             // check rewrite mode
             if(rewrite) {
                 // save file with rewrite if exists
                 Files.copy(uploadedInputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } else {
-                if (file.exists())
-                {
+                if (file.exists()){
                     // get file with new name
                     file = getFreeFileName(documentStoragePath, fileName);
                 }
@@ -323,10 +305,10 @@ public class AnnotationResources extends Resources {
                 Files.copy(uploadedInputStream, file.toPath());
             }
             UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity();
-            uploadedDocument.setGuid(documentStoragePath + "/" + fileName);
-            return objectToJson(uploadedDocument);
-        }catch(Exception ex){
-            return generateException(response, ex);
+            uploadedDocument.setGuid(documentStoragePath + File.separator + fileName);
+            return uploadedDocument;
+        } catch(Exception ex) {
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         } finally {
             try {
                 uploadedInputStream.close();
@@ -338,23 +320,19 @@ public class AnnotationResources extends Resources {
 
     /**
      * get text coordinates
-     * @param request
-     * @param response
+     * @param textCoordinatesRequest
      * @return list of each text row with coordinates
      */
     @POST
     @Path(value = "/textCoordinates")
-    public Object textCoordinates(@Context HttpServletRequest request, @Context HttpServletResponse response) {
+    @Produces(APPLICATION_JSON)
+    public List<TextRowEntity> textCoordinates(TextCoordinatesRequest textCoordinatesRequest) {
         String password = "";
         try {
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // get request body
-            String requestBody = getRequestBody(request);
             // get/set parameters
-            String documentGuid = getJsonString(requestBody, "guid");
-            password = getJsonString(requestBody, "password");
-            int pageNumber = getJsonInteger(requestBody, "pageNumber");
+            String documentGuid = textCoordinatesRequest.getGuid();
+            password = textCoordinatesRequest.getPassword();
+            int pageNumber = textCoordinatesRequest.getPageNumber();
             // get document info
             DocumentInfoContainer info = annotationImageHandler.getDocumentInfo(new File(documentGuid).getName(), password);
             // get all rows info for specific page
@@ -369,31 +347,27 @@ public class AnnotationResources extends Resources {
                 textRow.setLineHeight(info.getPages().get(pageNumber - 1).getRows().get(i).getLineHeight());
                 textCoordinates.add(textRow);
             }
-            return objectToJson(textCoordinates);
+            return textCoordinates;
         }catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
     /**
      * Annotate document
-     * @param request
-     * @param response
+     * @param annotateDocumentRequest
      * @return annotated document info
      */
     @POST
     @Path(value = "/annotate")
-    public Object annotate(@Context HttpServletRequest request, @Context HttpServletResponse response) {
+    @Produces(APPLICATION_JSON)
+    public AnnotatedDocumentEntity annotate(AnnotateDocumentRequest annotateDocumentRequest) {
         String password = "";
         try {
-            // set response content type
-            setResponseContentType(response, MediaType.APPLICATION_JSON);
-            // get request body
-            String requestBody = getRequestBody(request);
             // get/set parameters
-            String documentGuid = getJsonString(requestBody, "guid");
-            password = getJsonString(requestBody, "password");
-            AnnotationDataEntity[] annotationsData = (AnnotationDataEntity[]) getJsonObject(requestBody, "annotationsList", AnnotationDataEntity[].class);
+            String documentGuid = annotateDocumentRequest.getGuid();
+            password = annotateDocumentRequest.getPassword();
+            AnnotationDataEntity[] annotationsData = annotateDocumentRequest.getAnnotationssData();
             // initiate AnnotatedDocument object
             AnnotatedDocumentEntity annotatedDocument = new AnnotatedDocumentEntity();
             // initiate list of annotations to add
@@ -443,9 +417,9 @@ public class AnnotationResources extends Resources {
             IOUtils.copy(result, fileStream);
             fileStream.close();
             result.close();
-            return objectToJson(annotatedDocument);
+            return annotatedDocument;
         }catch (Exception ex){
-            return generateException(response, ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
     }
 
@@ -462,6 +436,9 @@ public class AnnotationResources extends Resources {
                 break;
             case "textStrikeout":
                 annotator = new TexStrikeoutAnnotator(annotationData);
+                break;
+            case "polyline":
+                annotator = new PolylineAnnotator(annotationData);
                 break;
         }
         return annotator;

@@ -8,6 +8,7 @@ package com.groupdocs.ui.annotation.entity.web;
 public class CommentsEntity {
     private String time;
     private String text;
+    private String userName;
 
     public String getTime() {
         return time;
@@ -23,5 +24,13 @@ public class CommentsEntity {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

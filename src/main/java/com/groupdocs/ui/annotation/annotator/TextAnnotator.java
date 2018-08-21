@@ -57,6 +57,7 @@ public class TextAnnotator extends Annotator{
         textAnnotation.setType(AnnotationType.Text);
         textAnnotation.setGuid(String.valueOf(annotationData.getId()));
         textAnnotation.setText(comment.getText());
+        textAnnotation.setCreatorName(comment.getUserName());
         DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date date = format.parse(comment.getTime());
@@ -79,6 +80,7 @@ public class TextAnnotator extends Annotator{
         textAnnotation.setType(AnnotationType.Text);
         textAnnotation.setGuid( String.valueOf(annotationData.getId()));
         textAnnotation.setText(annotationData.getComments()[0].getText());
+        textAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -88,6 +90,7 @@ public class TextAnnotator extends Annotator{
             Date date = format.parse(annotationData.getComments()[i].getTime());
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
+            reply.setUserName(annotationData.getComments()[i].getUserName());
             replyes[i] = reply;
         }
         textAnnotation.setReplies(replyes);
@@ -108,6 +111,7 @@ public class TextAnnotator extends Annotator{
         double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
         textAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), topPosition));
         textAnnotation.setFieldText(comment.getText());
+        textAnnotation.setCreatorName(comment.getUserName());
         DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date date = format.parse(comment.getTime());
@@ -141,6 +145,7 @@ public class TextAnnotator extends Annotator{
         textAnnotation.setType(AnnotationType.Text);
         textAnnotation.setGuid( String.valueOf(annotationData.getId()));
         textAnnotation.setText(annotationData.getComments()[0].getText());
+        textAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -150,6 +155,7 @@ public class TextAnnotator extends Annotator{
             Date date = format.parse(annotationData.getComments()[i].getTime());
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
+            reply.setUserName(annotationData.getComments()[i].getUserName());
             replyes[i] = reply;
         }
         textAnnotation.setReplies(replyes);

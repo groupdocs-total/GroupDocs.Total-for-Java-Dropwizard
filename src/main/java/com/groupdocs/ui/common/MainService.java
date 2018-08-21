@@ -1,5 +1,6 @@
 package com.groupdocs.ui.common;
 
+import com.groupdocs.ui.annotation.resources.AnnotationResources;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.health.TemplateHealthCheck;
 import com.groupdocs.ui.signature.resources.SignatureResources;
@@ -52,6 +53,7 @@ public class MainService extends Application<GlobalConfiguration> {
         cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         // Initiate resources (web pages)
+        environment.jersey().register(new AnnotationResources(globalConfiguration));
         environment.jersey().register(new ViewerResources(globalConfiguration));
         environment.jersey().register(new SignatureResources(globalConfiguration));
         environment.jersey().register(new TotalResources(globalConfiguration));

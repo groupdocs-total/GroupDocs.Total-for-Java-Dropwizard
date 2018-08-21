@@ -108,7 +108,7 @@ signature:
 annotation:
   # Files directory path
   # Absolute or relative path to files directory
-  filesDirectory: /App_Data/
+  filesDirectory: 'C:/GroupDocs/Documents/Annotation/'
   # Output directory path
   # Absolute path to annotated files directory
   outputDirectory: ''

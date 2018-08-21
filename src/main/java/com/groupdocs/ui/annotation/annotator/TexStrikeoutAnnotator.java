@@ -62,6 +62,7 @@ public class TexStrikeoutAnnotator extends Annotator{
         strikeoutAnnotation.setType(AnnotationType.TextStrikeout);
         // add annotation comment
         strikeoutAnnotation.setText(comment.getText());
+        strikeoutAnnotation.setCreatorName(comment.getUserName());
         // set line color
         strikeoutAnnotation.setPenColor(1201033);
         // set date
@@ -85,6 +86,7 @@ public class TexStrikeoutAnnotator extends Annotator{
         strikeoutAnnotation.setPenColor(0);
         strikeoutAnnotation.setType(AnnotationType.TextStrikeout);
         strikeoutAnnotation.setText(annotationData.getComments()[0].getText());
+        strikeoutAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -93,6 +95,7 @@ public class TexStrikeoutAnnotator extends Annotator{
             format.setTimeZone(TimeZone.getTimeZone("GMT"));
             Date date = format.parse(annotationData.getComments()[i].getTime());
             reply.setRepliedOn(date);
+            reply.setUserName(annotationData.getComments()[i].getUserName());
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             replyes[i] = reply;
         }
@@ -133,6 +136,7 @@ public class TexStrikeoutAnnotator extends Annotator{
         strikeoutAnnotation.setPenColor(0);
         strikeoutAnnotation.setType(AnnotationType.TextStrikeout);
         strikeoutAnnotation.setText(annotationData.getComments()[0].getText());
+        strikeoutAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -142,6 +146,7 @@ public class TexStrikeoutAnnotator extends Annotator{
             Date date = format.parse(annotationData.getComments()[i].getTime());
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
+            reply.setUserName(annotationData.getComments()[i].getUserName());
             replyes[i] = reply;
         }
         strikeoutAnnotation.setReplies(replyes);

@@ -63,6 +63,7 @@ public class AreaAnnotator extends Annotator{
             reply.setRepliedOn(date);
             // set reply text
             reply.setMessage(annotationData.getComments()[i].getText());
+            reply.setUserName(annotationData.getComments()[i].getUserName());
             annotationReplyInfos[i] = reply;
         }
         // add all replies
@@ -103,6 +104,7 @@ public class AreaAnnotator extends Annotator{
             Date date = format.parse(annotationData.getComments()[i].getTime());
             reply.setRepliedOn(date);
             reply.setMessage(annotationData.getComments()[i].getText());
+            reply.setUserName(annotationData.getComments()[i].getUserName());
             annotationReplyInfos[i] = reply;
         }
         areaAnnotation.setReplies(annotationReplyInfos);
@@ -132,6 +134,7 @@ public class AreaAnnotator extends Annotator{
             Date date = format.parse(annotationData.getComments()[i].getTime());
             reply.setRepliedOn(date);
             reply.setMessage(annotationData.getComments()[i].getText());
+            reply.setUserName(annotationData.getComments()[i].getUserName());
             annotationReplyInfos[i] = reply;
         }
         areaAnnotation.setReplies(annotationReplyInfos);
@@ -161,6 +164,7 @@ public class AreaAnnotator extends Annotator{
             Date date = format.parse(annotationData.getComments()[i].getTime());
             reply.setRepliedOn(date);
             reply.setMessage(annotationData.getComments()[i].getText());
+            reply.setUserName(annotationData.getComments()[i].getUserName());
             annotationReplyInfos[i] = reply;
         }
         areaAnnotation.setReplies(annotationReplyInfos);

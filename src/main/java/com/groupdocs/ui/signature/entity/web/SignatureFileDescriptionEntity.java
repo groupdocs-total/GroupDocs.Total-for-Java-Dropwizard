@@ -11,7 +11,7 @@ public class SignatureFileDescriptionEntity extends FileDescriptionEntity {
     private String image;
 
     /**
-     * Get incoded image Base64 string
+     * Get encoded image Base64 string
      * @return image
      */
     public String getImage() {
@@ -19,7 +19,7 @@ public class SignatureFileDescriptionEntity extends FileDescriptionEntity {
     }
 
     /**
-     * Set incoded image Base64 string
+     * Set encoded image Base64 string
      */
     public void setImage(String image) {
         this.image = image;

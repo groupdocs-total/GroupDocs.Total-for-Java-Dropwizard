@@ -9,6 +9,7 @@ import com.groupdocs.ui.viewer.resources.ViewerResources;
 import com.groupdocs.ui.annotation.resources.AnnotationResources;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
@@ -37,6 +38,8 @@ public class MainService extends Application<GlobalConfiguration> {
         bootstrap.addBundle(new AssetsBundle());
         // init view bundle
         bootstrap.addBundle(new ViewBundle());
+        // for injection file content in resource methods
+        bootstrap.addBundle(new MultiPartBundle());
     }
 
     @Override
@@ -57,7 +60,6 @@ public class MainService extends Application<GlobalConfiguration> {
         environment.jersey().register(new ViewerResources(globalConfiguration));
         environment.jersey().register(new SignatureResources(globalConfiguration));
         environment.jersey().register(new TotalResources(globalConfiguration));
-        environment.jersey().register(new AnnotationResources(globalConfiguration));
 
         // Add dummy health check to get rid of console warnings
         // TODO: implement health check

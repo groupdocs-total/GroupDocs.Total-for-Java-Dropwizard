@@ -6,31 +6,42 @@ package com.groupdocs.ui.annotation.entity.web;
  * @author Aspose Pty Ltd
  */
 public class AnnotationDataEntity {
-    private double id;
+    private int id;
+    private int pageNumber;
+    private int fontSize;
     private double left;
     private double top;
     private double width;
     private double height;
-    private int pageNumber;
     private String svgPath;
     private String type;
     private String documentType;
+    private String text;
+    private String font;
     private CommentsEntity[] comments;
 
-    public double getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(double id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public int getPageNumber() {
+        return pageNumber;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
     }
 
     public double getLeft() {
@@ -65,14 +76,6 @@ public class AnnotationDataEntity {
         this.height = height;
     }
 
-    public int getPageNumber() {
-        return pageNumber;
-    }
-
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
-    }
-
     public String getSvgPath() {
         return svgPath;
     }
@@ -81,12 +84,36 @@ public class AnnotationDataEntity {
         this.svgPath = svgPath;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getDocumentType() {
         return documentType;
     }
 
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getFont() {
+        return font;
+    }
+
+    public void setFont(String font) {
+        this.font = font;
     }
 
     public CommentsEntity[] getComments() {

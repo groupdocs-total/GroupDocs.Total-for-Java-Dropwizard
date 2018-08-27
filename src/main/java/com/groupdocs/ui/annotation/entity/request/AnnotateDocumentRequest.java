@@ -3,16 +3,14 @@ package com.groupdocs.ui.annotation.entity.request;
 import com.groupdocs.ui.annotation.entity.web.AnnotationDataEntity;
 import com.groupdocs.ui.common.entity.web.request.LoadDocumentRequest;
 
-import java.util.List;
-
 public class AnnotateDocumentRequest extends LoadDocumentRequest {
-    private  AnnotationDataEntity[] annotationssData;
+    private AnnotationDataEntity[] annotationsList;
 
-    public AnnotationDataEntity[] getAnnotationssData() {
-        return annotationssData;
+    public AnnotationDataEntity[] getAnnotationsData() {
+        return annotationsList;
     }
 
-    public void setAnnotationssData(AnnotationDataEntity[] annotationssData) {
-        this.annotationssData = annotationssData;
+    public void setAnnotationsData(AnnotationDataEntity[] annotationsData) {
+        this.annotationsList = annotationsData;
     }
 }

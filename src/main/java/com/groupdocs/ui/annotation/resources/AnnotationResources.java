@@ -32,14 +32,10 @@ import com.groupdocs.ui.common.resources.Resources;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jetty.server.Request;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import java.io.InputStream;
@@ -326,6 +322,7 @@ public class AnnotationResources extends Resources {
     @POST
     @Path(value = "/textCoordinates")
     @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
     public List<TextRowEntity> textCoordinates(TextCoordinatesRequest textCoordinatesRequest) {
         String password = "";
         try {
@@ -361,13 +358,14 @@ public class AnnotationResources extends Resources {
     @POST
     @Path(value = "/annotate")
     @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
     public AnnotatedDocumentEntity annotate(AnnotateDocumentRequest annotateDocumentRequest) {
         String password = "";
         try {
             // get/set parameters
             String documentGuid = annotateDocumentRequest.getGuid();
             password = annotateDocumentRequest.getPassword();
-            AnnotationDataEntity[] annotationsData = annotateDocumentRequest.getAnnotationssData();
+            AnnotationDataEntity[] annotationsData = annotateDocumentRequest.getAnnotationsData();
             // initiate AnnotatedDocument object
             AnnotatedDocumentEntity annotatedDocument = new AnnotatedDocumentEntity();
             // initiate list of annotations to add
@@ -384,40 +382,52 @@ public class AnnotationResources extends Resources {
                 // create annotator
                 annotator = getAnnotator(annotationsData[i], annotator);
                 // add annotation
-                addAnnotationOptions(annotationsData[0].getDocumentType(), info, annotations, annotator, annotationsData[i]);
+                try {
+                    addAnnotationOptions(annotationsData[0].getDocumentType(), info, annotations, annotator, annotationsData[i]);
+                } catch (Exception ex){
+                    if(ex.getMessage().equals("This file type is not supported")){
+                        continue;
+                    } else {
+                        throw new TotalGroupDocsException(ex.getMessage(), ex);
+                    }
+                }
             }
-            InputStream result = null;
-            // Add annotation to the document
-            InputStream cleanDoc = new FileInputStream(documentGuid);
-            switch (annotationsData[0].getDocumentType()) {
-                case "Portable Document Format":
-                    result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Pdf);
-                    break;
-                case "Microsoft Word":
-                    result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Words);
-                    break;
-                case "Microsoft PowerPoint":
-                    result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Slides);
-                    break;
-                case "image":
-                    result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Images);
-                    break;
-                case "Microsoft Excel":
-                    result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Cells);
-                    break;
-                case "AutoCAD Drawing File Format":
-                    result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Diagram);
-                    break;
+            if(annotations.size() > 0) {
+                InputStream result = null;
+                // Add annotation to the document
+                InputStream cleanDoc = new FileInputStream(documentGuid);
+                switch (annotationsData[0].getDocumentType()) {
+                    case "Portable Document Format":
+                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Pdf);
+                        break;
+                    case "Microsoft Word":
+                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Words);
+                        break;
+                    case "Microsoft PowerPoint":
+                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Slides);
+                        break;
+                    case "image":
+                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Images);
+                        break;
+                    case "Microsoft Excel":
+                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Cells);
+                        break;
+                    case "AutoCAD Drawing File Format":
+                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Diagram);
+                        break;
+                }
+                // Save result stream to file.
+                File outPut = new File(documentGuid);
+                String path = globalConfiguration.getAnnotation().getOutputDirectory() + "/" + outPut.getName();
+                OutputStream fileStream = new FileOutputStream(path);
+                annotatedDocument.setGuid(path);
+                IOUtils.copy(result, fileStream);
+                fileStream.close();
+                result.close();
+                return annotatedDocument;
+            } else {
+                throw new NotSupportedException("This file type is not supported");
             }
-            // Save result stream to file.
-            File outPut = new File(documentGuid);
-            String path = globalConfiguration.getAnnotation().getOutputDirectory() + "/" + outPut.getName();
-            OutputStream fileStream = new FileOutputStream(path);
-            annotatedDocument.setGuid(path);
-            IOUtils.copy(result, fileStream);
-            fileStream.close();
-            result.close();
-            return annotatedDocument;
         }catch (Exception ex){
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
@@ -440,6 +450,9 @@ public class AnnotationResources extends Resources {
             case "polyline":
                 annotator = new PolylineAnnotator(annotationData);
                 break;
+            case "textField":
+                annotator = new TextFieldAnnotator(annotationData);
+                break;
         }
         return annotator;
     }
@@ -459,8 +472,12 @@ public class AnnotationResources extends Resources {
                 annotationsCollection.add(annotator.annotatePdf(documentInfo));
                 break;
             case "Microsoft Word":
-                for(int n = 0; n < annotationData.getComments().length; n++) {
-                    annotationsCollection.add(annotator.annotateWord(documentInfo, annotationData.getComments()[n]));
+                if(annotationData.getComments().length == 0){
+                    annotationsCollection.add(annotator.annotateWord(documentInfo, null));
+                } else {
+                    for (int n = 0; n < annotationData.getComments().length; n++) {
+                        annotationsCollection.add(annotator.annotateWord(documentInfo, annotationData.getComments()[n]));
+                    }
                 }
                 break;
             case "Microsoft PowerPoint":
@@ -470,8 +487,12 @@ public class AnnotationResources extends Resources {
                 annotationsCollection.add(annotator.annotateImage(documentInfo));
                 break;
             case "Microsoft Excel":
-                for(int n = 0; n < annotationData.getComments().length; n++) {
-                    annotationsCollection.add(annotator.annotateCells(documentInfo, annotationData.getComments()[n]));
+                if(annotationData.getComments().length == 0){
+                    annotationsCollection.add(annotator.annotateCells(documentInfo, null));
+                } else {
+                    for (int n = 0; n < annotationData.getComments().length; n++) {
+                        annotationsCollection.add(annotator.annotateCells(documentInfo, annotationData.getComments()[n]));
+                    }
                 }
                 break;
             case "AutoCAD Drawing File Format":

@@ -4,6 +4,7 @@ import com.groupdocs.annotation.domain.*;
 import com.groupdocs.annotation.domain.containers.DocumentInfoContainer;
 import com.groupdocs.ui.annotation.entity.web.AnnotationDataEntity;
 import com.groupdocs.ui.annotation.entity.web.CommentsEntity;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.NotSupportedException;
 import java.text.DateFormat;
@@ -58,7 +59,7 @@ public class TextFieldAnnotator extends Annotator{
         AnnotationInfo textFieldAnnotation = new AnnotationInfo();
         textFieldAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
         textFieldAnnotation.setFieldText(annotationData.getText());
-        textFieldAnnotation.setFontFamily(annotationData.getFont().toUpperCase());
+        textFieldAnnotation.setFontFamily(StringUtils.capitalize(annotationData.getFont()));
         textFieldAnnotation.setFontSize(annotationData.getFontSize());
         textFieldAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         textFieldAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
@@ -104,6 +105,7 @@ public class TextFieldAnnotator extends Annotator{
         textFieldAnnotation.setFieldText(annotationData.getText());
         textFieldAnnotation.setFontFamily(annotationData.getFont());
         textFieldAnnotation.setFontColor(-15988609);
+        textFieldAnnotation.setFontSize(annotationData.getFontSize());
         textFieldAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         textFieldAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         textFieldAnnotation.setType(AnnotationType.TextField);
@@ -121,6 +123,7 @@ public class TextFieldAnnotator extends Annotator{
         textFieldAnnotation.setFieldText(annotationData.getText());
         textFieldAnnotation.setFontFamily(annotationData.getFont());
         textFieldAnnotation.setFontColor(-15988609);
+        textFieldAnnotation.setFontSize(annotationData.getFontSize());
         textFieldAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         textFieldAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         textFieldAnnotation.setType(AnnotationType.TextField);

@@ -453,6 +453,12 @@ public class AnnotationResources extends Resources {
             case "textField":
                 annotator = new TextFieldAnnotator(annotationData);
                 break;
+            case "watermark":
+                annotator = new WatermarkAnnotator(annotationData);
+                break;
+            case "textReplacement":
+                annotator = new TextReplacementAnnotator(annotationData);
+                break;
         }
         return annotator;
     }

@@ -1,7 +1,7 @@
 package com.groupdocs.ui.signature.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.dropwizard.Configuration;
+import com.groupdocs.ui.common.config.CommonConfiguration;
 
 import javax.validation.Valid;
 
@@ -10,7 +10,7 @@ import javax.validation.Valid;
  *
  * @author Aspose Pty Ltd
  */
-public class SignatureConfiguration extends Configuration{
+public class SignatureConfiguration extends CommonConfiguration{
 
     @Valid
     @JsonProperty

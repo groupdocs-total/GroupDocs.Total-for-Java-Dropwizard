@@ -36,19 +36,19 @@
         <script type="text/javascript">
             $('#element').viewer({
                 applicationPath: 'http://${globalConfiguration.server.hostAddress}:${globalConfiguration.server.httpPort?c}/signature',
-                defaultDocument: '${globalConfiguration.viewer.defaultDocument}',
+                defaultDocument: '${globalConfiguration.common.defaultDocument}',
                 htmlMode: false,
-                preloadPageCount: ${globalConfiguration.viewer.preloadPageCount?c},
+                preloadPageCount: ${globalConfiguration.common.preloadPageCount?c},
                 zoom : false,
-                pageSelector: ${globalConfiguration.viewer.pageSelector?c},
+                pageSelector: ${globalConfiguration.common.pageSelector?c},
                 search: false,
                 thumbnails: false,
                 rotate: false,
-                download: ${globalConfiguration.viewer.download?c},
-                upload: ${globalConfiguration.viewer.upload?c},
-                print: ${globalConfiguration.viewer.print?c},
-                browse: ${globalConfiguration.viewer.browse?c},
-                rewrite: ${globalConfiguration.viewer.rewrite?c}
+                download: ${globalConfiguration.common.download?c},
+                upload: ${globalConfiguration.common.upload?c},
+                print: ${globalConfiguration.common.print?c},
+                browse: ${globalConfiguration.common.browse?c},
+                rewrite: ${globalConfiguration.common.rewrite?c}
             });
             $('#element').signature({
                 textSignature: ${globalConfiguration.signature.textSignature?c},

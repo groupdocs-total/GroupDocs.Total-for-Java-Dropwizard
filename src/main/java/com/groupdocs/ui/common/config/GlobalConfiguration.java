@@ -27,6 +27,10 @@ public class GlobalConfiguration extends Configuration{
 
     @Valid
     @JsonProperty
+    private CommonConfiguration common;
+
+    @Valid
+    @JsonProperty
     private ViewerConfiguration viewer;
 
     @Valid
@@ -39,6 +43,7 @@ public class GlobalConfiguration extends Configuration{
     public GlobalConfiguration(){
         server = new ServerConfiguration();
         application = new ApplicationConfiguration();
+        common = new CommonConfiguration();
         viewer = new ViewerConfiguration();
         signature = new SignatureConfiguration();
     }
@@ -57,6 +62,14 @@ public class GlobalConfiguration extends Configuration{
      */
     public ApplicationConfiguration getApplication() {
         return application;
+    }
+
+    /**
+     * Get signature configuration
+     * @return signature configuration
+     */
+    public CommonConfiguration getCommon() {
+        return common;
     }
 
     /**

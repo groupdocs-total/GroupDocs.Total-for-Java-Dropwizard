@@ -18,19 +18,19 @@
         <script type="text/javascript">
             $('#element').viewer({
                 applicationPath: 'http://${globalConfiguration.server.hostAddress}:${globalConfiguration.server.httpPort?c}/viewer',
-				defaultDocument: '${globalConfiguration.viewer.defaultDocument}',
+				defaultDocument: '${globalConfiguration.common.defaultDocument}',
 				htmlMode: ${globalConfiguration.viewer.htmlMode?c},
-                preloadPageCount: ${globalConfiguration.viewer.preloadPageCount?c},
+                preloadPageCount: ${globalConfiguration.common.preloadPageCount?c},
 				zoom : ${globalConfiguration.viewer.zoom?c},
-				pageSelector: ${globalConfiguration.viewer.pageSelector?c},
+				pageSelector: ${globalConfiguration.common.pageSelector?c},
 				search: ${globalConfiguration.viewer.search?c},
 				thumbnails: ${globalConfiguration.viewer.thumbnails?c},
 				rotate: ${globalConfiguration.viewer.rotate?c},
-				download: ${globalConfiguration.viewer.download?c},
-                upload: ${globalConfiguration.viewer.upload?c},
-                print: ${globalConfiguration.viewer.print?c},
-                browse: ${globalConfiguration.viewer.browse?c},
-                rewrite: ${globalConfiguration.viewer.rewrite?c}
+				download: ${globalConfiguration.common.download?c},
+                upload: ${globalConfiguration.common.upload?c},
+                print: ${globalConfiguration.common.print?c},
+                browse: ${globalConfiguration.common.browse?c},
+                rewrite: ${globalConfiguration.common.rewrite?c}
             });
         </script>
     </body>

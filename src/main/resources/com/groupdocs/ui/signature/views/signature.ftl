@@ -36,9 +36,9 @@
         <script type="text/javascript">
             $('#element').viewer({
                 applicationPath: 'http://${globalConfiguration.server.hostAddress}:${globalConfiguration.server.httpPort?c}/signature',
-                defaultDocument: '${globalConfiguration.common.defaultDocument}',
+                defaultDocument: '${globalConfiguration.signature.defaultDocument}',
                 htmlMode: false,
-                preloadPageCount: ${globalConfiguration.common.preloadPageCount?c},
+                preloadPageCount: ${globalConfiguration.signature.preloadPageCount?c},
                 zoom : false,
                 pageSelector: ${globalConfiguration.common.pageSelector?c},
                 search: false,

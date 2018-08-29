@@ -18,6 +18,14 @@ public class SignatureConfiguration extends CommonConfiguration{
 
     @Valid
     @JsonProperty
+    private String defaultDocument;
+
+    @Valid
+    @JsonProperty
+    private int preloadPageCount;
+
+    @Valid
+    @JsonProperty
     private String outputDirectory;
 
     @Valid
@@ -56,70 +64,6 @@ public class SignatureConfiguration extends CommonConfiguration{
     @JsonProperty
     private boolean downloadSigned;
 
-    public boolean getTextSignature() {
-        return textSignature;
-    }
-
-    public void setTextSignature(boolean textSignature) {
-        this.textSignature = textSignature;
-    }
-
-    public boolean getImageSignature() {
-        return imageSignature;
-    }
-
-    public void setImageSignature(boolean imageSignature) {
-        this.imageSignature = imageSignature;
-    }
-
-    public boolean getDigitalSignature() {
-        return digitalSignature;
-    }
-
-    public void setDigitalSignature(boolean digitalSignature) {
-        this.digitalSignature = digitalSignature;
-    }
-
-    public boolean getQrCodeSignature() {
-        return qrCodeSignature;
-    }
-
-    public void setQrCodeSignature(boolean qrCodeSignature) {
-        this.qrCodeSignature = qrCodeSignature;
-    }
-
-    public boolean getBarCodeSignature() {
-        return barCodeSignature;
-    }
-
-    public void setBarCodeSignature(boolean barCodeSignature) {
-        this.barCodeSignature = barCodeSignature;
-    }
-
-    public boolean getStampSignature() {
-        return stampSignature;
-    }
-
-    public void setStampSignature(boolean stampSignature) {
-        this.stampSignature = stampSignature;
-    }
-
-    public boolean getDownloadOriginal() {
-        return downloadOriginal;
-    }
-
-    public void setDownloadOriginal(boolean downloadOriginal) {
-        this.downloadOriginal = downloadOriginal;
-    }
-
-    public boolean getDownloadSigned() {
-        return downloadSigned;
-    }
-
-    public void setDownloadSigned(boolean downloadSigned) {
-        this.downloadSigned = downloadSigned;
-    }
-
     public String getFilesDirectory() {
         return filesDirectory;
     }
@@ -128,11 +72,99 @@ public class SignatureConfiguration extends CommonConfiguration{
         this.filesDirectory = filesDirectory;
     }
 
-    public String getDataDirectory() { return dataDirectory; }
+    public String getDefaultDocument() {
+        return defaultDocument;
+    }
 
-    public void setDataDirectory(String dataDirectory) { this.dataDirectory = dataDirectory; }
+    public void setDefaultDocument(String defaultDocument) {
+        this.defaultDocument = defaultDocument;
+    }
 
-    public String getOutputDirectory() { return outputDirectory; }
+    public int getPreloadPageCount() {
+        return preloadPageCount;
+    }
 
-    public void setOutputDirectory(String outputDirectory) { this.outputDirectory = outputDirectory; }
+    public void setPreloadPageCount(int preloadPageCount) {
+        this.preloadPageCount = preloadPageCount;
+    }
+
+    public String getOutputDirectory() {
+        return outputDirectory;
+    }
+
+    public void setOutputDirectory(String outputDirectory) {
+        this.outputDirectory = outputDirectory;
+    }
+
+    public String getDataDirectory() {
+        return dataDirectory;
+    }
+
+    public void setDataDirectory(String dataDirectory) {
+        this.dataDirectory = dataDirectory;
+    }
+
+    public boolean isTextSignature() {
+        return textSignature;
+    }
+
+    public void setTextSignature(boolean textSignature) {
+        this.textSignature = textSignature;
+    }
+
+    public boolean isImageSignature() {
+        return imageSignature;
+    }
+
+    public void setImageSignature(boolean imageSignature) {
+        this.imageSignature = imageSignature;
+    }
+
+    public boolean isDigitalSignature() {
+        return digitalSignature;
+    }
+
+    public void setDigitalSignature(boolean digitalSignature) {
+        this.digitalSignature = digitalSignature;
+    }
+
+    public boolean isQrCodeSignature() {
+        return qrCodeSignature;
+    }
+
+    public void setQrCodeSignature(boolean qrCodeSignature) {
+        this.qrCodeSignature = qrCodeSignature;
+    }
+
+    public boolean isBarCodeSignature() {
+        return barCodeSignature;
+    }
+
+    public void setBarCodeSignature(boolean barCodeSignature) {
+        this.barCodeSignature = barCodeSignature;
+    }
+
+    public boolean isStampSignature() {
+        return stampSignature;
+    }
+
+    public void setStampSignature(boolean stampSignature) {
+        this.stampSignature = stampSignature;
+    }
+
+    public boolean isDownloadOriginal() {
+        return downloadOriginal;
+    }
+
+    public void setDownloadOriginal(boolean downloadOriginal) {
+        this.downloadOriginal = downloadOriginal;
+    }
+
+    public boolean isDownloadSigned() {
+        return downloadSigned;
+    }
+
+    public void setDownloadSigned(boolean downloadSigned) {
+        this.downloadSigned = downloadSigned;
+    }
 }

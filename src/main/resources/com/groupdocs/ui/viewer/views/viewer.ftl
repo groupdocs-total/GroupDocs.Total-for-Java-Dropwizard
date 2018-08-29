@@ -18,9 +18,9 @@
         <script type="text/javascript">
             $('#element').viewer({
                 applicationPath: 'http://${globalConfiguration.server.hostAddress}:${globalConfiguration.server.httpPort?c}/viewer',
-				defaultDocument: '${globalConfiguration.common.defaultDocument}',
+				defaultDocument: '${globalConfiguration.viewer.defaultDocument}',
 				htmlMode: ${globalConfiguration.viewer.htmlMode?c},
-                preloadPageCount: ${globalConfiguration.common.preloadPageCount?c},
+                preloadPageCount: ${globalConfiguration.viewer.preloadPageCount?c},
 				zoom : ${globalConfiguration.viewer.zoom?c},
 				pageSelector: ${globalConfiguration.common.pageSelector?c},
 				search: ${globalConfiguration.viewer.search?c},

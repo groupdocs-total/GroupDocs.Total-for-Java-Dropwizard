@@ -23,6 +23,14 @@ public class ViewerConfiguration extends CommonConfiguration {
 
     @Valid
     @JsonProperty
+    private String defaultDocument;
+
+    @Valid
+    @JsonProperty
+    private int preloadPageCount;
+
+    @Valid
+    @JsonProperty
     private boolean zoom;
 
     @Valid
@@ -55,6 +63,22 @@ public class ViewerConfiguration extends CommonConfiguration {
 
     public void setFontsDirectory(String fontsDirectory) {
         this.fontsDirectory = fontsDirectory;
+    }
+
+    public String getDefaultDocument() {
+        return defaultDocument;
+    }
+
+    public void setDefaultDocument(String defaultDocument) {
+        this.defaultDocument = defaultDocument;
+    }
+
+    public int getPreloadPageCount() {
+        return preloadPageCount;
+    }
+
+    public void setPreloadPageCount(int preloadPageCount) {
+        this.preloadPageCount = preloadPageCount;
     }
 
     public boolean isZoom() {

@@ -15,10 +15,6 @@ public class CommonConfiguration extends Configuration {
 
     @Valid
     @JsonProperty
-    private int preloadPageCount;
-
-    @Valid
-    @JsonProperty
     private boolean pageSelector;
 
     @Valid
@@ -35,23 +31,11 @@ public class CommonConfiguration extends Configuration {
 
     @Valid
     @JsonProperty
-    private String defaultDocument;
-
-    @Valid
-    @JsonProperty
     private boolean browse;
 
     @Valid
     @JsonProperty
     private boolean rewrite;
-
-    public int getPreloadPageCount() {
-        return preloadPageCount;
-    }
-
-    public void setPreloadPageCount(int preloadPageCount) {
-        this.preloadPageCount = preloadPageCount;
-    }
 
     public boolean isPageSelector() {
         return pageSelector;
@@ -83,14 +67,6 @@ public class CommonConfiguration extends Configuration {
 
     public void setPrint(boolean print) {
         this.print = print;
-    }
-
-    public String getDefaultDocument() {
-        return defaultDocument;
-    }
-
-    public void setDefaultDocument(String defaultDocument) {
-        this.defaultDocument = defaultDocument;
     }
 
     public boolean isBrowse() {

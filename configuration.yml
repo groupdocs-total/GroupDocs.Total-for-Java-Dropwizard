@@ -22,13 +22,6 @@ application:
 # Common configurations
 ################################################
 common:
-  # Default document
-  # Absolute or relative path to default document
-  defaultDocument: ''
-  # Pages preload
-  # How many pages from a document should be loaded, remaining pages will be loaded on page scrolling
-  # Set 0 to load all pages at once
-  preloadPageCount: 0
   # File rewriting on document uploading
   # Set false to keep both files
   # Set true to replace files with same name
@@ -59,6 +52,13 @@ viewer:
   # Fonts path
   # Absolute path to custom fonts directory
   fontsDirectory: ''
+  # Default document
+  # Absolute or relative path to default document
+  defaultDocument: ''
+  # Pages preload
+  # How many pages from a document should be loaded, remaining pages will be loaded on page scrolling
+  # Set 0 to load all pages at once
+  preloadPageCount: 0
   # HTML rendering mode
   # Set false for image mode
   # Set true for HTML mode
@@ -86,6 +86,13 @@ signature:
   # Output directory path
   # Absolute path to signed files directory
   outputDirectory: ''
+  # Default document
+  # Absolute or relative path to default document
+  defaultDocument: ''
+  # Pages preload
+  # How many pages from a document should be loaded, remaining pages will be loaded on page scrolling
+  # Set 0 to load all pages at once
+  preloadPageCount: 0
   # Data directory path
   # Absolute path to signature cache files directory
   dataDirectory: ''

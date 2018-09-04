@@ -18,6 +18,14 @@ public class AnnotationConfiguration extends Configuration{
 
     @Valid
     @JsonProperty
+    private String defaultDocument;
+
+    @Valid
+    @JsonProperty
+    private int preloadPageCount;
+
+    @Valid
+    @JsonProperty
     private String outputDirectory;
 
     @Valid
@@ -90,6 +98,22 @@ public class AnnotationConfiguration extends Configuration{
 
     public void setFilesDirectory(String filesDirectory) {
         this.filesDirectory = filesDirectory;
+    }
+
+    public String getDefaultDocument() {
+        return defaultDocument;
+    }
+
+    public void setDefaultDocument(String defaultDocument) {
+        this.defaultDocument = defaultDocument;
+    }
+
+    public int getPreloadPageCount() {
+        return preloadPageCount;
+    }
+
+    public void setPreloadPageCount(int preloadPageCount) {
+        this.preloadPageCount = preloadPageCount;
     }
 
     public String getOutputDirectory() {

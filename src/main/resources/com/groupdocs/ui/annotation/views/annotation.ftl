@@ -25,19 +25,19 @@
         <script type="text/javascript">
             $('#element').viewer({
                 applicationPath: 'http://${globalConfiguration.server.hostAddress}:${globalConfiguration.server.httpPort?c}/annotation',
-                defaultDocument: '${globalConfiguration.viewer.defaultDocument}',
+                defaultDocument: '${globalConfiguration.annotation.defaultDocument}',
                 htmlMode: false,
-                preloadPageCount: ${globalConfiguration.viewer.preloadPageCount?c},
+                preloadPageCount: ${globalConfiguration.annotation.preloadPageCount?c},
                 zoom : false,
-                pageSelector: ${globalConfiguration.viewer.pageSelector?c},
+                pageSelector: ${globalConfiguration.common.pageSelector?c},
                 search: false,
                 thumbnails: false,
                 rotate: false,
-                download: ${globalConfiguration.viewer.download?c},
-                upload: ${globalConfiguration.viewer.upload?c},
-                print: ${globalConfiguration.viewer.print?c},
-                browse: ${globalConfiguration.viewer.browse?c},
-                rewrite: ${globalConfiguration.viewer.rewrite?c}
+                download: ${globalConfiguration.common.download?c},
+                upload: ${globalConfiguration.common.upload?c},
+                print: ${globalConfiguration.common.print?c},
+                browse: ${globalConfiguration.common.browse?c},
+                rewrite: ${globalConfiguration.common.rewrite?c}
             });
             $('#element').annotation({
                 textAnnotation: ${globalConfiguration.annotation.textAnnotation?c},

@@ -459,6 +459,15 @@ public class AnnotationResources extends Resources {
             case "textReplacement":
                 annotator = new TextReplacementAnnotator(annotationData);
                 break;
+            case "arrow":
+                annotator = new ArrowAnnotator(annotationData);
+                break;
+            case "textRedaction":
+                annotator = new TextRedactionAnnotator(annotationData);
+                break;
+            case "resourcesRedaction":
+                annotator = new ResourceRedactionAnnotator(annotationData);
+                break;
         }
         return annotator;
     }

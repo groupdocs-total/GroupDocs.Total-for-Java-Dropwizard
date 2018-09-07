@@ -32,7 +32,7 @@ public class PolylineAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateWord(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
@@ -51,7 +51,7 @@ public class PolylineAnnotator extends Annotator{
         polylineAnnotation.setType(AnnotationType.Polyline);
         polylineAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         // add replies
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -61,9 +61,9 @@ public class PolylineAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        polylineAnnotation.setReplies(replyes);
+        polylineAnnotation.setReplies(replies);
         return polylineAnnotation;
     }
 
@@ -72,7 +72,7 @@ public class PolylineAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
@@ -90,7 +90,7 @@ public class PolylineAnnotator extends Annotator{
         polylineAnnotation.setType(AnnotationType.Polyline);
         polylineAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         // add replies
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -100,9 +100,9 @@ public class PolylineAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        polylineAnnotation.setReplies(replyes);
+        polylineAnnotation.setReplies(replies);
         return polylineAnnotation;
     }
 
@@ -121,7 +121,7 @@ public class PolylineAnnotator extends Annotator{
         polylineAnnotation.setType(AnnotationType.Polyline);
         polylineAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         // add replies
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -131,9 +131,9 @@ public class PolylineAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        polylineAnnotation.setReplies(replyes);
+        polylineAnnotation.setReplies(replies);
         return polylineAnnotation;
     }
 
@@ -151,7 +151,7 @@ public class PolylineAnnotator extends Annotator{
         polylineAnnotation.setType(AnnotationType.Polyline);
         polylineAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         // add replies
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -161,9 +161,9 @@ public class PolylineAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        polylineAnnotation.setReplies(replyes);
+        polylineAnnotation.setReplies(replies);
         return polylineAnnotation;
     }
 }

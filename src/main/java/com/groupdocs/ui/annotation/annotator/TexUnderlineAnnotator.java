@@ -17,13 +17,13 @@ import java.util.TimeZone;
  * Annotates documents with the text annotation
  * @author Aspose Pty Ltd
  */
-public class TextRedactionAnnotator extends Annotator{
+public class TexUnderlineAnnotator extends Annotator{
 
     /**
      * Constructor
      * @param annotationData
      */
-    public TextRedactionAnnotator(AnnotationDataEntity annotationData){
+    public TexUnderlineAnnotator(AnnotationDataEntity annotationData){
         super(annotationData);
     }
 
@@ -35,13 +35,17 @@ public class TextRedactionAnnotator extends Annotator{
     @Override
     public AnnotationInfo annotateWord(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
         // init possible types of annotations
-        AnnotationInfo textRedactionAnnotation = new AnnotationInfo();
-        textRedactionAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
+        AnnotationInfo underlineAnnotation = new AnnotationInfo();
+        underlineAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
         double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
+        // calculation of the X-shift
         double topRightX = annotationData.getLeft() + annotationData.getWidth();
+        // calculation of the Y-shift
         double bottomRightY = topPosition - annotationData.getHeight();
-        textRedactionAnnotation.setSvgPath(
+        // set  draw annotation properties
+        underlineAnnotation.setBox(new Rectangle(annotationData.getLeft(), topPosition, annotationData.getWidth(), annotationData.getHeight()));
+        underlineAnnotation.setSvgPath(
                 "[{\"x\":" + annotationData.getLeft() +
                         ",\"y\":" + topPosition +
                         "},{\"x\":" + topRightX +
@@ -50,17 +54,21 @@ public class TextRedactionAnnotator extends Annotator{
                         ",\"y\":" + bottomRightY +
                         "},{\"x\":" + topRightX +
                         ",\"y\":" + bottomRightY + "}]");
-        textRedactionAnnotation.setType(AnnotationType.TextRedaction);
-        textRedactionAnnotation.setGuid(String.valueOf(annotationData.getId()));
+        // set annotation type
+        underlineAnnotation.setType(AnnotationType.TextUnderline);
+        // add annotation comment
         if(comment != null) {
-            textRedactionAnnotation.setText(comment.getText());
-            textRedactionAnnotation.setCreatorName(comment.getUserName());
+            underlineAnnotation.setText(comment.getText());
+            underlineAnnotation.setCreatorName(comment.getUserName());
+            // set date
             DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
             format.setTimeZone(TimeZone.getTimeZone("GMT"));
             Date date = format.parse(comment.getTime());
-            textRedactionAnnotation.setCreatedOn(date);
+            underlineAnnotation.setCreatedOn(date);
         }
-        return textRedactionAnnotation;
+        // set line color
+        underlineAnnotation.setPenColor(1201033);
+        return underlineAnnotation;
     }
 
     /**
@@ -69,46 +77,32 @@ public class TextRedactionAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotatePdf(DocumentInfoContainer info) throws ParseException {
-        // init possible types of annotations
-        AnnotationInfo textRedactionAnnotation = new AnnotationInfo();
-        textRedactionAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
-        // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
-        double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
-        double topRightX = annotationData.getLeft() + annotationData.getWidth();
-        double bottomRightY = topPosition - annotationData.getHeight();
-        textRedactionAnnotation.setSvgPath(
-                "[{\"x\":" + annotationData.getLeft() +
-                        ",\"y\":" + topPosition +
-                        "},{\"x\":" + topRightX +
-                        ",\"y\":" + topPosition +
-                        "},{\"x\":" + annotationData.getLeft() +
-                        ",\"y\":" + bottomRightY +
-                        "},{\"x\":" + topRightX +
-                        ",\"y\":" + bottomRightY + "}]");
-        textRedactionAnnotation.setType(AnnotationType.TextRedaction);
-        textRedactionAnnotation.setGuid( String.valueOf(annotationData.getId()));
-        textRedactionAnnotation.setText(annotationData.getComments()[0].getText());
-        textRedactionAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        AnnotationInfo underlineAnnotation = new AnnotationInfo();
+        underlineAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
+        underlineAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
+        underlineAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
+        underlineAnnotation.setPenColor(1201033);
+        underlineAnnotation.setType(AnnotationType.TextUnderline);
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            underlineAnnotation.setReplies(replies);
+
         }
-        textRedactionAnnotation.setReplies(replies);
-        return textRedactionAnnotation;
+        return underlineAnnotation;
     }
 
     /**
-     * Add area annnotation into the Excel document
-     * @param info
-     * @param comment
+     * This file type doesn't supported for the current annotation type
      */
     @Override
     public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
@@ -121,7 +115,40 @@ public class TextRedactionAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateSlides(DocumentInfoContainer info) throws ParseException {
-        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
+        AnnotationInfo underlineAnnotation = new AnnotationInfo();
+        underlineAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
+        double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
+        double topRightX = annotationData.getLeft() + annotationData.getWidth();
+        double bottomRightY = topPosition - annotationData.getHeight();
+        underlineAnnotation.setBox(new Rectangle(annotationData.getLeft(), topPosition, annotationData.getWidth(), annotationData.getHeight()));
+        underlineAnnotation.setSvgPath(
+                "[{\"x\":" + annotationData.getLeft() +
+                        ",\"y\":" + topPosition +
+                        "},{\"x\":" + topRightX +
+                        ",\"y\":" + topPosition +
+                        "},{\"x\":" + annotationData.getLeft() +
+                        ",\"y\":" + bottomRightY +
+                        "},{\"x\":" + topRightX +
+                        ",\"y\":" + bottomRightY + "}]");
+        underlineAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
+        underlineAnnotation.setPenColor(0);
+        underlineAnnotation.setType(AnnotationType.TextUnderline);
+        underlineAnnotation.setText(annotationData.getComments()[0].getText());
+        underlineAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+        for(int i = 1; i < annotationData.getComments().length; i++) {
+            AnnotationReplyInfo reply = new AnnotationReplyInfo();
+            reply.setMessage(annotationData.getComments()[i].getText());
+            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+            format.setTimeZone(TimeZone.getTimeZone("GMT"));
+            Date date = format.parse(annotationData.getComments()[i].getTime());
+            reply.setRepliedOn(date);
+            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
+            reply.setUserName(annotationData.getComments()[i].getUserName());
+            replies[i] = reply;
+        }
+        underlineAnnotation.setReplies(replies);
+        return underlineAnnotation;
     }
 
     /**

@@ -87,7 +87,7 @@ public class TexStrikeoutAnnotator extends Annotator{
         strikeoutAnnotation.setType(AnnotationType.TextStrikeout);
         strikeoutAnnotation.setText(annotationData.getComments()[0].getText());
         strikeoutAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -97,9 +97,9 @@ public class TexStrikeoutAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setUserName(annotationData.getComments()[i].getUserName());
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        strikeoutAnnotation.setReplies(replyes);
+        strikeoutAnnotation.setReplies(replies);
         return strikeoutAnnotation;
     }
 
@@ -108,7 +108,7 @@ public class TexStrikeoutAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
@@ -137,7 +137,7 @@ public class TexStrikeoutAnnotator extends Annotator{
         strikeoutAnnotation.setType(AnnotationType.TextStrikeout);
         strikeoutAnnotation.setText(annotationData.getComments()[0].getText());
         strikeoutAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -147,9 +147,9 @@ public class TexStrikeoutAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        strikeoutAnnotation.setReplies(replyes);
+        strikeoutAnnotation.setReplies(replies);
         return strikeoutAnnotation;
     }
 
@@ -158,7 +158,7 @@ public class TexStrikeoutAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateImage(DocumentInfoContainer info) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
@@ -166,6 +166,6 @@ public class TexStrikeoutAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 }

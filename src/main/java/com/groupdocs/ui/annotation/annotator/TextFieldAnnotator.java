@@ -74,7 +74,7 @@ public class TextFieldAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**

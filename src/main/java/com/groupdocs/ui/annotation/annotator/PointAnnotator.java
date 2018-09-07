@@ -36,7 +36,7 @@ public class PointAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateWord(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
@@ -56,7 +56,7 @@ public class PointAnnotator extends Annotator{
         // sert annotation type
         pointAnnotation.setType(AnnotationType.Point);
         // add replies
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -66,9 +66,9 @@ public class PointAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        pointAnnotation.setReplies(replyes);
+        pointAnnotation.setReplies(replies);
         return pointAnnotation;
     }
 
@@ -77,7 +77,7 @@ public class PointAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
@@ -97,7 +97,7 @@ public class PointAnnotator extends Annotator{
         // set type
         pointAnnotation.setType(AnnotationType.Point);
         // add replies
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -107,9 +107,9 @@ public class PointAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        pointAnnotation.setReplies(replyes);
+        pointAnnotation.setReplies(replies);
         return pointAnnotation;
     }
 
@@ -125,7 +125,7 @@ public class PointAnnotator extends Annotator{
         pointAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         pointAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         pointAnnotation.setType(AnnotationType.Point);
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -135,9 +135,9 @@ public class PointAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        pointAnnotation.setReplies(replyes);
+        pointAnnotation.setReplies(replies);
         return pointAnnotation;
     }
 
@@ -146,6 +146,6 @@ public class PointAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 }

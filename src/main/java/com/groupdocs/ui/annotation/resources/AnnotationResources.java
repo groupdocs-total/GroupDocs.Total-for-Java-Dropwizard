@@ -361,6 +361,7 @@ public class AnnotationResources extends Resources {
     @Consumes(APPLICATION_JSON)
     public AnnotatedDocumentEntity annotate(AnnotateDocumentRequest annotateDocumentRequest) {
         String password = "";
+        Exception notSupportedException = null;
         try {
             // get/set parameters
             String documentGuid = annotateDocumentRequest.getGuid();
@@ -385,7 +386,8 @@ public class AnnotationResources extends Resources {
                 try {
                     addAnnotationOptions(annotationsData[0].getDocumentType(), info, annotations, annotator, annotationsData[i]);
                 } catch (Exception ex){
-                    if(ex.getMessage().equals("This file type is not supported")){
+                    if(ex.getMessage().equals("Annotation of type " + annotationsData[i].getType() + " for this file type is not supported")){
+                        notSupportedException = ex;
                         continue;
                     } else {
                         throw new TotalGroupDocsException(ex.getMessage(), ex);
@@ -426,7 +428,7 @@ public class AnnotationResources extends Resources {
                 result.close();
                 return annotatedDocument;
             } else {
-                throw new NotSupportedException("This file type is not supported");
+                throw new NotSupportedException(notSupportedException.getMessage(), notSupportedException);
             }
         }catch (Exception ex){
             throw new TotalGroupDocsException(ex.getMessage(), ex);
@@ -467,6 +469,12 @@ public class AnnotationResources extends Resources {
                 break;
             case "resourcesRedaction":
                 annotator = new ResourceRedactionAnnotator(annotationData);
+                break;
+            case "textUnderline":
+                annotator = new TexUnderlineAnnotator(annotationData);
+                break;
+            case "distance":
+                annotator = new DistanceAnnotator(annotationData);
                 break;
         }
         return annotator;

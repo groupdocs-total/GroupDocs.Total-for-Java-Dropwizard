@@ -103,7 +103,7 @@ public class ArrowAnnotator extends Annotator{
         // sert annotation type
         arrowAnnotation.setType(AnnotationType.Arrow);
         // add replies
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -113,9 +113,9 @@ public class ArrowAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        arrowAnnotation.setReplies(replyes);
+        arrowAnnotation.setReplies(replies);
         return arrowAnnotation;
     }
 
@@ -124,7 +124,7 @@ public class ArrowAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
@@ -161,7 +161,7 @@ public class ArrowAnnotator extends Annotator{
         arrowAnnotation.setType(AnnotationType.Arrow);
         arrowAnnotation.setBackgroundColor(15988609);
         // add replies
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -171,9 +171,9 @@ public class ArrowAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        arrowAnnotation.setReplies(replyes);
+        arrowAnnotation.setReplies(replies);
         return arrowAnnotation;
     }
 
@@ -209,7 +209,7 @@ public class ArrowAnnotator extends Annotator{
         arrowAnnotation.setType(AnnotationType.Arrow);
         arrowAnnotation.setBackgroundColor(15988609);
         // add replies
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -219,9 +219,9 @@ public class ArrowAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        arrowAnnotation.setReplies(replyes);
+        arrowAnnotation.setReplies(replies);
         return arrowAnnotation;
     }
 
@@ -258,7 +258,7 @@ public class ArrowAnnotator extends Annotator{
         arrowAnnotation.setType(AnnotationType.Arrow);
         arrowAnnotation.setBackgroundColor(15988609);
         // add replies
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -268,9 +268,9 @@ public class ArrowAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        arrowAnnotation.setReplies(replyes);
+        arrowAnnotation.setReplies(replies);
         return arrowAnnotation;
     }
 }

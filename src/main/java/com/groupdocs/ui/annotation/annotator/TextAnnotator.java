@@ -81,7 +81,7 @@ public class TextAnnotator extends Annotator{
         textAnnotation.setGuid( String.valueOf(annotationData.getId()));
         textAnnotation.setText(annotationData.getComments()[0].getText());
         textAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -91,9 +91,9 @@ public class TextAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        textAnnotation.setReplies(replyes);
+        textAnnotation.setReplies(replies);
         return textAnnotation;
     }
 
@@ -146,7 +146,7 @@ public class TextAnnotator extends Annotator{
         textAnnotation.setGuid( String.valueOf(annotationData.getId()));
         textAnnotation.setText(annotationData.getComments()[0].getText());
         textAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
-        AnnotationReplyInfo[] replyes = new AnnotationReplyInfo[annotationData.getComments().length];
+        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
         for(int i = 1; i < annotationData.getComments().length; i++) {
             AnnotationReplyInfo reply = new AnnotationReplyInfo();
             reply.setMessage(annotationData.getComments()[i].getText());
@@ -156,9 +156,9 @@ public class TextAnnotator extends Annotator{
             reply.setRepliedOn(date);
             reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
             reply.setUserName(annotationData.getComments()[i].getUserName());
-            replyes[i] = reply;
+            replies[i] = reply;
         }
-        textAnnotation.setReplies(replyes);
+        textAnnotation.setReplies(replies);
         return textAnnotation;
     }
 
@@ -167,7 +167,7 @@ public class TextAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateImage(DocumentInfoContainer info) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
@@ -175,6 +175,6 @@ public class TextAnnotator extends Annotator{
      */
     @Override
     public AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws ParseException {
-        throw new NotSupportedException("This file type is not supported");
+        throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 }

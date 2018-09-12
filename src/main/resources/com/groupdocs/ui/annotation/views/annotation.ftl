@@ -7,18 +7,22 @@
         <link type="text/css" rel="stylesheet" href="assets/common/css/swiper.min.css">
         <link type="text/css" rel="stylesheet" href="assets/common/css/jquery-ui.min.css"/>
         <link type="text/css" rel="stylesheet" href="assets/common/css/circle-progress.css"/>
-        <link type="text/css" rel="stylesheet" href="assets/common/css/jquery.svg.css"/>
         <link type="text/css" rel="stylesheet" href="assets/viewer/css/viewer.css"/>
         <link type="text/css" rel="stylesheet" href="assets/viewer/css/viewer.mobile.css"/>
         <link type="text/css" rel="stylesheet" href="assets/viewer/css/viewer-dark.css"/>
         <link type="text/css" rel="stylesheet" href="assets/annotation/css/annotation.css"/>
         <script type="text/javascript" src="assets/common/js/jquery.min.js"></script>
-        <script type="text/javascript" src="assets/common/js/jquery.svg.js"></script>
         <script type="text/javascript" src="assets/common/js/swiper.min.js"></script>
         <script type="text/javascript" src="assets/common/js/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="assets/viewer/js/viewer.js"></script>
-        <script type="text/javascript" src="assets/annotation/js/annotation.js"></script>
         <script type="text/javascript" src="assets/common/js/jquery.ui.touch-punch.min.js"></script>
+        <script type="text/javascript" src="assets/common/js/jquery.initialize.min.js"></script>
+        <script type="text/javascript" src="assets/viewer/js/viewer.js"></script>
+        <script type="text/javascript" src="assets/annotation/js/svg.min.js"></script>
+        <script type="text/javascript" src="assets/annotation/js/svg.draw.js"></script>
+        <script type="text/javascript" src="assets/annotation/js/drawSvgAnnotation.js"></script>
+        <script type="text/javascript" src="assets/annotation/js/drawTextAnnotation.js"></script>
+        <script type="text/javascript" src="assets/annotation/js/drawFieldAnnotation.js"></script>
+        <script type="text/javascript" src="assets/annotation/js/annotation.js"></script>
     </head>
     <body>
         <div id="element"></div>

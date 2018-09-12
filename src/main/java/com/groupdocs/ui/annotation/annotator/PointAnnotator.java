@@ -56,19 +56,20 @@ public class PointAnnotator extends Annotator{
         // sert annotation type
         pointAnnotation.setType(AnnotationType.Point);
         // add replies
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            pointAnnotation.setReplies(replies);
         }
-        pointAnnotation.setReplies(replies);
         return pointAnnotation;
     }
 
@@ -97,19 +98,20 @@ public class PointAnnotator extends Annotator{
         // set type
         pointAnnotation.setType(AnnotationType.Point);
         // add replies
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            pointAnnotation.setReplies(replies);
         }
-        pointAnnotation.setReplies(replies);
         return pointAnnotation;
     }
 
@@ -125,19 +127,20 @@ public class PointAnnotator extends Annotator{
         pointAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         pointAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         pointAnnotation.setType(AnnotationType.Point);
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            pointAnnotation.setReplies(replies);
         }
-        pointAnnotation.setReplies(replies);
         return pointAnnotation;
     }
 

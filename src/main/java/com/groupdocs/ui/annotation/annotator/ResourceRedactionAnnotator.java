@@ -59,24 +59,20 @@ public class ResourceRedactionAnnotator extends Annotator{
         AnnotationInfo resourceRedactionAnnotation = new AnnotationInfo();
         // set annotation X, Y position
         resourceRedactionAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
-        // initiate reply info array
-        AnnotationReplyInfo[] annotationReplyInfos = new AnnotationReplyInfo[annotationData.getComments().length];
-        // add each reply
-        for(int i = 0; i < annotationData.getComments().length; i++){
-            // reply info object
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            // convert date time string into the date object
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            // set reply text
-            reply.setMessage(annotationData.getComments()[i].getText());
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            annotationReplyInfos[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            resourceRedactionAnnotation.setReplies(replies);
         }
-        // add all replies
-        resourceRedactionAnnotation.setReplies(annotationReplyInfos);
         // draw annotation options
         resourceRedactionAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         // set page number to add annotation
@@ -105,18 +101,20 @@ public class ResourceRedactionAnnotator extends Annotator{
         // set page number
         resourceRedactionAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         // add replies
-        AnnotationReplyInfo[] annotationReplyInfos = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 0; i < annotationData.getComments().length; i++){
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setMessage(annotationData.getComments()[i].getText());
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            annotationReplyInfos[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            resourceRedactionAnnotation.setReplies(replies);
         }
-        resourceRedactionAnnotation.setReplies(annotationReplyInfos);
         // set annotation type
         resourceRedactionAnnotation.setType(AnnotationType.ResourcesRedaction);
         // set draw annotation properties
@@ -135,18 +133,20 @@ public class ResourceRedactionAnnotator extends Annotator{
         // set page number
         resourceRedactionAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         // add replies
-        AnnotationReplyInfo[] annotationReplyInfos = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 0; i < annotationData.getComments().length; i++){
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setMessage(annotationData.getComments()[i].getText());
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            annotationReplyInfos[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            resourceRedactionAnnotation.setReplies(replies);
         }
-        resourceRedactionAnnotation.setReplies(annotationReplyInfos);
         // set annotation type
         resourceRedactionAnnotation.setType(AnnotationType.ResourcesRedaction);
         // set draw annotation properties
@@ -165,18 +165,20 @@ public class ResourceRedactionAnnotator extends Annotator{
         // set page number
         resourceRedactionAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         // add replies
-        AnnotationReplyInfo[] annotationReplyInfos = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 0; i < annotationData.getComments().length; i++){
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setMessage(annotationData.getComments()[i].getText());
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            annotationReplyInfos[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            resourceRedactionAnnotation.setReplies(replies);
         }
-        resourceRedactionAnnotation.setReplies(annotationReplyInfos);
         // set annotation type
         resourceRedactionAnnotation.setType(AnnotationType.ResourcesRedaction);
         // set draw annotation properties

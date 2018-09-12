@@ -42,28 +42,26 @@ public class PolylineAnnotator extends Annotator{
     @Override
     public AnnotationInfo annotatePdf(DocumentInfoContainer info) throws ParseException {
         AnnotationInfo polylineAnnotation = new AnnotationInfo();
-        polylineAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
-        polylineAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         polylineAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         polylineAnnotation.setPenColor(1201033);
         polylineAnnotation.setPenWidth((byte) 2);
         polylineAnnotation.setSvgPath(annotationData.getSvgPath());
         polylineAnnotation.setType(AnnotationType.Polyline);
-        polylineAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         // add replies
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            polylineAnnotation.setReplies(replies);
         }
-        polylineAnnotation.setReplies(replies);
         return polylineAnnotation;
     }
 
@@ -82,7 +80,6 @@ public class PolylineAnnotator extends Annotator{
     @Override
     public AnnotationInfo annotateSlides(DocumentInfoContainer info) throws ParseException {
         AnnotationInfo polylineAnnotation = new AnnotationInfo();
-        polylineAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         polylineAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         polylineAnnotation.setPenColor(1201033);
         polylineAnnotation.setPenWidth((byte) 2);
@@ -90,19 +87,20 @@ public class PolylineAnnotator extends Annotator{
         polylineAnnotation.setType(AnnotationType.Polyline);
         polylineAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         // add replies
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            polylineAnnotation.setReplies(replies);
         }
-        polylineAnnotation.setReplies(replies);
         return polylineAnnotation;
     }
 
@@ -113,27 +111,26 @@ public class PolylineAnnotator extends Annotator{
     @Override
     public AnnotationInfo annotateImage(DocumentInfoContainer info) throws ParseException {
         AnnotationInfo polylineAnnotation = new AnnotationInfo();
-        // polylineAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         polylineAnnotation.setPenColor(1201033);
         polylineAnnotation.setPenWidth((byte) 2);
         polylineAnnotation.setSvgPath(annotationData.getSvgPath());
-        polylineAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         polylineAnnotation.setType(AnnotationType.Polyline);
         polylineAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         // add replies
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            polylineAnnotation.setReplies(replies);
         }
-        polylineAnnotation.setReplies(replies);
         return polylineAnnotation;
     }
 
@@ -143,7 +140,6 @@ public class PolylineAnnotator extends Annotator{
     @Override
     public AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws ParseException {
         AnnotationInfo polylineAnnotation = new AnnotationInfo();
-        polylineAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         polylineAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         polylineAnnotation.setPenColor(1201033);
         polylineAnnotation.setPenWidth((byte) 2);
@@ -151,19 +147,20 @@ public class PolylineAnnotator extends Annotator{
         polylineAnnotation.setType(AnnotationType.Polyline);
         polylineAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
         // add replies
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            polylineAnnotation.setReplies(replies);
         }
-        polylineAnnotation.setReplies(replies);
         return polylineAnnotation;
     }
 }

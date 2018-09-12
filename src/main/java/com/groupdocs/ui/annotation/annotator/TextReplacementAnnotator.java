@@ -54,13 +54,15 @@ public class TextReplacementAnnotator extends Annotator{
         textReplacementAnnotation.setType(AnnotationType.TextReplacement);
         textReplacementAnnotation.setGuid(String.valueOf(annotationData.getId()));
         textReplacementAnnotation.setFieldText(annotationData.getText());
-        textReplacementAnnotation.setText(comment.getText());
-        textReplacementAnnotation.setFontSize(10);
-        textReplacementAnnotation.setCreatorName(comment.getUserName());
-        DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        Date date = format.parse(comment.getTime());
-        textReplacementAnnotation.setCreatedOn(date);
+        if (comment != null) {
+            textReplacementAnnotation.setText(comment.getText());
+            textReplacementAnnotation.setFontSize(10);
+            textReplacementAnnotation.setCreatorName(comment.getUserName());
+            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+            format.setTimeZone(TimeZone.getTimeZone("GMT"));
+            Date date = format.parse(comment.getTime());
+            textReplacementAnnotation.setCreatedOn(date);
+        }
         return textReplacementAnnotation;
     }
 
@@ -78,22 +80,34 @@ public class TextReplacementAnnotator extends Annotator{
         textReplacementAnnotation.setBox(new Rectangle(annotationData.getLeft(), topPosition,  annotationData.getWidth(),  annotationData.getHeight()));
         textReplacementAnnotation.setType(AnnotationType.TextReplacement);
         textReplacementAnnotation.setGuid( String.valueOf(annotationData.getId()));
-        textReplacementAnnotation.setText(annotationData.getComments()[0].getText());
         textReplacementAnnotation.setFieldText(annotationData.getText());
-        textReplacementAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        double topRightX = annotationData.getLeft() + annotationData.getWidth();
+        double bottomRightY = topPosition - annotationData.getHeight();
+        textReplacementAnnotation.setSvgPath(
+                "[{\"x\":" + annotationData.getLeft() +
+                        ",\"y\":" + topPosition +
+                        "},{\"x\":" + topRightX +
+                        ",\"y\":" + topPosition +
+                        "},{\"x\":" + annotationData.getLeft() +
+                        ",\"y\":" + bottomRightY +
+                        "},{\"x\":" + topRightX +
+                        ",\"y\":" + bottomRightY + "}]");
+        textReplacementAnnotation.setGuid( String.valueOf(annotationData.getId()));
+        // add replies
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            textReplacementAnnotation.setReplies(replies);
         }
-        textReplacementAnnotation.setReplies(replies);
         return textReplacementAnnotation;
     }
 

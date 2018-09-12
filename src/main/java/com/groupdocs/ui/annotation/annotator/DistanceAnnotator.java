@@ -47,27 +47,14 @@ public class DistanceAnnotator extends Annotator{
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
         double startY =  Double.parseDouble(startPoint.split(",")[1]);
-        double endX =  Double.parseDouble(endPoint.split(",")[0]);
-        double endY =  Double.parseDouble(endPoint.split(",")[1]);
-        double positionShift = 0;
-        if(startX > endX){
-            positionShift = startX - endX;
-            endX = -positionShift;
-        } else {
-            endX = endX - startX;
-        }
-        if(startY > endY){
-            positionShift = startY - endY;
-            endY = -positionShift;
-        } else {
-            endY = endY - startY;
-        }
+        double endX =  Double.parseDouble(endPoint.split(",")[0]) - startX;
+        double endY =  Double.parseDouble(endPoint.split(",")[1]) - startY;
         // set annotation position
-        distanceAnnotation.setAnnotationPosition(new Point(startX, startY));
+        distanceAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
         distanceAnnotation.setBox(new Rectangle(startX, startY, endX, endY));
         //set page number
         distanceAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
-        distanceAnnotation.setSvgPath(annotationData.getSvgPath());
+        distanceAnnotation.setSvgPath("M" + startX + "," + startY  + "L" + endX + "," + endY);
         // sert annotation type
         distanceAnnotation.setType(AnnotationType.Distance);
         // add replies
@@ -88,6 +75,8 @@ public class DistanceAnnotator extends Annotator{
                 replies[i] = reply;
             }
             distanceAnnotation.setReplies(replies);
+        } else {
+            distanceAnnotation.setFieldText(annotationData.getText());
         }
         return distanceAnnotation;
     }
@@ -117,26 +106,17 @@ public class DistanceAnnotator extends Annotator{
     public AnnotationInfo annotateImage(DocumentInfoContainer info) throws ParseException {
         // init annotation object
         AnnotationInfo distanceAnnotation = new AnnotationInfo();
+        // set draw annotation properties
         String startPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[0];
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
         double startY =  Double.parseDouble(startPoint.split(",")[1]);
-        double endX =  Double.parseDouble(endPoint.split(",")[0]);
-        double endY =  Double.parseDouble(endPoint.split(",")[1]);
-        double positionShift = 0;
-        if(startX > endX){
-            positionShift = startX - endX;
-            endX = -positionShift;
-        } else {
-            endX = endX - startX;
-        }
-        if(startY > endY){
-            positionShift = startY - endY;
-            endY = -positionShift;
-        } else {
-            endY = endY - startY;
-        }
-        distanceAnnotation.setBox(new Rectangle(startX, startY, endX, endY));        
+        double endX =  Double.parseDouble(endPoint.split(",")[0]) - startX;
+        double endY =  Double.parseDouble(endPoint.split(",")[1]) - startY;
+        // set annotation position
+        distanceAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
+        distanceAnnotation.setBox(new Rectangle(startX, startY, endX, endY));
+        distanceAnnotation.setSvgPath("M" + startX + "," + startY  + "L" + endX + "," + endY);
         // set type
         distanceAnnotation.setType(AnnotationType.Distance);
         distanceAnnotation.setBackgroundColor(15988609);
@@ -158,6 +138,8 @@ public class DistanceAnnotator extends Annotator{
                 replies[i] = reply;
             }
             distanceAnnotation.setReplies(replies);
+        } else {
+            distanceAnnotation.setFieldText(annotationData.getText());
         }
         return distanceAnnotation;
     }
@@ -169,45 +151,43 @@ public class DistanceAnnotator extends Annotator{
     public AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws ParseException {
         // init annotation object
         AnnotationInfo distanceAnnotation = new AnnotationInfo();
+        // set draw annotation properties
         String startPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[0];
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
         double startY =  Double.parseDouble(startPoint.split(",")[1]);
-        double endX =  Double.parseDouble(endPoint.split(",")[0]);
-        double endY =  Double.parseDouble(endPoint.split(",")[1]);
-        double positionShift = 0;
-        if(startX > endX){
-            positionShift = startX - endX;
-            endX = -positionShift;
-        } else {
-            endX = endX - startX;
-        }
-        if(startY > endY){
-            positionShift = startY - endY;
-            endY = -positionShift;
-        } else {
-            endY = endY - startY;
-        }
+        double endX =  Double.parseDouble(endPoint.split(",")[0]) - startX;
+        double endY =  Double.parseDouble(endPoint.split(",")[1]) - startY;
+        // set annotation position
+        distanceAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
         distanceAnnotation.setBox(new Rectangle(startX, startY, endX, endY));
+        distanceAnnotation.setSvgPath("M" + startX + "," + startY  + "L" + endX + "," + endY);
         //set page number
         distanceAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         // set type
         distanceAnnotation.setType(AnnotationType.Distance);
         distanceAnnotation.setBackgroundColor(15988609);
         // add replies
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                if(i == 0){
+                    reply.setMessage(annotationData.getText() + " " + annotationData.getComments()[i].getText());
+                } else {
+                    reply.setMessage(annotationData.getComments()[i].getText());
+                }
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            distanceAnnotation.setReplies(replies);
+        } else {
+            distanceAnnotation.setFieldText(annotationData.getText());
         }
-        distanceAnnotation.setReplies(replies);
         return distanceAnnotation;
     }
 }

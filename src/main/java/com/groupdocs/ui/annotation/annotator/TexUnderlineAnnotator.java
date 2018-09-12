@@ -83,6 +83,21 @@ public class TexUnderlineAnnotator extends Annotator{
         underlineAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         underlineAnnotation.setPenColor(1201033);
         underlineAnnotation.setType(AnnotationType.TextUnderline);
+        // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
+        double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
+        double topRightX = annotationData.getLeft() + annotationData.getWidth();
+        double bottomRightY = topPosition - annotationData.getHeight();
+        underlineAnnotation.setSvgPath(
+                "[{\"x\":" + annotationData.getLeft() +
+                        ",\"y\":" + topPosition +
+                        "},{\"x\":" + topRightX +
+                        ",\"y\":" + topPosition +
+                        "},{\"x\":" + annotationData.getLeft() +
+                        ",\"y\":" + bottomRightY +
+                        "},{\"x\":" + topRightX +
+                        ",\"y\":" + bottomRightY + "}]");
+        underlineAnnotation.setGuid( String.valueOf(annotationData.getId()));
+        // add replies
         if(annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
@@ -96,7 +111,6 @@ public class TexUnderlineAnnotator extends Annotator{
                 replies[i] = reply;
             }
             underlineAnnotation.setReplies(replies);
-
         }
         return underlineAnnotation;
     }
@@ -133,21 +147,20 @@ public class TexUnderlineAnnotator extends Annotator{
         underlineAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         underlineAnnotation.setPenColor(0);
         underlineAnnotation.setType(AnnotationType.TextUnderline);
-        underlineAnnotation.setText(annotationData.getComments()[0].getText());
-        underlineAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            underlineAnnotation.setReplies(replies);
         }
-        underlineAnnotation.setReplies(replies);
         return underlineAnnotation;
     }
 

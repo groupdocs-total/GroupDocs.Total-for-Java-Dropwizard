@@ -37,23 +37,14 @@ public class ArrowAnnotator extends Annotator{
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
         double startY =  Double.parseDouble(startPoint.split(",")[1]);
-        double endX =  Double.parseDouble(endPoint.split(",")[0]);
-        double endY =  Double.parseDouble(endPoint.split(",")[1]);
-        double positionShift = 0;
-        if(startX > endX){
-            positionShift = startX - endX;
-            endX = -positionShift;
-        } else {
-            endX = endX - startX;
-        }
-        if(startY > endY){
-            positionShift = startY - endY;
-            endY = -positionShift;
-        } else {
-            endY = endY - startY;
-        }
+        double endX =  Double.parseDouble(endPoint.split(",")[0]) - startX;
+        double endY =  Double.parseDouble(endPoint.split(",")[1]) - startY;
+        // set annotation position
+        arrowAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
         arrowAnnotation.setBox(new Rectangle(startX, startY, endX, endY));
+        //set page number
         arrowAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
+        arrowAnnotation.setSvgPath("M" + startX + "," + startY  + "L" + endX + "," + endY);
         // add annotation comment
         DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -79,43 +70,31 @@ public class ArrowAnnotator extends Annotator{
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
         double startY =  Double.parseDouble(startPoint.split(",")[1]);
-        double endX =  Double.parseDouble(endPoint.split(",")[0]);
-        double endY =  Double.parseDouble(endPoint.split(",")[1]);
-        double positionShift = 0;
-        if(startX > endX){
-            positionShift = startX - endX;
-            endX = -positionShift;
-        } else {
-            endX = endX - startX;
-        }
-        if(startY > endY){
-            positionShift = startY - endY;
-            endY = -positionShift;
-        } else {
-            endY = endY - startY;
-        }
+        double endX =  Double.parseDouble(endPoint.split(",")[0]) - startX;
+        double endY =  Double.parseDouble(endPoint.split(",")[1]) - startY;
         // set annotation position
-        arrowAnnotation.setAnnotationPosition(new Point(startX, startY));
+        arrowAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
         arrowAnnotation.setBox(new Rectangle(startX, startY, endX, endY));
         //set page number
         arrowAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
-        arrowAnnotation.setSvgPath(annotationData.getSvgPath());
+        arrowAnnotation.setSvgPath("M" + startX + "," + startY  + "L" + endX + "," + endY);
         // sert annotation type
         arrowAnnotation.setType(AnnotationType.Arrow);
         // add replies
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            arrowAnnotation.setReplies(replies);
         }
-        arrowAnnotation.setReplies(replies);
         return arrowAnnotation;
     }
 
@@ -139,24 +118,14 @@ public class ArrowAnnotator extends Annotator{
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
         double startY =  Double.parseDouble(startPoint.split(",")[1]);
-        double endX =  Double.parseDouble(endPoint.split(",")[0]);
-        double endY =  Double.parseDouble(endPoint.split(",")[1]);
-        double positionShift = 0;
-        if(startX > endX){
-            positionShift = startX - endX;
-            endX = -positionShift;
-        } else {
-            endX = endX - startX;
-        }
-        if(startY > endY){
-            positionShift = startY - endY;
-            endY = -positionShift;
-        } else {
-            endY = endY - startY;
-        }
+        double endX =  Double.parseDouble(endPoint.split(",")[0]) - startX;
+        double endY =  Double.parseDouble(endPoint.split(",")[1]) - startY;
+        // set annotation position
+        arrowAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
         arrowAnnotation.setBox(new Rectangle(startX, startY, endX, endY));
         //set page number
         arrowAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
+        arrowAnnotation.setSvgPath("M" + startX + "," + startY  + "L" + endX + "," + endY);
         // set type
         arrowAnnotation.setType(AnnotationType.Arrow);
         arrowAnnotation.setBackgroundColor(15988609);
@@ -189,39 +158,33 @@ public class ArrowAnnotator extends Annotator{
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
         double startY =  Double.parseDouble(startPoint.split(",")[1]);
-        double endX =  Double.parseDouble(endPoint.split(",")[0]);
-        double endY =  Double.parseDouble(endPoint.split(",")[1]);
-        double positionShift = 0;
-        if(startX > endX){
-            positionShift = startX - endX;
-            endX = -positionShift;
-        } else {
-            endX = endX - startX;
-        }
-        if(startY > endY){
-            positionShift = startY - endY;
-            endY = -positionShift;
-        } else {
-            endY = endY - startY;
-        }
-        arrowAnnotation.setBox(new Rectangle(startX, startY, endX, endY));        
+        double endX =  Double.parseDouble(endPoint.split(",")[0]) - startX;
+        double endY =  Double.parseDouble(endPoint.split(",")[1]) - startY;
+        // set annotation position
+        arrowAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
+        arrowAnnotation.setBox(new Rectangle(startX, startY, endX, endY));
+        //set page number
+        arrowAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
+        arrowAnnotation.setSvgPath("M" + startX + "," + startY  + "L" + endX + "," + endY);
         // set type
         arrowAnnotation.setType(AnnotationType.Arrow);
-        arrowAnnotation.setBackgroundColor(15988609);
+        arrowAnnotation.setBackgroundColor(-15988609);
         // add replies
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        // add replies
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            arrowAnnotation.setReplies(replies);
         }
-        arrowAnnotation.setReplies(replies);
         return arrowAnnotation;
     }
 
@@ -236,24 +199,14 @@ public class ArrowAnnotator extends Annotator{
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
         double startY =  Double.parseDouble(startPoint.split(",")[1]);
-        double endX =  Double.parseDouble(endPoint.split(",")[0]);
-        double endY =  Double.parseDouble(endPoint.split(",")[1]);
-        double positionShift = 0;
-        if(startX > endX){
-            positionShift = startX - endX;
-            endX = -positionShift;
-        } else {
-            endX = endX - startX;
-        }
-        if(startY > endY){
-            positionShift = startY - endY;
-            endY = -positionShift;
-        } else {
-            endY = endY - startY;
-        }
+        double endX =  Double.parseDouble(endPoint.split(",")[0]) - startX;
+        double endY =  Double.parseDouble(endPoint.split(",")[1]) - startY;
+        // set annotation position
+        arrowAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
         arrowAnnotation.setBox(new Rectangle(startX, startY, endX, endY));
         //set page number
         arrowAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
+        arrowAnnotation.setSvgPath("M" + startX + "," + startY  + "L" + endX + "," + endY);
         // set type
         arrowAnnotation.setType(AnnotationType.Arrow);
         arrowAnnotation.setBackgroundColor(15988609);

@@ -41,6 +41,7 @@ public class TextAnnotator extends Annotator{
         // init possible types of annotations
         AnnotationInfo textAnnotation = new AnnotationInfo();
         textAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
+        textAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(),  annotationData.getWidth(),  annotationData.getHeight()));
         // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
         double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
         double topRightX = annotationData.getLeft() + annotationData.getWidth();
@@ -56,12 +57,14 @@ public class TextAnnotator extends Annotator{
                         ",\"y\":" + bottomRightY + "}]");
         textAnnotation.setType(AnnotationType.Text);
         textAnnotation.setGuid(String.valueOf(annotationData.getId()));
-        textAnnotation.setText(comment.getText());
-        textAnnotation.setCreatorName(comment.getUserName());
-        DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        Date date = format.parse(comment.getTime());
-        textAnnotation.setCreatedOn(date);
+        if(comment != null) {
+            textAnnotation.setText(comment.getText());
+            textAnnotation.setCreatorName(comment.getUserName());
+            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+            format.setTimeZone(TimeZone.getTimeZone("GMT"));
+            Date date = format.parse(comment.getTime());
+            textAnnotation.setCreatedOn(date);
+        }
         return textAnnotation;
     }
 
@@ -74,26 +77,37 @@ public class TextAnnotator extends Annotator{
         // init possible types of annotations
         AnnotationInfo textAnnotation = new AnnotationInfo();
         textAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
+        textAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(),  annotationData.getWidth(),  annotationData.getHeight()));
         // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
         double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
-        textAnnotation.setBox(new Rectangle(annotationData.getLeft(), topPosition,  annotationData.getWidth(),  annotationData.getHeight()));
+        double topRightX = annotationData.getLeft() + annotationData.getWidth();
+        double bottomRightY = topPosition - annotationData.getHeight();
+        textAnnotation.setSvgPath(
+                "[{\"x\":" + annotationData.getLeft() +
+                        ",\"y\":" + topPosition +
+                        "},{\"x\":" + topRightX +
+                        ",\"y\":" + topPosition +
+                        "},{\"x\":" + annotationData.getLeft() +
+                        ",\"y\":" + bottomRightY +
+                        "},{\"x\":" + topRightX +
+                        ",\"y\":" + bottomRightY + "}]");
         textAnnotation.setType(AnnotationType.Text);
         textAnnotation.setGuid( String.valueOf(annotationData.getId()));
-        textAnnotation.setText(annotationData.getComments()[0].getText());
-        textAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        // add replies
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            textAnnotation.setReplies(replies);
         }
-        textAnnotation.setReplies(replies);
         return textAnnotation;
     }
 
@@ -110,12 +124,14 @@ public class TextAnnotator extends Annotator{
         // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
         double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
         textAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), topPosition));
-        textAnnotation.setFieldText(comment.getText());
-        textAnnotation.setCreatorName(comment.getUserName());
-        DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        Date date = format.parse(comment.getTime());
-        textAnnotation.setCreatedOn(date);
+        if (comment != null) {
+            textAnnotation.setFieldText(comment.getText());
+            textAnnotation.setCreatorName(comment.getUserName());
+            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+            format.setTimeZone(TimeZone.getTimeZone("GMT"));
+            Date date = format.parse(comment.getTime());
+            textAnnotation.setCreatedOn(date);
+        }
         return textAnnotation;
     }
 
@@ -128,11 +144,11 @@ public class TextAnnotator extends Annotator{
         // init possible types of annotations
         AnnotationInfo textAnnotation = new AnnotationInfo();
         textAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
+        textAnnotation.setBox(new Rectangle(annotationData.getLeft() / 4, annotationData.getTop(),  annotationData.getWidth(),  annotationData.getHeight()));
         // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
         double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
         double topRightX = annotationData.getLeft() + annotationData.getWidth();
         double bottomRightY = topPosition - annotationData.getHeight();
-        textAnnotation.setBox(new Rectangle(annotationData.getLeft(), topPosition,  annotationData.getWidth(),  annotationData.getHeight()));
         textAnnotation.setSvgPath(
                 "[{\"x\":" + annotationData.getLeft() +
                         ",\"y\":" + topPosition +
@@ -144,21 +160,20 @@ public class TextAnnotator extends Annotator{
                         ",\"y\":" + bottomRightY + "}]");
         textAnnotation.setType(AnnotationType.Text);
         textAnnotation.setGuid( String.valueOf(annotationData.getId()));
-        textAnnotation.setText(annotationData.getComments()[0].getText());
-        textAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
-        AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
-        for(int i = 1; i < annotationData.getComments().length; i++) {
-            AnnotationReplyInfo reply = new AnnotationReplyInfo();
-            reply.setMessage(annotationData.getComments()[i].getText());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(annotationData.getComments()[i].getTime());
-            reply.setRepliedOn(date);
-            reply.setParentReplyGuid(String.valueOf(annotationData.getId()));
-            reply.setUserName(annotationData.getComments()[i].getUserName());
-            replies[i] = reply;
+        if(annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            textAnnotation.setReplies(replies);
         }
-        textAnnotation.setReplies(replies);
         return textAnnotation;
     }
 

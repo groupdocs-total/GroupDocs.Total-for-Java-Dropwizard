@@ -285,7 +285,7 @@ public class AnnotationResources extends Resources {
                 fileName = FilenameUtils.getName(url.getPath());
             }
             // get documents storage path
-            String documentStoragePath = globalConfiguration.getViewer().getFilesDirectory();
+            String documentStoragePath = globalConfiguration.getAnnotation().getFilesDirectory();
             // save the file
             File file = new File(documentStoragePath + File.separator + fileName);
             // check rewrite mode
@@ -339,7 +339,7 @@ public class AnnotationResources extends Resources {
             // get each row info
             for(int i = 0; i < rows.size(); i++ ) {
                 TextRowEntity textRow = new TextRowEntity();
-                textRow.setTextCoordinates(info.getPages().get(pageNumber - 1).getRows().get(i).getCharacterCoordinates());
+                textRow.setTextCoordinates(info.getPages().get(pageNumber - 1).getRows().get(i).getTextCoordinates());
                 textRow.setLineTop(info.getPages().get(pageNumber - 1).getRows().get(i).getLineTop());
                 textRow.setLineHeight(info.getPages().get(pageNumber - 1).getRows().get(i).getLineHeight());
                 textCoordinates.add(textRow);

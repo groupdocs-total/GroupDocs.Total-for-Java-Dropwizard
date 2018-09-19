@@ -1,5 +1,9 @@
 package com.groupdocs.ui.annotation.entity.request;
 
+/**
+ * TextCoordinatesRequest
+ * @author Aspose Pty Ltd
+ */
 public class TextCoordinatesRequest {
     private String guid;
     private String password;

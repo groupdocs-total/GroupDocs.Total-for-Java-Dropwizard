@@ -3,7 +3,6 @@ package com.groupdocs.ui.annotation.annotator;
 import com.groupdocs.annotation.domain.AnnotationInfo;
 import com.groupdocs.annotation.domain.containers.DocumentInfoContainer;
 import com.groupdocs.ui.annotation.entity.web.AnnotationDataEntity;
-import com.groupdocs.ui.annotation.entity.web.CommentsEntity;
 
 import javax.ws.rs.NotSupportedException;
 import java.text.ParseException;
@@ -17,13 +16,15 @@ import java.text.ParseException;
 
 public abstract class Annotator {
     protected AnnotationDataEntity annotationData;
+    protected DocumentInfoContainer documentInfo;
 
     /**
      * Constructor
      * @param annotationData
      */
-    public Annotator(AnnotationDataEntity annotationData){
+    public Annotator(AnnotationDataEntity annotationData, DocumentInfoContainer documentInfo){
         this.annotationData = annotationData;
+        this.documentInfo = documentInfo;
     }
 
     /**
@@ -32,7 +33,7 @@ public abstract class Annotator {
      * @throws NotSupportedException
      * @throws ParseException
      */
-    public abstract AnnotationInfo annotateWord(DocumentInfoContainer info, CommentsEntity comment) throws NotSupportedException, ParseException;
+    public abstract AnnotationInfo annotateWord() throws NotSupportedException, ParseException;
 
     /**
      *
@@ -40,7 +41,7 @@ public abstract class Annotator {
      * @throws NotSupportedException
      * @throws ParseException
      */
-    public abstract AnnotationInfo annotatePdf(DocumentInfoContainer info) throws NotSupportedException, ParseException;
+    public abstract AnnotationInfo annotatePdf() throws NotSupportedException, ParseException;
 
     /**
      *
@@ -48,7 +49,7 @@ public abstract class Annotator {
      * @throws NotSupportedException
      * @throws ParseException
      */
-    public abstract AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws NotSupportedException, ParseException;
+    public abstract AnnotationInfo annotateCells() throws NotSupportedException, ParseException;
 
     /**
      *
@@ -56,7 +57,7 @@ public abstract class Annotator {
      * @throws NotSupportedException
      * @throws ParseException
      */
-    public abstract AnnotationInfo annotateSlides(DocumentInfoContainer info) throws NotSupportedException, ParseException;
+    public abstract AnnotationInfo annotateSlides() throws NotSupportedException, ParseException;
 
     /**
      *
@@ -64,7 +65,7 @@ public abstract class Annotator {
      * @throws NotSupportedException
      * @throws ParseException
      */
-    public abstract AnnotationInfo annotateImage(DocumentInfoContainer info) throws NotSupportedException, ParseException;
+    public abstract AnnotationInfo annotateImage() throws NotSupportedException, ParseException;
 
     /**
      *
@@ -72,5 +73,5 @@ public abstract class Annotator {
      * @throws NotSupportedException
      * @throws ParseException
      */
-    public abstract AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws NotSupportedException, ParseException;
+    public abstract AnnotationInfo annotateDiagram() throws NotSupportedException, ParseException;
 }

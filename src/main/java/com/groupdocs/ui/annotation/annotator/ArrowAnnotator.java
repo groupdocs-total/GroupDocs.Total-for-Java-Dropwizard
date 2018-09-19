@@ -23,16 +23,17 @@ public class ArrowAnnotator extends Annotator{
      * Constructor
      * @param annotationData
      */
-    public ArrowAnnotator(AnnotationDataEntity annotationData){
-        super(annotationData);
+    public ArrowAnnotator(AnnotationDataEntity annotationData, DocumentInfoContainer documentInfo){
+        super(annotationData, documentInfo);
     }
 
     /**
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateWord(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateWord() throws ParseException {
         AnnotationInfo arrowAnnotation = new AnnotationInfo();
+        // calculate correct coordinates for the annotation - this is used since the GroupDocs.Annotation library counts the coordinates from the bottom of the document
         String startPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[0];
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
@@ -45,14 +46,20 @@ public class ArrowAnnotator extends Annotator{
         //set page number
         arrowAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         arrowAnnotation.setSvgPath("M" + startX + "," + startY  + "L" + endX + "," + endY);
-        // add annotation comment
-        DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        if(comment != null) {
-            arrowAnnotation.setText(comment.getText());
-            arrowAnnotation.setCreatorName(comment.getUserName());
-            Date date = format.parse(comment.getTime());
-            arrowAnnotation.setCreatedOn(date);
+        // add replies
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            arrowAnnotation.setReplies(replies);
         }
         arrowAnnotation.setType(AnnotationType.Arrow);
         return arrowAnnotation;
@@ -60,12 +67,12 @@ public class ArrowAnnotator extends Annotator{
 
     /**
      * Add area annnotation into the pdf document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotatePdf(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotatePdf() throws ParseException {
         AnnotationInfo arrowAnnotation = new AnnotationInfo();
         // set draw annotation properties
+        // calculate correct coordinates for the annotation - this is used since the GroupDocs.Annotation library counts the coordinates from the bottom of the document
         String startPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[0];
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
@@ -81,7 +88,7 @@ public class ArrowAnnotator extends Annotator{
         // sert annotation type
         arrowAnnotation.setType(AnnotationType.Arrow);
         // add replies
-        if(annotationData.getComments().length != 0) {
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -102,18 +109,18 @@ public class ArrowAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateCells() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
      * Add area annnotation into the Power Point document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotateSlides(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateSlides() throws ParseException {
         // init annotation object
         AnnotationInfo arrowAnnotation = new AnnotationInfo();
+        // calculate correct coordinates for the annotation - this is used since the GroupDocs.Annotation library counts the coordinates from the bottom of the document
         String startPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[0];
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
@@ -148,12 +155,12 @@ public class ArrowAnnotator extends Annotator{
 
     /**
      * Add area annnotation into the image file
-     * @param info
      */
     @Override
-    public AnnotationInfo annotateImage(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateImage() throws ParseException {
         // init annotation object
         AnnotationInfo arrowAnnotation = new AnnotationInfo();
+        // calculate correct coordinates for the annotation - this is used since the GroupDocs.Annotation library counts the coordinates from the bottom of the document
         String startPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[0];
         String endPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[1];
         double startX =  Double.parseDouble(startPoint.split(",")[0]);
@@ -171,7 +178,7 @@ public class ArrowAnnotator extends Annotator{
         arrowAnnotation.setBackgroundColor(-15988609);
         // add replies
         // add replies
-        if(annotationData.getComments().length != 0) {
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -192,7 +199,7 @@ public class ArrowAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateDiagram() throws ParseException {
         // init annotation object
         AnnotationInfo arrowAnnotation = new AnnotationInfo();
         String startPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[0];

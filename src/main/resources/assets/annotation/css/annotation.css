@@ -528,6 +528,7 @@ ANNOTATIONS ADDED TO THE DOCUMENT
 	width: 239px;
     height: 50px;
 	text-align: left;
+	overflow: hidden;
 }
 
 .gd-annotation:hover > .gd-text-area-toolbar {

@@ -23,26 +23,23 @@ public class WatermarkAnnotator extends Annotator{
      * Constructor
      * @param annotationData
      */
-    public WatermarkAnnotator(AnnotationDataEntity annotationData){
-        super(annotationData);
+    public WatermarkAnnotator(AnnotationDataEntity annotationData, DocumentInfoContainer documentInfo){
+        super(annotationData, documentInfo);
     }
 
     /**
      * Add area annnotation into the Word document
-     * @param info
-     * @param comment
      */
     @Override
-    public AnnotationInfo annotateWord(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateWord() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
      * Add area annnotation into the pdf document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotatePdf(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotatePdf() throws ParseException {
         // init possible types of annotations
         // Text field annotation
         AnnotationInfo watermarkAnnotation = new AnnotationInfo();
@@ -58,20 +55,17 @@ public class WatermarkAnnotator extends Annotator{
 
     /**
      * Add area annnotation into the Excel document
-     * @param info
-     * @param comment
      */
     @Override
-    public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateCells() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
      * Add area annnotation into the Power Point document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotateSlides(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateSlides() throws ParseException {
         // init possible types of annotations
         AnnotationInfo watermarkAnnotation = new AnnotationInfo();
         watermarkAnnotation.setFieldText(annotationData.getText());
@@ -80,7 +74,6 @@ public class WatermarkAnnotator extends Annotator{
         watermarkAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         watermarkAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         watermarkAnnotation.setType(AnnotationType.Watermark);
-
         return watermarkAnnotation;
     }
 
@@ -88,7 +81,7 @@ public class WatermarkAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateImage(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateImage() throws ParseException {
         // init possible types of annotations
         AnnotationInfo watermarkAnnotation = new AnnotationInfo();
         watermarkAnnotation.setFieldText(annotationData.getText());
@@ -98,7 +91,6 @@ public class WatermarkAnnotator extends Annotator{
         watermarkAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         watermarkAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         watermarkAnnotation.setType(AnnotationType.Watermark);
-
         return watermarkAnnotation;
     }
 
@@ -106,7 +98,7 @@ public class WatermarkAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateDiagram() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 }

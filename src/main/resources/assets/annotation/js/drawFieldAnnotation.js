@@ -106,41 +106,48 @@
 	* Extend plugin
 	**/
 	$.extend(true, $.fn.drawFieldAnnotation, {
+		
 		/**
 		 * Draw text field annotation
 		 * @param {Object} canvas - document page to add annotation
 		 * @param {Array} annotationsList - List of all annotations
 		 * @param {Object} annotation - Current annotation
 		 * @param {int} annotationsCounter - Current annotation number
-		 * @param {Onject} ev - Current event
+		 * @param {String} prefix - Current annotation prefix
+		 * @param {Onbect} ev - Current event
 		 */
 		drawTextField: function(canvas, annotationsList, annotation, annotationsCounter, prefix, ev) {	
 			event.stopPropagation();
+			// close comments bar
 			$('#gd-annotations-comments-toggle').prop('checked', false);
+			// get mouse position
 			mouse = getMousePosition(ev);
 			currentPrefix = prefix;
 			idNumber = annotationsCounter;
+			// calculate coordinates
 			var canvasTopOffset = $(canvas).offset().top * $(canvas).css("zoom");
 			var x = mouse.x - ($(canvas).offset().left * $(canvas).css("zoom")) - (parseInt($(canvas).css("margin-left")) * 2);
 			var y = mouse.y - canvasTopOffset - (parseInt($(canvas).css("margin-top")) * 2);
 			zoomCorrection.x = ($(canvas).offset().left * $(canvas).css("zoom")) - $(canvas).offset().left;
 			zoomCorrection.y = ($(canvas).offset().top * $(canvas).css("zoom")) - $(canvas).offset().top;
-			annotation.id = annotationsCounter;				
+			annotation.id = annotationsCounter;			
+			// set start point coordinates
 			startX = mouse.x;
 			startY = mouse.y;
+			// prepare annotation HTML element
 			element = document.createElement('div');
 			element.className = 'gd-annotation';  			
 			element.innerHTML = getTextFieldAnnotationHtml(annotationsCounter);	
 			var canvasTopOffset = $(canvas).offset().top * $(canvas).css("zoom");
 			element.style.left = x + "px";
 			element.style.top = y + "px";
-				
+			// draw annotation
 			canvas.prepend(element);	
 			$(".gd-typewriter-text").click(function (e) {
 				e.stopPropagation()
 				$(this).focus();
-			})			
-			element.style.top = parseInt(element.style.top) - parseInt(($(element).find(".gd-text-area-toolbar").height() + $(element).find(".gd-text-area-toolbar").css("margin-bottom"))) + "px";
+			})		
+			// set annotation data
 			annotation.width = $(element).find("textarea").width();
 			annotation.height = $(element).find("textarea").height();	
 			annotation.left = parseInt(element.style.left.replace("px", ""));
@@ -148,16 +155,55 @@
 			annotation.top = parseInt(element.style.top.replace("px", "")) + dashboardHeight;			
 			annotationsList.push(annotation);	
 			makeResizable(annotation);			
-		} 
+		},
+
+		/**
+		 * Import text field annotation
+		 * @param {Object} canvas - document page to add annotation
+		 * @param {Array} annotationsList - List of all annotations
+		 * @param {Object} annotation - Current annotation
+		 * @param {int} annotationsCounter - Current annotation number
+		 * @param {String} prefix - Current annotation prefix
+		 */
+		importTextField: function(canvas, annotationsList, annotation, annotationsCounter, prefix) {			
+			$('#gd-annotations-comments-toggle').prop('checked', false);			
+			currentPrefix = prefix;
+			annotationsCounter;			
+			annotation.id = annotationsCounter;				
+			element = document.createElement('div');
+			element.className = 'gd-annotation';  			
+			element.innerHTML = getTextFieldAnnotationHtml(annotationsCounter, annotation.text, annotation.font, annotation.fontSize);				
+			element.style.left = annotation.left + "px";
+			element.style.top = annotation.top + "px";
+				
+			canvas.prepend(element);	
+			$(".gd-typewriter-text").click(function (e) {
+				e.stopPropagation()
+				$(this).focus();
+			})		
+							
+			annotationsList.push(annotation);	
+			makeResizable(annotation);		
+			$(".gd-typewriter-text").each(function(index, typeWriter){
+				if($(typeWriter).data("id") == annotationsCounter){
+					$(typeWriter).css("font-family", annotation.font);
+					$(typeWriter).css("font-size", annotation.fontSize);
+				}
+			});					
+		} 		
 	});
 	
-	function getTextFieldAnnotationHtml(id){
+	function getTextFieldAnnotationHtml(id, text, font, fontSize){
+		text = (text == null || text == "") ? "Enter annotation text here" : text;
+		font = (font == null || font == "") ? "Arial" : font;
+		fontSize = (fontSize == null || fontSize == "") ? "10" : fontSize;
 		var annotationToolBarHtml = '<div class="gd-text-area-toolbar">'+									
-										'<input type="text" class="gd-typewriter-font" value="Arial">'+
-										'<input type="number" value="10" class="gd-typewriter-font-size">'+
+										'<input type="text" class="gd-typewriter-font" value="' + font + '">'+
+										'<input type="number" value="' + fontSize + '" class="gd-typewriter-font-size">'+
 										'<i class="fa fa-trash-o gd-text-field-delete"></i>'+
 									'</div>';
-		var annotationTextFieldHtml = '<textarea class="gd-typewriter-text mousetrap annotation" id="gd-' + currentPrefix + '-annotation-' + idNumber + '" data-id="' + idNumber + '">Enter annotation text here</textarea>';
+		var annotationTextFieldHtml = '<textarea class="gd-typewriter-text mousetrap annotation" id="gd-' + currentPrefix + '-annotation-' + id + '" data-id="' + id + '">' + text + '</textarea>';
 		return annotationToolBarHtml + annotationTextFieldHtml;
 	}
+	
 })(jQuery);

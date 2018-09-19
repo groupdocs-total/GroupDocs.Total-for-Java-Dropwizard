@@ -27,23 +27,22 @@ public class TextAnnotator extends Annotator{
      * Constructor
      * @param annotationData
      */
-    public TextAnnotator(AnnotationDataEntity annotationData){
-        super(annotationData);
+    public TextAnnotator(AnnotationDataEntity annotationData, DocumentInfoContainer documentInfo){
+        super(annotationData, documentInfo);
     }
 
     /**
-     * Add area annnotation into the Word document
-     * @param info
-     * @param comment
+     * Add area annnotation into the Word document   
      */
     @Override
-    public AnnotationInfo annotateWord(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateWord() throws ParseException {
         // init possible types of annotations
         AnnotationInfo textAnnotation = new AnnotationInfo();
         textAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
+        textAnnotation.setGuid(String.valueOf(annotationData.getId()));
         textAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(),  annotationData.getWidth(),  annotationData.getHeight()));
         // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
-        double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
+        double topPosition = documentInfo.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
         double topRightX = annotationData.getLeft() + annotationData.getWidth();
         double bottomRightY = topPosition - annotationData.getHeight();
         textAnnotation.setSvgPath(
@@ -57,29 +56,35 @@ public class TextAnnotator extends Annotator{
                         ",\"y\":" + bottomRightY + "}]");
         textAnnotation.setType(AnnotationType.Text);
         textAnnotation.setGuid(String.valueOf(annotationData.getId()));
-        if(comment != null) {
-            textAnnotation.setText(comment.getText());
-            textAnnotation.setCreatorName(comment.getUserName());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(comment.getTime());
-            textAnnotation.setCreatedOn(date);
+        // add replies
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            textAnnotation.setReplies(replies);
         }
         return textAnnotation;
     }
 
     /**
      * Add area annnotation into the pdf document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotatePdf(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotatePdf() throws ParseException {
         // init possible types of annotations
         AnnotationInfo textAnnotation = new AnnotationInfo();
         textAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         textAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(),  annotationData.getWidth(),  annotationData.getHeight()));
         // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
-        double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
+        double topPosition = documentInfo.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
         double topRightX = annotationData.getLeft() + annotationData.getWidth();
         double bottomRightY = topPosition - annotationData.getHeight();
         textAnnotation.setSvgPath(
@@ -94,7 +99,7 @@ public class TextAnnotator extends Annotator{
         textAnnotation.setType(AnnotationType.Text);
         textAnnotation.setGuid( String.valueOf(annotationData.getId()));
         // add replies
-        if(annotationData.getComments().length != 0) {
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -113,40 +118,44 @@ public class TextAnnotator extends Annotator{
 
     /**
      * Add area annnotation into the Excel document
-     * @param info
-     * @param comment
      */
     @Override
-    public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateCells() throws ParseException {
         // init possible types of annotations
         AnnotationInfo textAnnotation = new AnnotationInfo();
         textAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
-        double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
+        double topPosition = documentInfo.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
         textAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), topPosition));
-        if (comment != null) {
-            textAnnotation.setFieldText(comment.getText());
-            textAnnotation.setCreatorName(comment.getUserName());
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(comment.getTime());
-            textAnnotation.setCreatedOn(date);
+        // add replies
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            textAnnotation.setReplies(replies);
         }
         return textAnnotation;
     }
 
     /**
      * Add area annnotation into the Power Point document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotateSlides(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateSlides() throws ParseException {
         // init possible types of annotations
         AnnotationInfo textAnnotation = new AnnotationInfo();
         textAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         textAnnotation.setBox(new Rectangle(annotationData.getLeft() / 4, annotationData.getTop(),  annotationData.getWidth(),  annotationData.getHeight()));
         // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
-        double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
+        double topPosition = documentInfo.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
         double topRightX = annotationData.getLeft() + annotationData.getWidth();
         double bottomRightY = topPosition - annotationData.getHeight();
         textAnnotation.setSvgPath(
@@ -159,8 +168,8 @@ public class TextAnnotator extends Annotator{
                         "},{\"x\":" + topRightX +
                         ",\"y\":" + bottomRightY + "}]");
         textAnnotation.setType(AnnotationType.Text);
-        textAnnotation.setGuid( String.valueOf(annotationData.getId()));
-        if(annotationData.getComments().length != 0) {
+        textAnnotation.setGuid(String.valueOf(annotationData.getId()));
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -181,7 +190,7 @@ public class TextAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateImage(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateImage() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
@@ -189,7 +198,7 @@ public class TextAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateDiagram() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 }

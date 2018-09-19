@@ -21,8 +21,7 @@ var annotation = {
 	top: 0,
 	width: 0,
 	height: 0,
-	pageNumber: 0,
-	svgPath: "",
+	pageNumber: 0,	
 	documentType: "",
 	svgPath: "",
 	text: "",
@@ -54,8 +53,11 @@ $(document).ready(function(){
     // Add SVG to all pages DIVs
     //////////////////////////////////////////////////
 	$.initialize(".gd-page-image", function() {
+		// set text rows data to null
 		rows = null;
+		// append svg element to each page, this is required to draw svg based annotations
 		$('div.gd-page').each(function(index, page){
+			// initiate svg object
 			if(svgList == null) {
 				svgList	= {};
 			}			
@@ -64,6 +66,7 @@ $(document).ready(function(){
 			} else {
 				if(!(page.id in svgList)){
 					$(page).addClass("gd-disable-select");
+					// add svg object to the list for further use
 					var draw = SVG(page.id).size(page.offsetWidth, page.offsetHeight);
 					svgList[page.id] = draw;
 					draw = null;
@@ -72,6 +75,19 @@ $(document).ready(function(){
 				}
 			}			
 		});
+		//check if document contains annotations
+		if ($(this).parent().parent().attr("id").search("thumbnails") == -1) {
+			$.each(documentData, function(index, data){
+				// import annotations
+				if (data.annotations != null) {
+					if (data.annotations.length > 0) {
+						$.each(data.annotations, function(index, annotationData){
+							importAnnotation(annotationData);
+						});
+					}
+				}
+			});
+		}
 	});
 	
     //////////////////////////////////////////////////
@@ -120,6 +136,7 @@ $(document).ready(function(){
     //////////////////////////////////////////////////
     $('#gd-panzoom').on('mousedown', 'svg', function(e){
 		if($(e.target).prop("tagName") == "IMG" || $(e.target).prop("tagName") == "svg"){
+			// initiate annotation object if null
 			if(annotation == null){
 				annotation =  {
 								id: "",
@@ -128,8 +145,7 @@ $(document).ready(function(){
 								top: 0,
 								width: 0,
 								height: 0,
-								pageNumber: 0,
-								svgPath: "",
+								pageNumber: 0,								
 								documentType: "",
 								svgPath: "",
 								text: "",
@@ -138,23 +154,17 @@ $(document).ready(function(){
 								comments: []
 							};
 			}
-			
+			// set annotation type
 			annotation.type = annotationType;
 			annotation.pageNumber = parseInt($($(e.target).parent()[0]).attr("id").replace ( /[^\d.]/g, '' ));
-			$($(e.target).parent()[0]).css("position", "relative");
-			
+			// add annotation			
 			switch (annotationType){
 				case "text":
-					++annotationsCounter;
-					if(rows == null){
-						getTextCoordinates(annotation.pageNumber, function(){	
-							$.fn.drawTextAnnotation($(e.target).parent()[0], annotationsList, annotation, annotationsCounter, "text", e);							
-							annotation = null;
-						});
-					} else {
+					++annotationsCounter;					
+					getTextCoordinates(annotation.pageNumber, function(){	
 						$.fn.drawTextAnnotation($(e.target).parent()[0], annotationsList, annotation, annotationsCounter, "text", e);							
 						annotation = null;
-					}
+					});					
 					break;
 				case "area":					
 					++annotationsCounter;
@@ -270,10 +280,13 @@ $(document).ready(function(){
     // delete comment event
     //////////////////////////////////////////////////
 	$('.gd-comments-sidebar-expanded').on('click', '.gd-delete-comment', function(e){
+		// check if there is no more comments for the annotation
 		if($(".gd-comment-box-sidebar").find(".gd-annotation-comment").length == 1){
+			// delete annotation
 			deleteAnnotation(e);
 			$("#gd-annotation-comments").html("");
 		} else {
+			// delete comment
 			var annotationId = $(e.target).parent().parent().parent().parent().parent().data("annotationId");
 			for(var i = 0; i < annotationsList.length; i++){
 				if(annotationId = annotationsList[i].id){
@@ -296,12 +309,14 @@ $(document).ready(function(){
 			$('#gd-annotations-comments-toggle').prop('checked', true);
 			var annotationId = null;
 			if (typeof $(e.target).attr("id") != "undefined"){
+				// get cuurent annotation id
 				annotationId = parseInt($(e.target).attr("id").replace( /[^\d.]/g, '' ));			
+				// get and append all comments for the annotation
 				$("#gd-annotation-comments").append(getCommentBaseHtml);
 				$(".gd-comment-box-sidebar").data("annotationId", annotationId);
 				for(var i = 0; i < annotationsList.length; i++){
 					if(annotationsList[i].id == annotationId){
-						if(annotationsList[i].comments.length != 0 ){
+						if(annotationsList[i].comments != null && annotationsList[i].comments.length != 0 ){
 							for(var n = 0; n < annotationsList[i].comments.length; n++){
 								$(".gd-comment-reply").before(getCommentHtml);
 								$(".gd-comment-time").last().html(annotationsList[i].comments[n].time);
@@ -369,7 +384,7 @@ function getTextCoordinates(pageNumber, callback) {
         password: password,   
 		pageNumber: pageNumber
     };
-    // sign the document
+    // get text data for the document page
     $.ajax({
         type: 'POST',
         url: url,
@@ -378,8 +393,7 @@ function getTextCoordinates(pageNumber, callback) {
         success: function(returnedData) {
             $('#gd-modal-spinner').hide();
             var result = "";
-            if(returnedData.message != undefined){
-                // if password for signature certificate is incorrect return to previouse step and show error
+            if(returnedData.message != undefined){                
                 if(returnedData.message.toLowerCase().indexOf("password") != -1){                  
                     $("#gd-password-required").html(returnedData.message);
                     $("#gd-password-required").show();
@@ -389,6 +403,7 @@ function getTextCoordinates(pageNumber, callback) {
                 }
                 return;
             }			
+			// set rows data
             rows = returnedData; 
 			rows.sort(function(row1, row2) {
 				// Ascending: first row top less than the previous
@@ -415,7 +430,7 @@ function getTextCoordinates(pageNumber, callback) {
 }
 
 /**
- * Compare and set text annotation position according the text position
+ * Compare and set text annotation position according to the text position
   * @param {int} mouseX - current mouse X position
   * @param {int} mouseY - current mouse Y position
  */
@@ -425,15 +440,19 @@ function setTextAnnotationCoordinates(mouseX, mouseY) {
 		y: 0,
 		height: 0
 	};
+	// check if the mouse position is less or bigger than the first or last text row
 	if(mouseY < rows[0].lineTop) {
 		mouseY = rows[0].lineTop;
 	} else if (mouseY > rows[rows.length - 1].lineTop){
 		mouseY = rows[rows.length - 1].lineTop;
 	}
+	// get most suitable row (vertical position)
 	for(var i = 0; i < rows.length; i++){		
 		if(mouseY >= rows[i].lineTop && mouseY <= rows[i + 1].lineTop){
+			// set row top position and height
 			correctCoordinates.y = rows[i].lineTop;
 			correctCoordinates.height = rows[i].lineHeight;
+			// get most suitable symbol coordinates in the row (horizontal position)
 			for(var n = 0; n < rows[i].textCoordinates.length; n++){
 				if(mouseX >= rows[i].textCoordinates[n] && mouseX < rows[i].textCoordinates[n + 1]){
 					correctCoordinates.x = rows[i].textCoordinates[n];
@@ -455,6 +474,7 @@ function setTextAnnotationCoordinates(mouseX, mouseY) {
  * Annotate current document
  */
 function annotate() {   
+	// set current document guid - used to check if the other document were opened
     currentDocumentGuid = documentGuid;
     var url = getApplicationPath('annotate');     
 	annotationsList[0].documentType = getDocumentFormat(documentGuid).format;	
@@ -465,7 +485,7 @@ function annotate() {
 		htmlMode: false,
         annotationsData: annotationsList
     };
-    // sign the document
+    // annotate the document
     $.ajax({
         type: 'POST',
         url: url,
@@ -475,7 +495,7 @@ function annotate() {
             $('#gd-modal-spinner').hide();
             var result = "";
             if(returnedData.message != undefined){
-                // if password for signature certificate is incorrect return to previouse step and show error
+                // if password for document is incorrect return to previouse step and show error
                 if(returnedData.message.toLowerCase().indexOf("password") != -1){                  
                     $("#gd-password-required").html(returnedData.message);
                     $("#gd-password-required").show();
@@ -486,7 +506,7 @@ function annotate() {
                 return;
             }			
             annotatedDocumentGuid = returnedData.guid;  
-			result = '<div id="gd-modal-signed">Document annotated successfully</div>';
+			result = '<div id="gd-modal-annotated">Document annotated successfully</div>';
 			toggleModalDialog(true, 'Annotation', result);
         },
         error: function(xhr, status, error) {
@@ -503,9 +523,13 @@ function annotate() {
  * @param {Object} event - delete annotation button click event data
  */
 function deleteAnnotation(event){
+	// get annotation id
 	var annotationId = $(event.target).parent().parent().parent().parent().parent().data("annotationId");
+	// get annotation data to delete
 	var annotationToRemove = $.grep(annotationsList, function(obj){return obj.id === annotationId;})[0];	
+	// delete annotation from the annotations list
 	annotationsList.splice($.inArray(annotationToRemove, annotationsList),1);
+	// delete annotation from the page
 	$(".gd-annotation").each(function(index, element){
 		var id = null;
 		if($(element).hasClass("svg")){
@@ -514,7 +538,8 @@ function deleteAnnotation(event){
 			id = parseInt($(element).find(".annotation").attr("id").replace( /[^\d.]/g, '' ));
 		}
 		if(id == annotationId){			
-			if($(element).attr("id").search("distance") != -1){
+			if(typeof $(element).attr("id") != "undefined" && $(element).attr("id").search("distance") != -1){
+				// remove text element for distance annotation
 				$.each($(element).parent().find("text"), function(index, text){
 					if($(text).data("id") == id){
 						$(text).remove();
@@ -534,19 +559,28 @@ function deleteAnnotation(event){
  */
 function saveComment(){
 	$(".gd-annotation-comment").each(function(index, currentComment){
+		// set saved flag
 		if(!$(currentComment).find(".gd-comment-text").data("saved")){
 			$(currentComment).find(".gd-comment-text").data("saved", true);
 			var annotationId = $(currentComment).parent().data("annotationId");	
+			// get current annotation from the annotations list
 			var annotationToAddComments = $.grep(annotationsList, function(obj){return obj.id === annotationId;})[0];			
+			// initiate comment object
 			var comment = {
 				time: null,
 				text: "",
 				userName: ""
-			};		
+			};			
+			// set comment data
 			comment.time = $(currentComment).find(".gd-comment-time").html();
 			comment.text = $(currentComment).find(".gd-comment-text").html();
 			comment.userName = $(currentComment).find(".gd-comment-user-name").val() == "" ? "Anonym A." : $(currentComment).find(".gd-comment-user-name").val();
-			annotationToAddComments.comments.push(comment);
+			// check if the same comment is already added - used for import annotations
+			var existedComment = $.grep(annotationToAddComments.comments, function(e){ return e.text.trim() == comment.text.trim(); });
+			// add comment
+			if(existedComment.length == 0){				
+				annotationToAddComments.comments.push(comment);
+			}				
 			annotationToAddComments = null;
 			comment = null;					
 		} else {			
@@ -560,11 +594,23 @@ function saveComment(){
 * @param {Object} currentAnnotation - currently added annotation
 */
 function addComment(currentAnnotation){
-	 $("#gd-annotation-comments").html("");
-	 $("#gd-annotation-comments").append(getCommentBaseHtml);
-	 $(".gd-comment-box-sidebar").data("annotationId", currentAnnotation.id);
-	 $(".gd-comment-reply").before(getCommentHtml);	
-	 $('#gd-annotations-comments-toggle').prop('checked', true);
+	$("#gd-annotation-comments").html("");
+	$('#gd-annotations-comments-toggle').prop('checked', true);
+	// check if annotation contains comments
+	if(currentAnnotation.comments != null && currentAnnotation.comments.length > 0){		
+		$.each(currentAnnotation.comments, function(index, comment){
+			if (index == 0){
+				$("#gd-annotation-comments").append(getCommentBaseHtml);
+			}
+			$(".gd-comment-box-sidebar").data("annotationId", currentAnnotation.id);
+			$(".gd-comment-reply").before(getCommentHtml(comment));
+		});		
+	} else {	
+		currentAnnotation.comments = [];
+		$("#gd-annotation-comments").append(getCommentBaseHtml);
+		$(".gd-comment-box-sidebar").data("annotationId", currentAnnotation.id);
+		$(".gd-comment-reply").before(getCommentHtml);			 
+	}
 }
  
 /**
@@ -622,7 +668,94 @@ function makeResizable (currentAnnotation){
 }
 
 /**
- * Get HTML of the resize handles - used to add resize handles to the added signature image
+ * Import already existed annotations
+ * @param {Object} annotationData - existed annotation
+ */
+function importAnnotation(annotationData){
+	annotation = annotationData;
+	// draw imported annotation over the document page
+	switch (annotation.type){
+			case "text":
+				++annotationsCounter;					
+				$.fn.importTextAnnotation($("#gd-page-" + annotationData.pageNumber)[0], annotationsList, annotation, annotationsCounter, "text");		
+				annotation = null;
+				break;
+			case "area":					
+				++annotationsCounter;
+				$.fn.importTextAnnotation($("#gd-page-" + annotationData.pageNumber)[0], annotationsList, annotation, annotationsCounter, "area");							
+				annotation = null;
+				break;
+			case "point":					
+				++annotationsCounter;
+				$.fn.drawSvgAnnotation($("#gd-page-" + annotationData.pageNumber)[0], "point");
+				$.fn.drawSvgAnnotation.importPoint(annotation);							
+				annotation = null;
+				break;
+			case "textStrikeout":					
+				++annotationsCounter;				
+				$.fn.importTextAnnotation($("#gd-page-" + annotationData.pageNumber)[0], annotationsList, annotation, annotationsCounter, "textStrikeout");							
+				annotation = null;				
+				break;
+			case "polyline":					
+				++annotationsCounter;
+				$.fn.drawSvgAnnotation($("#gd-page-" + annotationData.pageNumber)[0], "polyline");
+				$.fn.drawSvgAnnotation.importPolyline(annotation);							
+				annotation = null;
+				break;
+			case "textField":					
+				++annotationsCounter;						
+				$.fn.drawFieldAnnotation.importTextField($("#gd-page-" + annotationData.pageNumber)[0], annotationsList, annotation, annotationsCounter, "textField");							
+				annotation = null;	
+				break;
+			case "watermark":					
+				++annotationsCounter;					
+				$.fn.drawFieldAnnotation.importTextField($("#gd-page-" + annotationData.pageNumber)[0], annotationsList, annotation, annotationsCounter, "watermark");							
+				annotation = null;	
+				break;
+			case "textReplacement":					
+				++annotationsCounter;					
+				$.fn.importTextAnnotation($("#gd-page-" + annotationData.pageNumber)[0], annotationsList, annotation, annotationsCounter, "textReplacement");							
+				annotation = null;				
+				break;
+			case "arrow":					
+				++annotationsCounter;
+				$.fn.drawSvgAnnotation($("#gd-page-" + annotationData.pageNumber)[0], "arrow");
+				$.fn.drawSvgAnnotation.importArrow(annotation);							
+				annotation = null;
+				break;
+			case "textRedaction":
+				++annotationsCounter;				
+				$.fn.importTextAnnotation($("#gd-page-" + annotationData.pageNumber)[0], annotationsList, annotation, annotationsCounter, "textRedaction");							
+				annotation = null;				
+				break;
+			case "resourcesRedaction":					
+				++annotationsCounter;
+				$.fn.importTextAnnotation($("#gd-page-" + annotationData.pageNumber)[0], annotationsList, annotation, annotationsCounter, "resourcesRedaction");							
+				annotation = null;
+				break;
+			case "textUnderline":					
+				++annotationsCounter;				
+				$.fn.importTextAnnotation($("#gd-page-" + annotationData.pageNumber)[0], annotationsList, annotation, annotationsCounter, "textUnderline");							
+				annotation = null;			
+				break;
+			case "distance":					
+				++annotationsCounter;
+				$.fn.drawSvgAnnotation($("#gd-page-" + annotationData.pageNumber)[0], "distance");
+				$.fn.drawSvgAnnotation.importDistance(annotation);							
+				annotation = null;
+				break;
+		}		
+		// enable save button on the dashboard
+		if($("#gd-nav-save").hasClass("gd-save-disabled")) {
+			$("#gd-nav-save").removeClass("gd-save-disabled");
+			$("#gd-nav-save").on('click', function(){
+				annotate();
+			});
+		}		
+}
+
+/**
+ * Get HTML of the resize handles - used to add resize handles to the added annotation
  */
 function getHtmlResizeHandles(){
     return  '<div class="ui-resizable-handle ui-resizable-ne"></div>'+
@@ -631,13 +764,16 @@ function getHtmlResizeHandles(){
         '<div class="ui-resizable-handle ui-resizable-nw"></div>';
 }
 
-function getCommentHtml(){
+function getCommentHtml(comment){
+		var time = (typeof comment.time != "undefined") ? comment.time : "";
+		var text = (typeof comment.text != "undefined") ? comment.text : "";		
+		var userName = (typeof comment.userName != "undefined") ? comment.userName : "";
 		return 	'<div class="gd-annotation-comment">'+
 					'<div class="gd-comment-avatar">'+
 						'<span class="gd-blanc-avatar-icon">'+
 							'<i class="fa fa-commenting-o fa-flip-horizontal" aria-hidden="true"></i>'+
 							'<p class="gd-comment-time">'+
-								// comment adding time will be here
+								time +
 							'</p>'+
 							'<div class="gd-delete-comment">'+
 								'<i class="fa fa-trash-o" aria-hidden="true"></i>'+
@@ -646,8 +782,8 @@ function getCommentHtml(){
 					'</div>	'+
 					'<div class="gd-comment-text-wrapper mousetrap">'+
 						'<span class="comment-box-pointer"></span>'+
-						'<div class="gd-comment-text mousetrap" contenteditable="true" data-saved="false"></div>'+
-						'<input type="text" placeholder="User name" class="gd-comment-user-name">'+
+						'<div class="gd-comment-text mousetrap" contenteditable="true" data-saved="false">' + text + '</div>'+
+						'<input type="text" placeholder="User name" class="gd-comment-user-name" value="' + userName + '">'+
 					'</div>'+
 				'</div>';
 }

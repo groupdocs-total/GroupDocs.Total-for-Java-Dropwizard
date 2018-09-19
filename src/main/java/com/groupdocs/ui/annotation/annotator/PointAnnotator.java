@@ -27,24 +27,23 @@ public class PointAnnotator extends Annotator{
      * Constructor
      * @param annotationData
      */
-    public PointAnnotator(AnnotationDataEntity annotationData){
-        super(annotationData);
+    public PointAnnotator(AnnotationDataEntity annotationData, DocumentInfoContainer documentInfo){
+        super(annotationData, documentInfo);
     }
 
     /**
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateWord(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateWord() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
      * Add area annnotation into the pdf document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotatePdf(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotatePdf() throws ParseException {
         // init annotation object
         AnnotationInfo pointAnnotation = new AnnotationInfo();
         // set annotation position
@@ -56,7 +55,7 @@ public class PointAnnotator extends Annotator{
         // sert annotation type
         pointAnnotation.setType(AnnotationType.Point);
         // add replies
-        if(annotationData.getComments().length != 0) {
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -77,16 +76,15 @@ public class PointAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateCells() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
      * Add area annnotation into the Power Point document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotateSlides(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateSlides() throws ParseException {
         // init annotation object
         AnnotationInfo pointAnnotation = new AnnotationInfo();
         // set position
@@ -98,7 +96,7 @@ public class PointAnnotator extends Annotator{
         // set type
         pointAnnotation.setType(AnnotationType.Point);
         // add replies
-        if(annotationData.getComments().length != 0) {
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -117,17 +115,16 @@ public class PointAnnotator extends Annotator{
 
     /**
      * Add area annnotation into the image file
-     * @param info
      */
     @Override
-    public AnnotationInfo annotateImage(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateImage() throws ParseException {
         // init annotation object
         AnnotationInfo pointAnnotation = new AnnotationInfo();
         pointAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
         pointAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         pointAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         pointAnnotation.setType(AnnotationType.Point);
-        if(annotationData.getComments().length != 0) {
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -148,7 +145,7 @@ public class PointAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateDiagram() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 }

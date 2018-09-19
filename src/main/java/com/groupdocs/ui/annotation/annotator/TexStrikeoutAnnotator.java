@@ -27,22 +27,20 @@ public class TexStrikeoutAnnotator extends Annotator{
      * Constructor
      * @param annotationData
      */
-    public TexStrikeoutAnnotator(AnnotationDataEntity annotationData){
-        super(annotationData);
+    public TexStrikeoutAnnotator(AnnotationDataEntity annotationData, DocumentInfoContainer documentInfo){
+        super(annotationData, documentInfo);
     }
 
     /**
-     * Add area annnotation into the Word document
-     * @param info
-     * @param comment
+     * Add area annnotation into the Word document   
      */
     @Override
-    public AnnotationInfo annotateWord(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateWord() throws ParseException {
         // init possible types of annotations
         AnnotationInfo strikeoutAnnotation = new AnnotationInfo();
         strikeoutAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
-        double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
+        double topPosition = documentInfo.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
         // calculation of the X-shift
         double topRightX = annotationData.getLeft() + annotationData.getWidth();
         // calculation of the Y-shift
@@ -60,27 +58,29 @@ public class TexStrikeoutAnnotator extends Annotator{
                         ",\"y\":" + bottomRightY + "}]");
         // set annotation type
         strikeoutAnnotation.setType(AnnotationType.TextStrikeout);
-        // add annotation comment
-        if(comment != null) {
-            strikeoutAnnotation.setText(comment.getText());
-            strikeoutAnnotation.setCreatorName(comment.getUserName());
-            // set line color
-            strikeoutAnnotation.setPenColor(1201033);
-            // set date
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date date = format.parse(comment.getTime());
-            strikeoutAnnotation.setCreatedOn(date);
+        // add replies
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
+            AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
+            for (int i = 0; i < annotationData.getComments().length; i++) {
+                AnnotationReplyInfo reply = new AnnotationReplyInfo();
+                reply.setMessage(annotationData.getComments()[i].getText());
+                DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date date = format.parse(annotationData.getComments()[i].getTime());
+                reply.setRepliedOn(date);
+                reply.setUserName(annotationData.getComments()[i].getUserName());
+                replies[i] = reply;
+            }
+            strikeoutAnnotation.setReplies(replies);
         }
         return strikeoutAnnotation;
     }
 
     /**
      * Add area annnotation into the pdf document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotatePdf(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotatePdf() throws ParseException {
         AnnotationInfo strikeoutAnnotation = new AnnotationInfo();
         strikeoutAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));       
         strikeoutAnnotation.setPenColor(0);
@@ -88,7 +88,7 @@ public class TexStrikeoutAnnotator extends Annotator{
         strikeoutAnnotation.setPageNumber(annotationData.getPageNumber() - 1);
         strikeoutAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(),  annotationData.getWidth(),  annotationData.getHeight()));
         // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
-        double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
+        double topPosition = documentInfo.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
         double topRightX = annotationData.getLeft() + annotationData.getWidth();
         double bottomRightY = topPosition - annotationData.getHeight();
         strikeoutAnnotation.setSvgPath(
@@ -102,7 +102,7 @@ public class TexStrikeoutAnnotator extends Annotator{
                         ",\"y\":" + bottomRightY + "}]");
         strikeoutAnnotation.setGuid( String.valueOf(annotationData.getId()));
         // add replies
-        if(annotationData.getComments().length != 0) {
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -123,19 +123,18 @@ public class TexStrikeoutAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateCells() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
      * Add area annnotation into the Power Point document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotateSlides(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateSlides() throws ParseException {
         AnnotationInfo strikeoutAnnotation = new AnnotationInfo();
         strikeoutAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
-        double topPosition = info.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
+        double topPosition = documentInfo.getPages().get(annotationData.getPageNumber() - 1).getHeight() - annotationData.getTop();
         double topRightX = annotationData.getLeft() + annotationData.getWidth();
         double bottomRightY = topPosition - annotationData.getHeight();
         strikeoutAnnotation.setBox(new Rectangle(annotationData.getLeft(), topPosition, annotationData.getWidth(), annotationData.getHeight()));
@@ -152,7 +151,7 @@ public class TexStrikeoutAnnotator extends Annotator{
         strikeoutAnnotation.setPenColor(0);
         strikeoutAnnotation.setType(AnnotationType.TextStrikeout);
         // add replies
-        if(annotationData.getComments().length != 0) {
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -173,7 +172,7 @@ public class TexStrikeoutAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateImage(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateImage() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
@@ -181,7 +180,7 @@ public class TexStrikeoutAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateDiagram() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 }

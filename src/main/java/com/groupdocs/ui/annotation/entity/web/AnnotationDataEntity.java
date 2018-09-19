@@ -8,7 +8,7 @@ package com.groupdocs.ui.annotation.entity.web;
 public class AnnotationDataEntity {
     private int id;
     private int pageNumber;
-    private int fontSize;
+    private double fontSize;
     private double left;
     private double top;
     private double width;
@@ -36,11 +36,11 @@ public class AnnotationDataEntity {
         this.pageNumber = pageNumber;
     }
 
-    public int getFontSize() {
+    public double getFontSize() {
         return fontSize;
     }
 
-    public void setFontSize(int fontSize) {
+    public void setFontSize(double fontSize) {
         this.fontSize = fontSize;
     }
 

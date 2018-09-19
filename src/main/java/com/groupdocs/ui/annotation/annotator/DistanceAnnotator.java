@@ -23,24 +23,23 @@ public class DistanceAnnotator extends Annotator{
      * Constructor
      * @param annotationData
      */
-    public DistanceAnnotator(AnnotationDataEntity annotationData){
-        super(annotationData);
+    public DistanceAnnotator(AnnotationDataEntity annotationData, DocumentInfoContainer documentInfo){
+        super(annotationData, documentInfo);
     }
 
     /**
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateWord(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateWord() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
      * Add area annnotation into the pdf document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotatePdf(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotatePdf() throws ParseException {
         AnnotationInfo distanceAnnotation = new AnnotationInfo();
         // set draw annotation properties
         String startPoint = annotationData.getSvgPath().replaceAll("[a-zA-Z]+", "").split(" ")[0];
@@ -58,12 +57,13 @@ public class DistanceAnnotator extends Annotator{
         // sert annotation type
         distanceAnnotation.setType(AnnotationType.Distance);
         // add replies
-        if(annotationData.getComments().length != 0) {
+        String text = (annotationData.getText() == null) ? "" : annotationData.getText();
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();
                 if(i == 0){
-                    reply.setMessage(annotationData.getText() + " " + annotationData.getComments()[i].getText());
+                    reply.setMessage(text + " " + annotationData.getComments()[i].getText());
                 } else {
                     reply.setMessage(annotationData.getComments()[i].getText());
                 }
@@ -76,7 +76,7 @@ public class DistanceAnnotator extends Annotator{
             }
             distanceAnnotation.setReplies(replies);
         } else {
-            distanceAnnotation.setFieldText(annotationData.getText());
+            distanceAnnotation.setFieldText(text);
         }
         return distanceAnnotation;
     }
@@ -85,25 +85,23 @@ public class DistanceAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateCells(DocumentInfoContainer info, CommentsEntity comment) throws ParseException {
+    public AnnotationInfo annotateCells() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
      * Add area annnotation into the Power Point document
-     * @param info
      */
     @Override
-    public AnnotationInfo annotateSlides(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateSlides() throws ParseException {
         throw new NotSupportedException("Annotation of type " + annotationData.getType() + " for this file type is not supported");
     }
 
     /**
      * Add area annnotation into the image file
-     * @param info
      */
     @Override
-    public AnnotationInfo annotateImage(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateImage() throws ParseException {
         // init annotation object
         AnnotationInfo distanceAnnotation = new AnnotationInfo();
         // set draw annotation properties
@@ -121,7 +119,7 @@ public class DistanceAnnotator extends Annotator{
         distanceAnnotation.setType(AnnotationType.Distance);
         distanceAnnotation.setBackgroundColor(15988609);
         // add replies
-        if(annotationData.getComments().length != 0) {
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();
@@ -148,7 +146,7 @@ public class DistanceAnnotator extends Annotator{
      * This file type doesn't supported for the current annotation type
      */
     @Override
-    public AnnotationInfo annotateDiagram(DocumentInfoContainer info) throws ParseException {
+    public AnnotationInfo annotateDiagram() throws ParseException {
         // init annotation object
         AnnotationInfo distanceAnnotation = new AnnotationInfo();
         // set draw annotation properties
@@ -168,7 +166,7 @@ public class DistanceAnnotator extends Annotator{
         distanceAnnotation.setType(AnnotationType.Distance);
         distanceAnnotation.setBackgroundColor(15988609);
         // add replies
-        if(annotationData.getComments().length != 0) {
+        if(annotationData.getComments() != null && annotationData.getComments().length != 0) {
             AnnotationReplyInfo[] replies = new AnnotationReplyInfo[annotationData.getComments().length];
             for (int i = 0; i < annotationData.getComments().length; i++) {
                 AnnotationReplyInfo reply = new AnnotationReplyInfo();

@@ -804,16 +804,12 @@ function getCommentBaseHtml(){
  * @param {Object} button - Clicked download button
  */
 function download (button){
-    var annotated = false;
-    var documentName = "";   
+    var annotated = false;  
+	var documentName = documentGuid.match(/[-_\w]+[.][\w]+$/i)[0];
+    if($(button).attr("id") == "gd-annotated-download"){
+        annotated = true;       
+    } 
     if(typeof documentName != "undefined" && documentName != ""){
-		if($(button).attr("id") == "gd-annotated-download"){
-			annotated = true;
-			documentName = annotatedDocumentGuid;
-			annotatedDocumentGuid = "";
-		} else {
-			documentName = documentGuid;
-		}
          // Open download dialog
          window.location.assign(getApplicationPath("downloadDocument/?path=") + documentName + "&annotated=" + annotated);
     } else {

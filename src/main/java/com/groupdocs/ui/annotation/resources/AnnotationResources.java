@@ -238,23 +238,33 @@ public class AnnotationResources extends Resources {
     /**
      * Download document
      * @param documentGuid path to document parameter
+     * @param annotated
      * @param response
      */
     @GET
     @Path(value = "/downloadDocument")
     @Produces(APPLICATION_OCTET_STREAM)
-    public void downloadDocument(@QueryParam("path") String documentGuid, @Context HttpServletResponse response) throws IOException {
+    public void downloadDocument(@QueryParam("path") String documentGuid,
+                                 @QueryParam("annotated") Boolean annotated,
+                                 @Context HttpServletResponse response) throws IOException {
         int count;
         byte[] buff = new byte[16 * 1024];
-        OutputStream out = response.getOutputStream();
+        // get document path
         String fileName = new File(documentGuid).getName();
         // set response content disposition
         response.setHeader("Content-disposition", "attachment; filename=" + fileName);
         BufferedOutputStream outStream = null;
         BufferedInputStream inputStream = null;
+        String pathToDownload;
+        if(annotated) {
+            pathToDownload = String.format("%s%s%s", directoryUtils.getOutputDirectory().getPath(), File.separator, fileName);
+        } else {
+            pathToDownload = String.format("%s%s%s", directoryUtils.getFilesDirectory().getPath(), File.separator, fileName);
+        }
         try {
+            OutputStream out = response.getOutputStream();
             // download the document
-            inputStream = new BufferedInputStream(new FileInputStream(documentGuid));
+            inputStream = new BufferedInputStream(new FileInputStream(pathToDownload));
             outStream = new BufferedOutputStream(out);
             while ((count = inputStream.read(buff)) != -1) {
                 outStream.write(buff, 0, count);

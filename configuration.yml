@@ -53,7 +53,7 @@ viewer:
   # Absolute path to custom fonts directory
   fontsDirectory: ''
   # Default document
-  # Absolute or relative path to default document
+  # Absolute path to default document
   defaultDocument: ''
   # Pages preload
   # How many pages from a document should be loaded, remaining pages will be loaded on page scrolling
@@ -163,3 +163,20 @@ annotation:
   downloadOriginal: true
   # Enable/disable signed document downloading
   downloadAnnotated: true
+
+################################################
+# GroupDocs.Comparison configurations
+################################################
+comparison:
+  # Files directory path
+  # Absolute path to files directory
+  filesDirectory: C:/GroupDocs/Documents/Comparison/
+  # FResult files directory path
+  # Absolute path to result files directory
+  resultDirectory: C:/GroupDocs/Documents/Comparison/compare/
+  # Result pages preload
+  # How many pages from a result document should be loaded, remaining pages will be loaded on page scrolling
+  # Set 0 to load all pages at once
+  preloadResultPageCount: 2
+  # Enable/disable multi comparing feature
+  multiComparing: true

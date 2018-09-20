@@ -1,0 +1,187 @@
+#gd-header-logo {
+    background-image: url('../images/logo.png') !important;
+}
+.gd-drag-n-drop-wrap-compare.hover {
+    background: #ddd;
+    border-color: #aaa;
+}
+.gd-url-cancel {
+    background: transparent;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.gd-url-cancel-first i {
+    font-size: 21px;
+    margin-top: 5px;
+    margin-left: 6px;
+}
+.gd-add-url {
+    position: absolute;
+    top: 0;
+    color: #fff;
+    background-color: #3e4d59;
+    padding: 7px 16px 6px;
+    font-size: 12px;
+}
+.gd-upload-files-table-idx {
+    left: 15px;
+    width: 260px;
+    border-spacing: 0;
+    position: relative;
+}
+.gd-upload-files-table-idx>tbody>tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+.gd-filetree-name-compare {
+    position: absolute;
+    top: 20px;
+    left: 43px;
+    width: 260px;
+}
+.gd-filetree-name-compare > span {
+    font-size: 12px;
+    font-weight: 300;
+    color: #9a9a9a;
+    margin-right: 15px;
+}
+.gd-upload-files-table-i {
+    font-size: 21px;
+    position: absolute;
+    top: 25px;
+    left: 10px;
+}
+.wrapper {
+    display: unset;
+}
+#gd-select-compare-files {
+    display: flex;
+    width: 100%;
+    height: initial;
+    padding-top: 60px;
+}
+#gd-pages {
+    display: flex;
+    padding-top: 0px;
+    height: calc(100% - 210px);
+}
+.gd-drag-n-drop-wrap-compare {
+    margin-top: 0px;
+    width: unset;
+    height: unset;
+    border: 2px dashed #ccc;
+    background-color: #f8f8f8;
+    text-align: center;
+    cursor: default;
+    margin-bottom: 20px;
+    position: inherit;
+    padding-bottom: 7px;
+}
+.gd-drag-n-drop-wrap-compare h2 {
+    color: #cacaca;
+    margin: 5px 0;
+    font-size: 18px;
+    font-weight: 300;
+}
+.gd-drag-n-drop-wrap-compare h4 {
+    color: #cacaca;
+    font-weight: 300;
+    font-size: 14px;
+    margin: 10px 0;
+}
+.gd-drag-n-drop-wrap-compare h5 {
+    color: #afafaf;
+    font-weight: 200;
+    font-size: 12px;
+    margin: 20px 0 0 0;
+}
+#gd-select-compare-files section {
+    float: left;
+    padding: 20px 20px 20px;
+}
+#gd-pages section {
+    display: block;
+    padding: 20px 0 0;
+}
+.gd-upload-section-label {
+    background-color: #3e4e5a;
+    border-radius: 0px;
+    color: #ffffff;
+    padding-top: 9px;
+    padding-left: 7px;
+    display: inline-block;
+    text-align: center;
+    font-size: 11px;
+}
+#gd-upload-section-label i {
+    margin-right: 10px;
+    margin-left: -10px;
+}
+.gd-drag-n-drop-icon .fa-cloud-download-alt {
+    color: #efefef;
+    font-size: 80px;
+}
+.gd-browse-document i {
+    font-size: 108px;
+    color: #3e4e5a;
+    position: inherit;
+}
+.gd-browse-document{
+    margin-left: calc(50% - 73px);
+}
+.gd-modal-buttons {
+    position: initial;
+    display: inline-grid;
+    font-size: 14px;
+    width: 146px;
+    cursor: pointer;
+    text-align: center;
+}
+.gd-page {
+    display: block;
+}
+#gd-pages img {
+    text-align: center;
+    width: unset;
+}
+.swiper-wrapper {
+    height: 110px !important;
+}
+.gd-password-wrap {
+    position: absolute;
+    margin-top: 60px;
+}
+.gd-upload-complete {
+    top: Calc(100% - 102px);
+}
+.gd-upload-complete-fail {
+    font-size: 10px;
+    text-transform: uppercase;
+    text-align: center;
+    position: fixed;
+    left: calc(100% - 139px);
+    top: Calc(100% - 102px);
+    display: none;
+    color: #FF0000;
+}
+.gd-add-file-multicompare i {
+    color: #3e4e5a;
+    font-size: 108px;
+}
+.gd-files-blocks {
+    display: flex;
+    overflow-x: scroll;
+}
+.gd-close-dad-area {
+    position: inherit;
+    margin-top: -20px;
+}
+.gd-close-dad-area i {
+    color: #3e4e5a;
+}
+.gd-password-wrap > input {
+    width: unset;
+}
+.gd-url-wrap > input {
+    width: 230px;
+}

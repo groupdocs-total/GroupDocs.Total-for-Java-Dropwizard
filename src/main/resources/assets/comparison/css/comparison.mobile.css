@@ -1,0 +1,129 @@
+@media (max-width: 1024px) {
+    gd-drag-n-drop-wrap-compare  {
+        width: 100%;
+        background: transparent;
+        border: 0;
+        height: auto;
+    }
+
+    #gd-add-url-first, #gd-add-url-second {
+        right: -7px;
+        height: 89px;
+        border-radius: 0px;
+        width: 152px;
+        font-size: 51px;
+    }
+
+    #gd-url-cancel-first, #gd-url-cancel-second {
+        position: inherit;
+        top: -12px;
+        left: -800px;
+        width: 83px;
+        height: 90px;
+    }
+
+    .gd-upload-files-table-idx {
+        width: calc(100% - 20px);
+    }
+
+    .swiper-slide-comparison {
+        width: 80% !important;
+    }
+
+    #gd-select-compare-files section {
+        width: 100%;
+        padding-top: 50px;
+    }
+
+    #gd-pages section {
+        padding: 20px 20px 20px;
+        width: 100%;
+        font-size: 38px;
+    }
+
+    .gd-upload-files-table-idx > div {
+        height: 275px !important;
+    }
+
+    .gd-upload-files-table-i {
+        font-size: 40px !important;
+        top: 72px !important;
+    }
+
+    .gd-filetree-name-compare {
+        top: 55px;
+        left: 75px;
+        width: 100%;
+    }
+
+    .gd-filetree-name-compare > span {
+        font-size: 30px;
+        padding-left: 0;
+    }
+
+    .gd-upload-section-label {
+        padding-top: 18px;
+    }
+
+    .gd-upload-section-label > i {
+        font-size: 26px;
+    }
+
+    #gd-navbar {
+        overflow-x: scroll;
+    }
+
+    #gd-select-compare-files {
+        padding-top: 100px;
+        overflow-y: scroll;
+        height: 100%;
+        display: block;
+    }
+
+    .gd-password-wrap {
+        position: relative;
+        margin-top: 160px !important;
+    }
+
+    #gd-navbar > li {
+        padding: 15px 15px;
+    }
+
+    .gd-drag-n-drop-buttons .btn {
+        width: calc(50% - 20px);
+        height: 77px;
+        font-size: 26px;
+    }
+
+    #gd-modal-error {
+        font-size: 38px;
+    }
+
+    .gd-modal-title {
+        font-size: 42px;
+    }
+
+    .gd-close-dad-area {
+        margin-top: -50px;
+    }
+
+    .gd-close-dad-area i {
+        font-size: 54px;
+    }
+    .gd-file-name {
+        font-size: 30px;
+    }
+    .gd-cancel-button {
+        color: #3e4e5a;
+    }
+    .files-table-remove i {
+        color: #3e4e5a;
+    }
+    .swiper-slide-cancel {
+        background-color: unset;
+        width: unset !important;
+    }
+    .files-table-remove {
+        height: 110px;
+    }
+}

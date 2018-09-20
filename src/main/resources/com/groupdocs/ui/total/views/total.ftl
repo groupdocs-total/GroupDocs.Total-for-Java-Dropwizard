@@ -42,9 +42,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="">
-                            <img src="assets/total/images/groupdocs-comparison-d.png"/>
-                            <div class="coming-soon">
+                        <a href="comparison">
+                            <img src="assets/total/images/groupdocs-comparison.png"/>
+                            <div>
                                 <h5>GroupDocs</h5>
                                 <h6>Comparison</h6>
                             </div>

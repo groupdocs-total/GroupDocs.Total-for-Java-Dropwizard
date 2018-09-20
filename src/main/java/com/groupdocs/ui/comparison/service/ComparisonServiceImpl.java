@@ -119,7 +119,6 @@ public class ComparisonServiceImpl implements ComparisonService {
             // create setting for comparing
             ComparisonSettings settings = new ComparisonSettings();
 
-
             // compare two documents
             compareResult = comparer.compare(firstPath,
                     convertEmptyPasswordToNull(compareRequest.getFirstPassword()),

@@ -1,25 +1,18 @@
 @media (max-width: 1024px) {
-    gd-drag-n-drop-wrap-compare  {
+    .gd-drag-n-drop-wrap-compare  {
         width: 100%;
         background: transparent;
         border: 0;
         height: auto;
     }
 
-    #gd-add-url-first, #gd-add-url-second {
+    .gd-add-url {
         right: -7px;
-        height: 89px;
-        border-radius: 0px;
-        width: 152px;
         font-size: 51px;
     }
 
-    #gd-url-cancel-first, #gd-url-cancel-second {
-        position: inherit;
-        top: -12px;
-        left: -800px;
-        width: 83px;
-        height: 90px;
+    .gd-url-cancel {
+        font-size: 54px;
     }
 
     .gd-upload-files-table-idx {
@@ -27,7 +20,7 @@
     }
 
     .swiper-slide-comparison {
-        width: 80% !important;
+        width: 60% !important;
     }
 
     #gd-select-compare-files section {

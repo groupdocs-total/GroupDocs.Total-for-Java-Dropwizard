@@ -30,8 +30,7 @@ ANNOTATIONS TOOL BAR
 ******************************************
 */
 .gd-annotations-bar-wrapper {
-	width: 136px;
-    height: 70%;
+	width: 136px;    
     position: absolute;
     top: 28%;
 }
@@ -48,7 +47,7 @@ ANNOTATIONS TOOL BAR
 
 .gd-lbl-toggle {   
     color: #959da5;
-    top: 34%;
+    top: 42%;
     cursor: pointer;     	
     position: absolute;  
 }
@@ -280,7 +279,7 @@ ANNOTATIONS COMMENTS BAR
 	right: 282px;
 	height: 53px;
 	font-size: 25px;
-	z-index: 9999;
+	z-index: 2;
 }
 
 .gd-lbl-comments-toggle{
@@ -288,7 +287,7 @@ ANNOTATIONS COMMENTS BAR
     top: 52%;
 	right: 12px;
     color: #959da5;
-	z-index: 9999;
+	z-index: 2;
 	cursor: pointer;
 }
 .gd-lbl-comments-toggle::before {
@@ -307,8 +306,7 @@ ANNOTATIONS COMMENTS BAR
 	top: 50px;
 	left: auto;
 	background-color: #3e4e5a;
-	height: 100%;	
-	height: 95%;
+	height: 95%;		
 	overflow-y: auto;
 	z-index: 1;
 }

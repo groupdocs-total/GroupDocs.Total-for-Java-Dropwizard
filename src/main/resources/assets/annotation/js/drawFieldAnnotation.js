@@ -8,10 +8,12 @@
 
  $(document).ready(function(){
 	
+	var userMouseClick = ('ontouch' in document.documentElement)  ? 'touch' : 'click';
+	var userMouseUp = ('ontouchend' in document.documentElement)  ? 'touchend' : 'mouseup';
 	//////////////////////////////////////////////////
     // delete text field click event
     //////////////////////////////////////////////////  
-	$('#gd-panzoom').on('click', '.gd-text-field-delete', function(e){
+	$('#gd-panzoom').on(userMouseClick, '.gd-text-field-delete', function(e){
 		var id = parseInt($(this.parentElement.parentElement).find(".annotation").attr("id").replace ( /[^\d.]/g, '' ));
 		var annotationToRemove = $.grep(annotationsList, function(obj){return obj.id === id;})[0];	
 		annotationsList.splice($.inArray(annotationToRemove, annotationsList),1);
@@ -48,7 +50,7 @@
 	//////////////////////////////////////////////////
     // resize text area event
     //////////////////////////////////////////////////  
-	$("#gd-panzoom").bind("mouseup", ".gd-typewriter-text",  function(event){
+	$("#gd-panzoom").bind(userMouseUp, ".gd-typewriter-text",  function(event){
 		var id = $(event.target).data("id");
 		$.each(annotationsList, function(index, elem){
 			if(elem.id == id){

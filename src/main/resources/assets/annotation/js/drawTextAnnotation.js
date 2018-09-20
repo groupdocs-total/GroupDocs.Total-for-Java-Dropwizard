@@ -53,6 +53,8 @@
 								fontSize: 10,
 								comments: []
 							};
+	var userMouseUp = ('ontouchend' in document.documentElement)  ? 'touchend' : 'mouseup';
+	var userMouseMove = ('ontouchmove' in document.documentElement)  ? 'touchmove' : 'mousemove';
 	
 	/**
 	 * Draw text annotation
@@ -135,8 +137,7 @@
 			// prepend annotation element into the document page
 			canvas.prepend(element);					
 			annotationsList.push(annotation);				
-			makeResizable(annotation);				
-			addComment(annotation);
+			makeResizable(annotation);	
 		} else {			
 			// drop all data when draw is finished
 			canvas.onmousemove = null;			 		
@@ -144,14 +145,14 @@
 			if($(ev.target).prop("tagName") == "IMG"){					
 				annotationsList[annotationsList.length - 1].width = parseFloat(element.style.width.replace("px", ""));
 				annotationsList[annotationsList.length - 1].height = parseFloat(element.style.height.replace("px", ""));					
-			}	
+			}				
 			element = null;				
 			annotationInnerHtml = null;	
 			lineInnerHtml = null;			
 		}		
 		// set mouse up event
 		// this handler used to get annotation width and height after draw process
-		canvas.onmouseup = function(e) {
+		$(canvas).on(userMouseUp, function(e) {
 			if(element != null && e.target.tagName != "TEXTAREA"){
 				if(currentPrefix == "textReplacement"){
 					element.appendChild(getTextReplaceAnnotationHtml(idNumber));			
@@ -163,14 +164,16 @@
 					annotationsList[annotationsList.length - 1].width = parseFloat(element.style.width.replace("px", ""));
 					annotationsList[annotationsList.length - 1].height = parseFloat(element.style.height.replace("px", ""));					
 				}			
+				addComment(annotationsList[annotationsList.length - 1]);
 				annotationInnerHtml = null;	
 				lineInnerHtml = null;
 				element = null;
 			}
-		}
+		});
+		
 		// set mouse move event
 		// this handler used to get annotation width and height while draw process
-		canvas.onmousemove = function (e) {      
+		$(canvas).on(userMouseMove, function (e) {      
 			mouse = getMousePosition(e);
 			if (element !== null) {
 				if(currentPrefix == "text"){					
@@ -185,7 +188,7 @@
 				annotationInnerHtml.style.width = parseFloat(element.style.width) + "px";
 				annotationInnerHtml.style.height = parseFloat(element.style.height) + "px";				
 			}
-		}   
+		});
 	}
 	
 	/**
@@ -197,8 +200,8 @@
 	 * @param {String} prefix - Current annotation prefix
 	 */
 	$.fn.importTextAnnotation = function(canvas, annotationsList, annotation, annotationsCounter, prefix) {	
-		// check if the annotation with the same coordinates are alredy added.
-		// we use this since the GroupDocs.Annotation library returns all annotation comments from the Word document as new annotation
+		// check if the annotation with the same coordinates are already added.
+		// we use this since the GroupDocs.Annotation library returns all annotation comments from the Word document as a new annotation
 		if (previousAnnotation.left != annotation.left && previousAnnotation.top != annotation.top){	
 			currentPrefix = prefix;
 			idNumber = annotationsCounter;
@@ -227,7 +230,7 @@
 					annotationInnerHtml.style.height = annotation.height + "px";
 					annotationInnerHtml.style.width = annotation.width + "px";					
 					lineInnerHtml = getLineHtml();
-					break;
+					break;				
 				default:
 					element.style.left = annotation.left + "px";
 					element.style.top = annotation.top + "px";

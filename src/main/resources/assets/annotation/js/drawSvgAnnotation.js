@@ -28,7 +28,9 @@
 	var currentAnnotation = null;
 	var canvasTopOffset = null;
 	var currentPrefix = "";
-		
+	var userMouseUp = ('ontouchend' in document.documentElement)  ? 'touchend' : 'mouseup';
+	var userMouseMove = ('ontouchmove' in document.documentElement)  ? 'touchmove' : 'mousemove';
+	
 	/**
 	 * Draw svg annotation	
 	 */
@@ -100,14 +102,14 @@
 			line = svgList[canvas.id].polyline().attr(option);			
 			line.draw(event);			
 			// set mouse move event handler
-			svgList[canvas.id].on('mousemove', event => {
+			svgList[canvas.id].on(userMouseMove, event => {
 			  if (line) {
 				// draw line to next point coordinates
 				line.draw('point', event);
 			  }
 			})
 			// set mouse up event handler
-			svgList[canvas.id].on('mouseup', event => {
+			svgList[canvas.id].on(userMouseUp, event => {
 				if (line && currentPrefix == "polyline") {
 					// stop draw
 					line.draw('stop', event);				
@@ -167,7 +169,7 @@
 			let path = null;		 
 			path = svgList[canvas.id].path("M" + x + "," + y + " L" + x + "," + y).attr(option);			
 			// set mouse move event handler
-			svgList[canvas.id].on('mousemove', event => {
+			svgList[canvas.id].on(userMouseMove, event => {
 				if (path) {
 					// get current coordinates after mouse move
 					mouse = getMousePosition(event);
@@ -185,7 +187,7 @@
 				}
 			})
 			// set mouse up event handler
-			svgList[canvas.id].on('mouseup', event => {
+			svgList[canvas.id].on(userMouseUp, event => {
 				if (path && currentPrefix == "arrow") {	
 					// set annotation data
 					currentAnnotation.left = x;
@@ -231,7 +233,7 @@
 			let text = null;
 			text = svgList[canvas.id].text("0px").attr(textOptions);
 			// set mouse move event
-			svgList[canvas.id].on('mousemove', event => {
+			svgList[canvas.id].on(userMouseMove, event => {
 				if (path) {
 					// get end coordinates
 					mouse = getMousePosition(event);
@@ -258,7 +260,7 @@
 				}
 			})
 			// set mouse up event
-			svgList[canvas.id].on('mouseup', event => {
+			svgList[canvas.id].on(userMouseUp, event => {
 				if (path) {
 					currentAnnotation.left = x;
 					currentAnnotation.top = y;	
@@ -423,8 +425,16 @@
 			// When we draw a polygon, we immediately need 2 points.
 			// One start-point and one point at the mouse-position
 			this.set = new SVG.Set();
-
-			var p = this.startPoint,			
+			var p = null;
+			if(isNaN(this.startPoint.x) && isNaN(this.startPoint.y)) {
+				p = {
+					x: e.touches[0].clientX,
+					y: e.touches[0].clientY
+				};
+			} else {
+				p = this.startPoint;
+			}
+			
 			arr = [
 				[p.x - zoomCorrection.x, p.y - zoomCorrection.y],
 				[p.x - zoomCorrection.x, p.y - zoomCorrection.y]
@@ -439,7 +449,10 @@
 			arr.pop();
 
 			if (e) {
-				var p = this.transformPoint(e.clientX, e.clientY);	
+				// fix for mobiles
+				var x = (typeof e.clientX != "undefined") ? e.clientX : e.changedTouches[0].clientX;
+				var y = (typeof e.clientY != "undefined") ? e.clientY : e.changedTouches[0].clientY;
+				var p = this.transformPoint(x, y);	
 				p.x = p.x - zoomCorrection.x;
 				p.y = p.y - zoomCorrection.y;
 				arr.push(this.snapToGrid([p.x, p.y]));
@@ -452,8 +465,11 @@
 		point:function(e){
 
 			if (this.el.type.indexOf('poly') > -1) {
+				// fix for mobiles
+				var x = (typeof e.clientX != "undefined") ? e.clientX : e.touches[0].clientX;
+				var y = (typeof e.clientY != "undefined") ? e.clientY : e.touches[0].clientY;
 				// Add the new Point to the point-array
-				var p = this.transformPoint(e.clientX, e.clientY),
+				var p = this.transformPoint(x, y),
 				arr = this.el.array().valueOf();
 				p.x = p.x - zoomCorrection.x;
 				p.y = p.y - zoomCorrection.y;				

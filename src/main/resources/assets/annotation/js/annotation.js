@@ -134,7 +134,8 @@ $(document).ready(function(){
 	//////////////////////////////////////////////////
     // add annotation event
     //////////////////////////////////////////////////
-    $('#gd-panzoom').on('mousedown', 'svg', function(e){
+	var userClick = ('ontouchstart' in document.documentElement)  ? 'touchstart' : 'mousedown';
+    $('#gd-panzoom').on(userClick, 'svg', function(e){
 		if($(e.target).prop("tagName") == "IMG" || $(e.target).prop("tagName") == "svg"){
 			// initiate annotation object if null
 			if(annotation == null){
@@ -362,9 +363,9 @@ function getMousePosition(event) {
 		y: 0
 	};
 	var ev = event || window.event; //Moz || IE
-	if (ev.pageX) { //Moz
-		mouse.x = ev.pageX;
-		mouse.y = ev.pageY;
+	if (ev.pageX || ev.touches[0].pageX) { //Moz
+		mouse.x = (typeof ev.pageX != "undefined") ? ev.pageX : ev.touches[0].pageX;
+		mouse.y = (typeof ev.pageY != "undefined") ? ev.pageY : ev.touches[0].pageY;
 	} else if (ev.clientX) { //IE
 		mouse.x = ev.clientX + document.body.scrollLeft;
 		mouse.y = ev.clientY + document.body.scrollTop;
@@ -594,8 +595,7 @@ function saveComment(){
 * @param {Object} currentAnnotation - currently added annotation
 */
 function addComment(currentAnnotation){
-	$("#gd-annotation-comments").html("");
-	$('#gd-annotations-comments-toggle').prop('checked', true);
+	$("#gd-annotation-comments").html("");	
 	// check if annotation contains comments
 	if(currentAnnotation.comments != null && currentAnnotation.comments.length > 0){		
 		$.each(currentAnnotation.comments, function(index, comment){
@@ -606,10 +606,11 @@ function addComment(currentAnnotation){
 			$(".gd-comment-reply").before(getCommentHtml(comment));
 		});		
 	} else {	
+		$('#gd-annotations-comments-toggle').prop('checked', true);
 		currentAnnotation.comments = [];
 		$("#gd-annotation-comments").append(getCommentBaseHtml);
 		$(".gd-comment-box-sidebar").data("annotationId", currentAnnotation.id);
-		$(".gd-comment-reply").before(getCommentHtml);			 
+		$(".gd-comment-reply").before(getCommentHtml);
 	}
 }
  

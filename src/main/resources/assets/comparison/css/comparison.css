@@ -183,5 +183,6 @@
     width: unset;
 }
 .gd-url-wrap > input {
-    width: 230px;
+    width: 70%;
+    margin-left: 20px;
 }

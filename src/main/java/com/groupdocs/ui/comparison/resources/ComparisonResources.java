@@ -35,10 +35,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static javax.ws.rs.core.MediaType.*;
 
@@ -277,6 +274,16 @@ public class ComparisonResources extends Resources {
         return comparisonService.loadResultPage(loadResultPageRequest);
     }
 
+    /**
+     * Compare 2 files got by different ways
+     *
+     * @param files files data
+     * @param fileDetails files details
+     * @param passwords files passwords
+     * @param urls files url and password
+     * @param paths files path and password
+     * @return response with compare results
+     */
     @POST
     @Path(value = "/compare")
     @Produces(APPLICATION_JSON)
@@ -286,6 +293,10 @@ public class ComparisonResources extends Resources {
                                          @FormDataParam("passwords") List<String> passwords,
                                          @FormDataParam("urls") List<CompareFileDataRequest> urls,
                                          @FormDataParam("paths") List<CompareFileDataRequest> paths) {
+        // check if there is no files
+        if (files == null) {
+            files = Collections.EMPTY_LIST;
+        }
         // calculate total amount of files
         int initialCapacity = files.size() + urls.size() + paths.size();
 
@@ -316,6 +327,16 @@ public class ComparisonResources extends Resources {
         }
     }
 
+    /**
+     * Compare several files got by different ways
+     *
+     * @param files files data
+     * @param fileDetails files details
+     * @param passwords files passwords
+     * @param urls files url and password
+     * @param paths files path and password
+     * @return response with compare results
+     */
     @POST
     @Path(value = "/multiCompare")
     @Produces(APPLICATION_JSON)
@@ -325,6 +346,10 @@ public class ComparisonResources extends Resources {
                                               @FormDataParam("passwords") List<String> passwords,
                                               @FormDataParam("urls") List<CompareFileDataRequest> urls,
                                               @FormDataParam("paths") List<CompareFileDataRequest> paths) {
+        // check if there is no files
+        if (files == null) {
+            files = Collections.EMPTY_LIST;
+        }
         // calculate total amount of files
         int initialCapacity = files.size() + urls.size() + paths.size();
 

@@ -8,11 +8,16 @@
 
     .gd-add-url {
         right: -7px;
-        font-size: 51px;
+        font-size: 20px;
+        height: inherit;
     }
 
     .gd-url-cancel {
         font-size: 54px;
+    }
+
+    .gd-url-wrap > input {
+        margin-left: 30px;
     }
 
     .gd-upload-files-table-idx {

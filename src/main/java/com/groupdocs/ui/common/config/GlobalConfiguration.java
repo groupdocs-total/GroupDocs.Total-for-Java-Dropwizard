@@ -75,8 +75,8 @@ public class GlobalConfiguration extends Configuration{
     }
 
     /**
-     * Get signature configuration
-     * @return signature configuration
+     * Get common configuration
+     * @return common configuration
      */
     public CommonConfiguration getCommon() {
         return common;

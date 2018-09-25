@@ -5,6 +5,7 @@ import com.groupdocs.annotation.domain.*;
 import com.groupdocs.annotation.domain.config.AnnotationConfig;
 import com.groupdocs.annotation.domain.containers.DocumentInfoContainer;
 import com.groupdocs.annotation.domain.containers.FileTreeContainer;
+import com.groupdocs.annotation.domain.image.PageImage;
 import com.groupdocs.annotation.domain.options.FileTreeOptions;
 import com.groupdocs.annotation.domain.options.ImageOptions;
 import com.groupdocs.annotation.handler.AnnotationImageHandler;
@@ -224,7 +225,10 @@ public class AnnotationResources extends Resources {
                 imageOptions.setPassword(password);
             }
             // get page image
-            byte[] bytes = IOUtils.toByteArray(annotationImageHandler.getPages(new File(documentGuid).getName(), imageOptions).get(0).getStream());
+            InputStream document = new FileInputStream(documentGuid);
+            List<PageImage> images = annotationImageHandler.getPages(document, imageOptions);
+
+            byte[] bytes = IOUtils.toByteArray(images.get(pageNumber - 1).getStream());
             // encode ByteArray into String
             String incodedImage = new String(Base64.getEncoder().encode(bytes));
             loadedPage.setPageImage(incodedImage);

@@ -362,11 +362,13 @@
 		* import distance annotation
 		*/
 		importDistance: function(annotation){			
-			currentAnnotation.id = annotationsCounter;
-			annotation.comments[0].text = annotation.comments[0].text.replace(annotation.width + "px", "");
-			annotation.comments = $.grep(annotation.comments, function(value) {
-																return value.text != "  ";
-															});		
+		    currentAnnotation.id = annotationsCounter;
+		    if (annotation.comments != null) {
+		        annotation.comments[0].text = annotation.comments[0].text.replace(annotation.width + "px", "");
+		        annotation.comments = $.grep(annotation.comments, function (value) {
+		            return value.text != "  ";
+		        });
+		    }
 			annotation.text = Math.round(annotation.width) + "px";
 			annotationsList.push(annotation);		
 			addComment(annotation);			

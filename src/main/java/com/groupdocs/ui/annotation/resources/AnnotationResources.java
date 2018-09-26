@@ -190,7 +190,7 @@ public class AnnotationResources extends Resources {
                 description.setNumber(documentDescription.getPages().get(i).getNumber());
                 // set annotations data if document page contains annotations
                 if(annotations != null && annotations.length > 0) {
-                    description.setAnnotations(setAnnotations(annotations));
+                   description.setAnnotations(setAnnotations(annotations, description.getNumber()));
                 }
                 pagesDescription.add(description);
             }
@@ -586,41 +586,44 @@ public class AnnotationResources extends Resources {
     /**
      * set all imported annotations data
      * @param annotations
+     * @param pageNumber
      * @return annotations data entity array
      */
-    private AnnotationDataEntity[] setAnnotations(AnnotationInfo[] annotations){
+    private AnnotationDataEntity[] setAnnotations(AnnotationInfo[] annotations, int pageNumber){
         // initiate annotations data array
         AnnotationDataEntity[] pageAnnotations = new AnnotationDataEntity[annotations.length];
         DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
         // set each annotation data - this functionality used since annotations data returned by the
         // GroupDocs.Annotation library are obfuscated
         for (int n = 0; n < annotations.length; n++){
-            AnnotationDataEntity annotation = new AnnotationDataEntity();
-            annotation.setFont(annotations[n].getFontFamily());
-            annotation.setFontSize(annotations[n].getFontSize());
-            annotation.setHeight(annotations[n].getBox().getHeight());
-            annotation.setLeft(annotations[n].getBox().getX());
-            annotation.setPageNumber(annotations[n].getPageNumber() + 1);
-            annotation.setSvgPath(annotations[n].getSvgPath());
-            String text = (annotations[n].getText() == null) ? annotations[n].getFieldText() : annotations[n].getText();
-            annotation.setText(text);
-            annotation.setTop(annotations[n].getBox().getY());
-            AnnotationTypes annotationTypes = new AnnotationTypes();
-            annotation.setType(annotationTypes.getAnnotationType(annotations[n].getType()));
-            annotation.setWidth(annotations[n].getBox().getWidth());
-            // set each creply data
-            if(annotations[n].getReplies() != null && annotations[n].getReplies().length > 0) {
-                CommentsEntity[] comments = new CommentsEntity[annotations[n].getReplies().length];
-                for (int m = 0; m < annotations[n].getReplies().length; m++) {
-                    CommentsEntity comment = new CommentsEntity();
-                    comment.setText(annotations[n].getReplies()[m].getMessage());
-                    comment.setTime(format.format(annotations[n].getReplies()[m].getRepliedOn()));
-                    comment.setUserName(annotations[n].getReplies()[m].getUserName());
-                    comments[m] = comment;
+            if(pageNumber == annotations[n].getPageNumber() + 1) {
+                AnnotationDataEntity annotation = new AnnotationDataEntity();
+                annotation.setFont(annotations[n].getFontFamily());
+                annotation.setFontSize(annotations[n].getFontSize());
+                annotation.setHeight(annotations[n].getBox().getHeight());
+                annotation.setLeft(annotations[n].getBox().getX());
+                annotation.setPageNumber(annotations[n].getPageNumber() + 1);
+                annotation.setSvgPath(annotations[n].getSvgPath());
+                String text = (annotations[n].getText() == null) ? annotations[n].getFieldText() : annotations[n].getText();
+                annotation.setText(text);
+                annotation.setTop(annotations[n].getBox().getY());
+                AnnotationTypes annotationTypes = new AnnotationTypes();
+                annotation.setType(annotationTypes.getAnnotationType(annotations[n].getType()));
+                annotation.setWidth(annotations[n].getBox().getWidth());
+                // set each creply data
+                if (annotations[n].getReplies() != null && annotations[n].getReplies().length > 0) {
+                    CommentsEntity[] comments = new CommentsEntity[annotations[n].getReplies().length];
+                    for (int m = 0; m < annotations[n].getReplies().length; m++) {
+                        CommentsEntity comment = new CommentsEntity();
+                        comment.setText(annotations[n].getReplies()[m].getMessage());
+                        comment.setTime(format.format(annotations[n].getReplies()[m].getRepliedOn()));
+                        comment.setUserName(annotations[n].getReplies()[m].getUserName());
+                        comments[m] = comment;
+                    }
+                    annotation.setComments(comments);
                 }
-                annotation.setComments(comments);
+                pageAnnotations[n] = annotation;
             }
-            pageAnnotations[n] = annotation;
         }
         return pageAnnotations;
     }

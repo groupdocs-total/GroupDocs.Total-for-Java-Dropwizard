@@ -18,6 +18,7 @@ public class AnnotationDataEntity {
     private String documentType;
     private String text;
     private String font;
+    private boolean imported;
     private CommentsEntity[] comments;
 
     public int getId() {
@@ -114,6 +115,14 @@ public class AnnotationDataEntity {
 
     public void setFont(String font) {
         this.font = font;
+    }
+
+    public boolean isImported() {
+        return imported;
+    }
+
+    public void setImported(boolean imported) {
+        this.imported = imported;
     }
 
     public CommentsEntity[] getComments() {

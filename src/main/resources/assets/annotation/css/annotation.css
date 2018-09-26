@@ -329,6 +329,11 @@ ANNOTATIONS COMMENTS BAR
   transition: right .25s ease-in-out;
 }
 
+.gd-annotations-comments-wrapper.active {
+	width: 300px;
+	display: block;
+}
+
 .gd-comments-content{
 	display: none;
 }

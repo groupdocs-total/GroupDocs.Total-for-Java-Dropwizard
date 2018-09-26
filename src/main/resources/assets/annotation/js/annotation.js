@@ -47,8 +47,8 @@ $(document).ready(function(){
     //////////////////////////////////////////////////
     // Disable default download event
     //////////////////////////////////////////////////
-    $('#gd-btn-download').off('click');
-
+    $('#gd-btn-download').off('click');	
+	
 	//////////////////////////////////////////////////
     // Add SVG to all pages DIVs
     //////////////////////////////////////////////////
@@ -69,7 +69,7 @@ $(document).ready(function(){
 					// add svg object to the list for further use
 					var draw = SVG(page.id).size(page.offsetWidth, page.offsetHeight);
 					svgList[page.id] = draw;
-					draw = null;
+					draw = null;					
 				} else {
 					return true;
 				}
@@ -77,18 +77,26 @@ $(document).ready(function(){
 		});
 		//check if document contains annotations
 		if ($(this).parent().parent().attr("id").search("thumbnails") == -1) {
-			$.each(documentData, function(index, data){
-				// import annotations
-				if (data.annotations != null) {
-					if (data.annotations.length > 0) {
-						$.each(data.annotations, function(index, annotationData){
+			for(var i = 0; i < documentData.length; i++){
+				if (documentData[i].annotations != null && documentData[i].annotations.length > 0){ 
+					$.each(documentData[i].annotations, function(index, annotationData){
+						if(annotationData != null && annotationData.pageNumber == documentData[i].number && annotationData.imported != true){
 							importAnnotation(annotationData);
-						});
-					}
+							annotationData.imported = true;
+						}
+					});
 				}
-			});
-		}
+			}
+		}		
 	});
+	
+	//////////////////////////////////////////////////
+    // Open comment bar event
+    //////////////////////////////////////////////////
+	$(".gd-annotations-comments-toggle").on('click', function(){
+		$(".gd-annotations-comments-wrapper").toggleClass("active");
+	});
+	
 	
     //////////////////////////////////////////////////
     // Fix for tooltips of the dropdowns
@@ -305,6 +313,9 @@ $(document).ready(function(){
     // annotation click event
     //////////////////////////////////////////////////
     $('#gd-panzoom').on('click', '.gd-annotation', function(e){
+		if(!$(".gd-annotations-comments-wrapper").hasClass("active")){
+			$(".gd-annotations-comments-wrapper").toggleClass("active");
+		}
 		if(e.target.tagName != "I" && e.target.tagName != "INPUT" && e.target.tagName != "TEXTAREA"){
 			$("#gd-annotation-comments").html("");
 			$('#gd-annotations-comments-toggle').prop('checked', true);
@@ -865,9 +876,9 @@ GROUPDOCS.ANNOTATION PLUGIN
 			getHtmlDownloadPanel();
 			$('#gd-navbar').append(getHtmlSavePanel);
 			// assembly annotation tools side bar html base
-			$("body").append(getHtmlAnnotationsBarBase);
+			$(".wrapper").append(getHtmlAnnotationsBarBase);
 			// assembly annotation comments side bar html base
-			$("body").append(getHtmlAnnotationCommentsBase);
+			$(".wrapper").append(getHtmlAnnotationCommentsBase);
 			
 			// assembly annotations tools side bar
 			if(options.textAnnotation){

@@ -1,8 +1,9 @@
 package com.groupdocs.ui.common;
 
+import com.groupdocs.ui.annotation.resources.AnnotationResources;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.common.exception.TotalGroupDocsExceptionMapper;
 import com.groupdocs.ui.common.health.TemplateHealthCheck;
+import com.groupdocs.ui.comparison.resources.ComparisonResources;
 import com.groupdocs.ui.signature.resources.SignatureResources;
 import com.groupdocs.ui.total.resources.TotalResources;
 import com.groupdocs.ui.viewer.resources.ViewerResources;
@@ -55,10 +56,11 @@ public class MainService extends Application<GlobalConfiguration> {
         cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         // Initiate resources (web pages)
+        environment.jersey().register(new AnnotationResources(globalConfiguration));
+        environment.jersey().register(new ComparisonResources(globalConfiguration));
         environment.jersey().register(new ViewerResources(globalConfiguration));
         environment.jersey().register(new SignatureResources(globalConfiguration));
         environment.jersey().register(new TotalResources(globalConfiguration));
-        environment.jersey().register(new TotalGroupDocsExceptionMapper());
 
         // Add dummy health check to get rid of console warnings
         // TODO: implement health check

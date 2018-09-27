@@ -2,9 +2,9 @@ package com.groupdocs.ui.signature.signatureloader;
 
 import com.google.common.collect.Ordering;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
+import com.groupdocs.ui.common.util.comparator.FileNameComparator;
+import com.groupdocs.ui.common.util.comparator.FileTypeComparator;
 import com.groupdocs.ui.signature.entity.web.SignatureFileDescriptionEntity;
-import com.groupdocs.ui.signature.util.comparator.FileNameComparator;
-import com.groupdocs.ui.signature.util.comparator.FileTypeComparator;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

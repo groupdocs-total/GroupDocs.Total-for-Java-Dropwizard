@@ -29,7 +29,6 @@ var annotation = {
 	fontSize: 10,
 	comments: []
 };
-var currentDocumentGuid = "";
 var annotationType = null;
 var annotationsList = [];
 var annotationsCounter = 0;
@@ -42,8 +41,8 @@ $(document).ready(function(){
     ******************************************************************
     NAV BAR CONTROLS
     ******************************************************************
-    */
-
+    */    
+    
     //////////////////////////////////////////////////
     // Disable default download event
     //////////////////////////////////////////////////
@@ -52,8 +51,13 @@ $(document).ready(function(){
 	//////////////////////////////////////////////////
     // Add SVG to all pages DIVs
     //////////////////////////////////////////////////
-	$.initialize(".gd-page-image", function() {
-		// set text rows data to null
+    $.initialize(".gd-page-image", function () {
+        // ensure that the closed comments tab doesn't 
+        // have active class when another document is opened
+        if ($(".gd-annotations-comments-wrapper").hasClass("active")) {
+            $(".gd-annotations-comments-wrapper").toggleClass("active");
+        }
+	    // set text rows data to null
 		rows = null;
 		// append svg element to each page, this is required to draw svg based annotations
 		$('div.gd-page').each(function(index, page){
@@ -486,8 +490,7 @@ function setTextAnnotationCoordinates(mouseX, mouseY) {
  * Annotate current document
  */
 function annotate() {   
-	// set current document guid - used to check if the other document were opened
-    currentDocumentGuid = documentGuid;
+	// set current document guid - used to check if the other document were opened   
     var url = getApplicationPath('annotate');     
 	annotationsList[0].documentType = getDocumentFormat(documentGuid).format;	
     // current document guid is taken from the viewer.js globals
@@ -606,7 +609,7 @@ function saveComment(){
 * @param {Object} currentAnnotation - currently added annotation
 */
 function addComment(currentAnnotation){
-	$("#gd-annotation-comments").html("");	
+    $("#gd-annotation-comments").html("");
 	// check if annotation contains comments
 	if(currentAnnotation.comments != null && currentAnnotation.comments.length > 0){		
 		$.each(currentAnnotation.comments, function(index, comment){
@@ -617,7 +620,10 @@ function addComment(currentAnnotation){
 			$(".gd-comment-reply").before(getCommentHtml(comment));
 		});		
 	} else {	
-		$('#gd-annotations-comments-toggle').prop('checked', true);
+	    $('#gd-annotations-comments-toggle').prop('checked', true);
+	    if (!$(".gd-annotations-comments-wrapper").hasClass("active")) {
+	        $(".gd-annotations-comments-wrapper").toggleClass("active");
+	    }
 		currentAnnotation.comments = [];
 		$("#gd-annotation-comments").append(getCommentBaseHtml);
 		$(".gd-comment-box-sidebar").data("annotationId", currentAnnotation.id);

@@ -127,48 +127,17 @@ public class ComparisonResources extends Resources {
                                                  @FormDataParam("file") FormDataContentDisposition fileDetail,
                                                  @FormDataParam("url") String url,
                                                  @FormDataParam("rewrite") Boolean rewrite) {
-        InputStream uploadedInputStream = null;
-        try {
-            String fileName;
-            if (StringUtils.isEmpty(url)) {
-                // get the InputStream to store the file
-                uploadedInputStream = inputStream;
-                fileName = fileDetail.getFileName();
-            } else {
-                // get the InputStream from the URL
-                URL fileUrl = URI.create(url).toURL();
-                uploadedInputStream = fileUrl.openStream();
-                fileName = FilenameUtils.getName(fileUrl.getPath());
-            }
-            // get documents storage path
-            String documentStoragePath = globalConfiguration.getComparison().getFilesDirectory();
-            // save the file
-            File file = new File(documentStoragePath + File.separator + fileName);
-            // check rewrite mode
-            if(rewrite) {
-                // save file with rewrite if exists
-                Files.copy(uploadedInputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } else {
-                if (file.exists()){
-                    // get file with new name
-                    file = getFreeFileName(documentStoragePath, fileName);
-                }
-                // save file with out rewriting
-                Files.copy(uploadedInputStream, file.toPath());
-            }
-            UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity();
-            uploadedDocument.setGuid(documentStoragePath + File.separator + fileName);
-            return uploadedDocument;
-        }catch(Exception ex){
-            logger.error("Exception in uploading document", ex);
-            throw new TotalGroupDocsException(ex.getMessage(), ex);
-        } finally {
-            try {
-                uploadedInputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        // upload file
+        String pathname = uploadFile(url, inputStream, fileDetail, rewrite, null);
+        // create response
+        UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity();
+        uploadedDocument.setGuid(pathname);
+        return uploadedDocument;
+    }
+
+    @Override
+    protected String getStoragePath(Map<String, Object> params) {
+        return globalConfiguration.getComparison().getFilesDirectory();
     }
 
     /**

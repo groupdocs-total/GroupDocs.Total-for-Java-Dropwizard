@@ -7,6 +7,7 @@ import com.groupdocs.ui.total.views.Total;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 /**
  * Total Resources
@@ -16,6 +17,11 @@ import java.net.UnknownHostException;
 
 @Path(value = "/")
 public class TotalResources extends Resources {
+
+    @Override
+    protected String getStoragePath(Map<String, Object> params) {
+        return "";
+    }
 
     /**
      * Constructor

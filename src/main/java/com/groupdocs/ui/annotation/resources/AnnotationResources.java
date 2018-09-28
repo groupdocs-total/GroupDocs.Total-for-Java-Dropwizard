@@ -1,7 +1,9 @@
 package com.groupdocs.ui.annotation.resources;
 
 import com.groupdocs.annotation.common.license.License;
-import com.groupdocs.annotation.domain.*;
+import com.groupdocs.annotation.domain.AnnotationInfo;
+import com.groupdocs.annotation.domain.FileDescription;
+import com.groupdocs.annotation.domain.RowData;
 import com.groupdocs.annotation.domain.config.AnnotationConfig;
 import com.groupdocs.annotation.domain.containers.DocumentInfoContainer;
 import com.groupdocs.annotation.domain.containers.FileTreeContainer;
@@ -13,13 +15,13 @@ import com.groupdocs.ui.annotation.annotator.*;
 import com.groupdocs.ui.annotation.entity.request.AnnotateDocumentRequest;
 import com.groupdocs.ui.annotation.entity.request.TextCoordinatesRequest;
 import com.groupdocs.ui.annotation.entity.web.*;
-import com.groupdocs.ui.annotation.importer.*;
+import com.groupdocs.ui.annotation.importer.Importer;
 import com.groupdocs.ui.annotation.util.directory.DirectoryUtils;
 import com.groupdocs.ui.annotation.views.Annotation;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
-import com.groupdocs.ui.common.entity.web.UploadedDocumentEntity;
 import com.groupdocs.ui.common.entity.web.LoadedPageEntity;
+import com.groupdocs.ui.common.entity.web.UploadedDocumentEntity;
 import com.groupdocs.ui.common.entity.web.request.FileTreeRequest;
 import com.groupdocs.ui.common.entity.web.request.LoadDocumentPageRequest;
 import com.groupdocs.ui.common.entity.web.request.LoadDocumentRequest;
@@ -27,36 +29,21 @@ import com.groupdocs.ui.common.exception.TotalGroupDocsException;
 import com.groupdocs.ui.common.resources.Resources;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.net.URL;
+import java.io.*;
 import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
-import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+import static com.groupdocs.ui.annotation.util.DocumentTypesConverter.getDocumentType;
+import static javax.ws.rs.core.MediaType.*;
 
 /**
  * AnnotationResources
@@ -85,7 +72,7 @@ public class AnnotationResources extends Resources {
         AnnotationConfig config = new AnnotationConfig();
         // set storage path
         config.setStoragePath(directoryUtils.getFilesDirectory().getPath());
-        // set directory to store annotted documents
+        // set directory to store annotated documents
         globalConfiguration.getAnnotation().setOutputDirectory(directoryUtils.getOutputDirectory().getPath());
         config.getFontDirectories().add(globalConfiguration.getAnnotation().getFontsDirectory());
         // set GroupDocs license
@@ -167,7 +154,8 @@ public class AnnotationResources extends Resources {
             String password = loadDocumentRequest.getPassword();
             DocumentInfoContainer documentDescription;
             // get document info container
-            documentDescription = annotationImageHandler.getDocumentInfo(new File(documentGuid).getName(), password);
+            String fileName = FilenameUtils.getName(documentGuid);
+            documentDescription = annotationImageHandler.getDocumentInfo(fileName, password);
 
             String documentType = documentDescription.getDocumentType();
             // check if document type is image
@@ -251,37 +239,13 @@ public class AnnotationResources extends Resources {
     public void downloadDocument(@QueryParam("path") String documentGuid,
                                  @QueryParam("annotated") Boolean annotated,
                                  @Context HttpServletResponse response) throws IOException {
-        int count;
-        byte[] buff = new byte[16 * 1024];
         // get document path
         String fileName = new File(documentGuid).getName();
-        // set response content disposition
-        response.setHeader("Content-disposition", "attachment; filename=" + fileName);
-        BufferedOutputStream outStream = null;
-        BufferedInputStream inputStream = null;
-        String pathToDownload;
-        if(annotated) {
-            pathToDownload = String.format("%s%s%s", directoryUtils.getOutputDirectory().getPath(), File.separator, fileName);
-        } else {
-            pathToDownload = String.format("%s%s%s", directoryUtils.getFilesDirectory().getPath(), File.separator, fileName);
-        }
-        try {
-            OutputStream out = response.getOutputStream();
-            // download the document
-            inputStream = new BufferedInputStream(new FileInputStream(pathToDownload));
-            outStream = new BufferedOutputStream(out);
-            while ((count = inputStream.read(buff)) != -1) {
-                outStream.write(buff, 0, count);
-            }
-        } catch (Exception ex){
-            throw new TotalGroupDocsException(ex.getMessage(), ex);
-        } finally {
-            // close streams
-            if (inputStream != null)
-                inputStream.close();
-            if (outStream != null)
-                outStream.close();
-        }
+        // choose directory
+        String directory = annotated ? directoryUtils.getOutputDirectory().getPath() : directoryUtils.getFilesDirectory().getPath();
+        String pathToDownload = String.format("%s%s%s", directory, File.separator, fileName);
+        // download the file
+        downloadFile(response, documentGuid, pathToDownload);
     }
 
     /**
@@ -300,47 +264,18 @@ public class AnnotationResources extends Resources {
                                                  @FormDataParam("file") FormDataContentDisposition fileDetail,
                                                  @FormDataParam("url") String documentUrl,
                                                  @FormDataParam("rewrite") Boolean rewrite) {
-        InputStream uploadedInputStream = null;
-        try {
-            String fileName;
-            if (StringUtils.isEmpty(documentUrl)) {
-                // get the InputStream to store the file
-                uploadedInputStream = inputStream;
-                fileName = fileDetail.getFileName();
-            } else {
-                // get the InputStream from the URL
-                URL url =  new URL(documentUrl);
-                uploadedInputStream = url.openStream();
-                fileName = FilenameUtils.getName(url.getPath());
-            }
-            // get documents storage path
-            String documentStoragePath = globalConfiguration.getAnnotation().getFilesDirectory();
-            // save the file
-            File file = new File(documentStoragePath + File.separator + fileName);
-            // check rewrite mode
-            if(rewrite) {
-                // save file with rewrite if exists
-                Files.copy(uploadedInputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } else {
-                if (file.exists()){
-                    // get file with new name
-                    file = getFreeFileName(documentStoragePath, fileName);
-                }
-                // save file with out rewriting
-                Files.copy(uploadedInputStream, file.toPath());
-            }
-            UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity();
-            uploadedDocument.setGuid(documentStoragePath + File.separator + fileName);
-            return uploadedDocument;
-        } catch(Exception ex) {
-            throw new TotalGroupDocsException(ex.getMessage(), ex);
-        } finally {
-            try {
-                uploadedInputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        // upload file
+        String pathname = uploadFile(documentUrl, inputStream, fileDetail, rewrite, null);
+        // create response
+        UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity();
+        uploadedDocument.setGuid(pathname);
+        return uploadedDocument;
+
+    }
+
+    @Override
+    protected String getStoragePath(Map<String, Object> params) {
+        return globalConfiguration.getAnnotation().getFilesDirectory();
     }
 
     /**
@@ -389,15 +324,13 @@ public class AnnotationResources extends Resources {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public AnnotatedDocumentEntity annotate(AnnotateDocumentRequest annotateDocumentRequest) {
-        String password = "";
-        Exception notSupportedException = null;
+        AnnotatedDocumentEntity annotatedDocument = new AnnotatedDocumentEntity();
         try {
             // get/set parameters
             String documentGuid = annotateDocumentRequest.getGuid();
-            password = annotateDocumentRequest.getPassword();
+            String password = annotateDocumentRequest.getPassword();
             AnnotationDataEntity[] annotationsData = annotateDocumentRequest.getAnnotationsData();
             // initiate AnnotatedDocument object
-            AnnotatedDocumentEntity annotatedDocument = new AnnotatedDocumentEntity();
             // initiate list of annotations to add
             List<AnnotationInfo> annotations = new ArrayList<AnnotationInfo>();
             // get document info - required to get document page height and calculate annotation top position
@@ -408,12 +341,14 @@ public class AnnotationResources extends Resources {
             }
             // initiate annotator object
             Annotator annotator = null;
+            String documentType = annotationsData[0].getDocumentType();
+            Exception notSupportedException = null;
             for(int i = 0; i < annotationsData.length; i++) {
                 // create annotator
                 annotator = getAnnotator(annotationsData[i], annotator, documentInfo);
-                // add annotation, if cuurent annotation type isn't supported by the current document type it will be ignored
+                // add annotation, if current annotation type isn't supported by the current document type it will be ignored
                 try {
-                    addAnnotationOptions(annotationsData[0].getDocumentType(), annotations, annotator);
+                    addAnnotationOptions(documentType, annotations, annotator);
                 } catch (Exception ex){
                     if(ex.getMessage().equals("Annotation of type " + annotationsData[i].getType() + " for this file type is not supported")){
                         notSupportedException = ex;
@@ -423,46 +358,27 @@ public class AnnotationResources extends Resources {
                     }
                 }
             }
-            // check if annottions array contains at least one annotation to add
+            // check if annotations array contains at least one annotation to add
             if(annotations.size() > 0) {
-                InputStream result = null;
                 // Add annotation to the document
+                int type = getDocumentType(documentType);
                 InputStream cleanDoc = new FileInputStream(documentGuid);
-                switch (annotationsData[0].getDocumentType()) {
-                    case "Portable Document Format":
-                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Pdf);
-                        break;
-                    case "Microsoft Word":
-                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Words);
-                        break;
-                    case "Microsoft PowerPoint":
-                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Slides);
-                        break;
-                    case "image":
-                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Images);
-                        break;
-                    case "Microsoft Excel":
-                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Cells);
-                        break;
-                    case "AutoCAD Drawing File Format":
-                        result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, DocumentType.Diagram);
-                        break;
-                }
+                InputStream result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, type);
                 // Save result stream to file.
                 File outPut = new File(documentGuid);
-                String path = globalConfiguration.getAnnotation().getOutputDirectory() + "/" + outPut.getName();
+                String path = globalConfiguration.getAnnotation().getOutputDirectory() + File.separator + outPut.getName();
                 OutputStream fileStream = new FileOutputStream(path);
                 annotatedDocument.setGuid(path);
                 IOUtils.copy(result, fileStream);
                 fileStream.close();
                 result.close();
-                return annotatedDocument;
-            } else {
+            } else if (notSupportedException != null) {
                 throw new NotSupportedException(notSupportedException.getMessage(), notSupportedException);
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
+        return annotatedDocument;
     }
 
     /**
@@ -548,36 +464,17 @@ public class AnnotationResources extends Resources {
     }
 
     /**
-     * get all annotations from the document
-     * @param documentType
+     * Get all annotations from the document
+     *
+     * @param documentGuid
      * @param documentType
      * @return array of the annotations
      */
-    private AnnotationInfo[] getAnnotations(String documentGuid, String documentType){
-        AnnotationInfo[] annotations = null;
+    private AnnotationInfo[] getAnnotations(String documentGuid, String documentType) {
         try {
             FileInputStream documentStream = new FileInputStream(documentGuid);
-            switch (documentType) {
-                case "PDF":
-                    annotations = new PdfImporter(documentStream, annotationImageHandler).importAnnotations();
-                    break;
-                case "WORDS":
-                    annotations = new WordImporter(documentStream, annotationImageHandler).importAnnotations();
-                    break;
-                case "SLIDES":
-                    annotations = new SlidesImporter(documentStream, annotationImageHandler).importAnnotations();
-                    break;
-                case "image":
-                    annotations = new ImageImporter(documentStream, annotationImageHandler).importAnnotations();
-                    break;
-                case "CELLS":
-                    annotations = new CellsImporter(documentStream, annotationImageHandler).importAnnotations();
-                    break;
-                case "diagram":
-                    annotations = new DiagramImporter(documentStream, annotationImageHandler).importAnnotations();
-                    break;
-            }
-            return annotations;
+            int docType = getDocumentType(documentType);
+            return new Importer(documentStream, annotationImageHandler).importAnnotations(docType);
         } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }

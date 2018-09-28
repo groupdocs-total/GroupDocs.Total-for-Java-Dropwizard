@@ -37,6 +37,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
@@ -46,15 +48,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.XMLDecoder;
 import java.io.*;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
+import java.util.*;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.*;
@@ -67,6 +65,10 @@ import static javax.ws.rs.core.MediaType.*;
 
 @Path(value = "/signature")
 public class SignatureResources extends Resources {
+
+    private static final Logger logger = LoggerFactory.getLogger(SignatureResources.class);
+
+    public static final String SIGNATURE_TYPE_PARAM = "signatureType";
     private final SignatureHandler signatureHandler;
     private DirectoryUtils directoryUtils;
     private List<String> supportedImageFormats = Arrays.asList("bmp", "jpeg", "jpg", "tiff", "tif", "png");
@@ -88,10 +90,13 @@ public class SignatureResources extends Resources {
         config.setImagesPath(directoryUtils.getDataDirectory().getImageDirectory().getPath());
         config.setOutputPath(directoryUtils.getOutputDirectory().getPath());
 
-        // set GroupDocs license
-        License license = new License();
-        license.setLicense(globalConfiguration.getApplication().getLicensePath());
-
+        try {
+            // set GroupDocs license
+            License license = new License();
+            license.setLicense(globalConfiguration.getApplication().getLicensePath());
+        } catch (Throwable throwable) {
+            logger.error("Can not verify Signature license!");
+        }
         // initialize total instance for the Image mode
         signatureHandler = new SignatureHandler(config);
     }
@@ -230,37 +235,13 @@ public class SignatureResources extends Resources {
     public void downloadDocument(@QueryParam("path") String documentGuid,
                                  @QueryParam("signed") Boolean signed,
                                  @Context HttpServletResponse response) throws IOException {
-        int count;
-        byte[] buff = new byte[16 * 1024];
         // get document path
         String fileName = new File(documentGuid).getName();
-        // set response content disposition
-        response.setHeader("Content-disposition", "attachment; filename=" + fileName);
-        BufferedOutputStream outStream = null;
-        BufferedInputStream inputStream = null;
-        String pathToDownload;
-        if(signed) {
-            pathToDownload = String.format("%s%s%s", directoryUtils.getOutputDirectory().getPath(), File.separator, fileName);
-        } else {
-            pathToDownload = String.format("%s%s%s", directoryUtils.getFilesDirectory().getPath(), File.separator, fileName);
-        }
-        try {
-            OutputStream out = response.getOutputStream();
-            // download the document
-            inputStream = new BufferedInputStream(new FileInputStream(pathToDownload));
-            outStream = new BufferedOutputStream(out);
-            while ((count = inputStream.read(buff)) != -1) {
-                outStream.write(buff, 0, count);
-            }
-        } catch (Exception ex){
-            throw new TotalGroupDocsException(ex.getMessage(), ex);
-        } finally {
-            // close streams
-            if (inputStream != null)
-                inputStream.close();
-            if (outStream != null)
-                outStream.close();
-        }
+        // choose directory
+        String directory = signed ? directoryUtils.getOutputDirectory().getPath() : directoryUtils.getFilesDirectory().getPath();
+        String pathToDownload = String.format("%s%s%s", directory, File.separator, fileName);
+
+        downloadFile(response, documentGuid, pathToDownload);
     }
 
     /**
@@ -276,67 +257,46 @@ public class SignatureResources extends Resources {
                                                          @FormDataParam("url") String documentUrl,
                                                          @FormDataParam("rewrite") Boolean rewrite,
                                                          @FormDataParam("signatureType") String signatureType) {
-        InputStream uploadedInputStream = null;
-        try {
-            String fileName;
-            if (StringUtils.isEmpty(documentUrl)) {
-                // get the InputStream to store the file
-                uploadedInputStream = inputStream;
-                fileName = fileDetail.getFileName();
-            } else {
-                // get the InputStream from the URL
-                URL url =  new URL(documentUrl);
-                uploadedInputStream = url.openStream();
-                fileName = FilenameUtils.getName(url.getPath());
-            }
-            // get signatures storage path
-            String documentStoragePath;
-            if (signatureType == null || signatureType.isEmpty()) {
-                signatureType = "";
-            }
-            switch(signatureType){
-                case "digital": documentStoragePath = directoryUtils.getDataDirectory().getCertificateDirectory().getPath();
-                    break;
-                case "image": documentStoragePath = directoryUtils.getDataDirectory().getImageDirectory().getPath();
-                    break;
-                default:  documentStoragePath = directoryUtils.getFilesDirectory().getPath();
-                    break;
-            }
-            // save the file
-            String filePath =  String.format("%s%s%s", documentStoragePath, File.separator, fileName);
-            File file = new File(filePath);
-            // check rewrite mode
-            if(rewrite) {
-                // save file with rewrite if exists
-                Files.copy(uploadedInputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } else {
-                if (file.exists())
-                {
-                    // get file with new name
-                    file = getFreeFileName(documentStoragePath, fileName);
-                }
-                // save file with out rewriting
-                Files.copy(uploadedInputStream, file.toPath());
-            }
-            SignatureFileDescriptionEntity uploadedDocument = new SignatureFileDescriptionEntity();
-            uploadedDocument.setGuid(documentStoragePath + File.separator + fileName);
-            if("image".equals(signatureType)){
-                // get page image
+        if (signatureType == null) {
+            signatureType = "";
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put(SIGNATURE_TYPE_PARAM, signatureType);
+        // upload file
+        String filePath = uploadFile(documentUrl, inputStream, fileDetail, rewrite, params);
+        // create response
+        SignatureFileDescriptionEntity uploadedDocument = new SignatureFileDescriptionEntity();
+        uploadedDocument.setGuid(filePath);
+        if("image".equals(signatureType)){
+            // get page image
+            try {
                 byte[] bytes = Files.readAllBytes(new File(uploadedDocument.getGuid()).toPath());
                 // encode ByteArray into String
                 String encodedImage = new String(Base64.getEncoder().encode(bytes));
                 uploadedDocument.setImage(encodedImage);
-            }
-            return uploadedDocument;
-        }catch(Exception ex){
-            throw new TotalGroupDocsException(ex.getMessage(), ex);
-        } finally {
-            try {
-                uploadedInputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ex) {
+                throw new TotalGroupDocsException(ex.getMessage(), ex);
             }
         }
+        return uploadedDocument;
+    }
+
+    @Override
+    protected String getStoragePath(Map<String, Object> params) {
+        String signatureType = (String) params.get(SIGNATURE_TYPE_PARAM);
+        String documentStoragePath;
+        if (signatureType == null || signatureType.isEmpty()) {
+            signatureType = "";
+        }
+        switch(signatureType){
+            case "digital": documentStoragePath = directoryUtils.getDataDirectory().getCertificateDirectory().getPath();
+                break;
+            case "image": documentStoragePath = directoryUtils.getDataDirectory().getImageDirectory().getPath();
+                break;
+            default:  documentStoragePath = directoryUtils.getFilesDirectory().getPath();
+                break;
+        }
+        return documentStoragePath;
     }
 
     /**

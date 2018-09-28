@@ -10,7 +10,7 @@ import java.io.File;
  * @author Aspose Pty Ltd
  */
 public class OutputDirectoryUtils implements IDirectoryUtils {
-    private final String OUTPUT_FOLDER = "/Annotated";
+    private static final String OUTPUT_FOLDER = "/Annotated";
     private AnnotationConfiguration annotationConfiguration;
 
     /**

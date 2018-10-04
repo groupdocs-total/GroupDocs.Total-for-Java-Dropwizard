@@ -21,8 +21,7 @@ var annotation = {
 	top: 0,
 	width: 0,
 	height: 0,
-	pageNumber: 0,	
-	documentType: "",
+	pageNumber: 0,
 	svgPath: "",
 	text: "",
 	font: "Arial",
@@ -41,8 +40,8 @@ $(document).ready(function(){
     ******************************************************************
     NAV BAR CONTROLS
     ******************************************************************
-    */    
-    
+    */
+
     //////////////////////////////////////////////////
     // Disable default download event
     //////////////////////////////////////////////////
@@ -52,7 +51,7 @@ $(document).ready(function(){
     // Add SVG to all pages DIVs
     //////////////////////////////////////////////////
     $.initialize(".gd-page-image", function () {
-        // ensure that the closed comments tab doesn't 
+        // ensure that the closed comments tab doesn't
         // have active class when another document is opened
         if ($(".gd-annotations-comments-wrapper").hasClass("active")) {
             $(".gd-annotations-comments-wrapper").toggleClass("active");
@@ -158,8 +157,7 @@ $(document).ready(function(){
 								top: 0,
 								width: 0,
 								height: 0,
-								pageNumber: 0,								
-								documentType: "",
+								pageNumber: 0,
 								svgPath: "",
 								text: "",
 								font: "Arial",
@@ -204,15 +202,15 @@ $(document).ready(function(){
 					annotation = null;
 					break;
 				case "textField":					
-					++annotationsCounter;	
+					++annotationsCounter;
 					$.fn.drawFieldAnnotation($(e.target).parent()[0]);
-					$.fn.drawFieldAnnotation.drawTextField(annotationsList, annotation, annotationsCounter, "textField", e);							
+					$.fn.drawFieldAnnotation.drawTextField(annotationsList, annotation, annotationsCounter, "textField", e);
 					annotation = null;	
 					break;
 				case "watermark":					
-					++annotationsCounter;			
-					$.fn.drawFieldAnnotation($(e.target).parent()[0]);					
-					$.fn.drawFieldAnnotation.drawTextField(annotationsList, annotation, annotationsCounter, "watermark", e);							
+					++annotationsCounter;
+					$.fn.drawFieldAnnotation($(e.target).parent()[0]);
+					$.fn.drawFieldAnnotation.drawTextField(annotationsList, annotation, annotationsCounter, "watermark", e);
 					annotation = null;	
 					break;
 				case "textReplacement":					
@@ -492,15 +490,15 @@ function setTextAnnotationCoordinates(mouseX, mouseY) {
  * Annotate current document
  */
 function annotate() {   
-	// set current document guid - used to check if the other document were opened   
-    var url = getApplicationPath('annotate');     
-	annotationsList[0].documentType = getDocumentFormat(documentGuid).format;	
+	// set current document guid - used to check if the other document were opened
+    var url = getApplicationPath('annotate');
     // current document guid is taken from the viewer.js globals
     var data = {
         guid: documentGuid.replace(/\\/g, "//"),
         password: password,
 		htmlMode: false,
-        annotationsData: annotationsList
+        annotationsData: annotationsList,
+		documentType: getDocumentFormat(documentGuid).format
     };
     // annotate the document
     $.ajax({
@@ -824,8 +822,9 @@ function getCommentBaseHtml(){
  * @param {Object} button - Clicked download button
  */
 function download (button){
-    var annotated = false;  
-	var documentName = documentGuid.match(/[-_\w]+[.][\w]+$/i)[0];
+    var annotated = false;
+    var listPath = documentGuid.split("/");
+	var documentName = listPath[listPath.length - 1];
     if($(button).attr("id") == "gd-annotated-download"){
         annotated = true;       
     } 

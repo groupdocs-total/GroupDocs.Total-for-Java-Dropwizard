@@ -98,13 +98,13 @@
 	var idNumber = null;
 	var zoomLevel = 1;
 	var canvas = null;
-	
+
 	/**
 	 * Draw field annotation	
 	 */
 	$.fn.drawFieldAnnotation = function(documentPage) {
 		canvas = documentPage;
-		zoomLevel = (typeof $(canvas).css("zoom") == "undefined") ? 1 : $(canvas).css("zoom");		
+		zoomLevel = (typeof $(canvas).css("zoom") == "undefined") ? 1 : $(canvas).css("zoom");
 	}
 	
 	/**
@@ -119,9 +119,9 @@
 		 * @param {Object} annotation - Current annotation
 		 * @param {int} annotationsCounter - Current annotation number
 		 * @param {String} prefix - Current annotation prefix
-		 * @param {Onbect} ev - Current event
+		 * @param {Object} ev - Current event
 		 */
-		drawTextField: function(annotationsList, annotation, annotationsCounter, prefix, ev) {				
+		drawTextField: function(annotationsList, annotation, annotationsCounter, prefix, ev) {
 			// close comments bar
 			$('#gd-annotations-comments-toggle').prop('checked', false);
 			// get mouse position
@@ -169,7 +169,7 @@
 		 * @param {int} annotationsCounter - Current annotation number
 		 * @param {String} prefix - Current annotation prefix
 		 */
-		importTextField: function(annotationsList, annotation, annotationsCounter, prefix) {			
+		importTextField: function(canvas, annotationsList, annotation, annotationsCounter, prefix) {
 			$('#gd-annotations-comments-toggle').prop('checked', false);			
 			currentPrefix = prefix;
 			annotationsCounter;			

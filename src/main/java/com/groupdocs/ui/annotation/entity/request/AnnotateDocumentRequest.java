@@ -8,13 +8,22 @@ import com.groupdocs.ui.common.entity.web.request.LoadDocumentRequest;
  * @author Aspose Pty Ltd
  */
 public class AnnotateDocumentRequest extends LoadDocumentRequest {
-    private AnnotationDataEntity[] annotationsList;
+    private String documentType;
+    private AnnotationDataEntity[] annotationsData;
 
     public AnnotationDataEntity[] getAnnotationsData() {
-        return annotationsList;
+        return annotationsData;
     }
 
     public void setAnnotationsData(AnnotationDataEntity[] annotationsData) {
-        this.annotationsList = annotationsData;
+        this.annotationsData = annotationsData;
+    }
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
     }
 }

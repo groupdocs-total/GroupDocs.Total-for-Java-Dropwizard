@@ -6,31 +6,31 @@ package com.groupdocs.ui.common.entity.web;
  * @author Aspose Pty Ltd
  */
 public class DocumentDescriptionEntity {
-    private double Width;
-    private double Height;
-    private int Number;
+    private double width;
+    private double height;
+    private int number;
 
     public double getWidth() {
-        return Width;
+        return width;
     }
 
     public void setWidth(double width) {
-        Width = width;
+        this.width = width;
     }
 
     public double getHeight() {
-        return Height;
+        return height;
     }
 
     public void setHeight(double height) {
-        Height = height;
+        this.height = height;
     }
 
     public int getNumber() {
-        return Number;
+        return number;
     }
 
     public void setNumber(int number) {
-        Number = number;
+        this.number = number;
     }
 }

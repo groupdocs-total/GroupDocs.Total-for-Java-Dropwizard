@@ -6,7 +6,7 @@
 
     <groupId>com.groupdocs.ui</groupId>
     <artifactId>total</artifactId>
-    <version>0.4.6</version>
+    <version>0.4.7</version>
     <packaging>jar</packaging>
 
     <name>GroupDocs.Total Dropwizard</name>
@@ -70,7 +70,7 @@
         <dependency>
             <groupId>com.groupdocs</groupId>
             <artifactId>groupdocs-annotation</artifactId>
-            <version>18.8</version>
+            <version>18.10</version>
         </dependency>
         <dependency>
             <groupId>com.groupdocs</groupId>

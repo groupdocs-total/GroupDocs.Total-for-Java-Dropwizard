@@ -37,7 +37,7 @@ $(document).ready(function () {
     var annotationInnerHtml = null;
     var lineInnerHtml = null;
     var currentPrefix = "";
-    var idNumber = null;  
+    var idNumber = null;
     var userMouseUp = ('ontouchend' in document.documentElement) ? 'touchend' : 'mouseup';
     var userMouseMove = ('ontouchmove' in document.documentElement) ? 'touchmove' : 'mousemove';
 
@@ -198,9 +198,9 @@ $(document).ready(function () {
 
         switch (currentPrefix) {
             case "textStrikeout":
-                element.style.left = startCoordinates.x + "px";
-                element.style.top = startCoordinates.y + "px";
-                element.style.height = startCoordinates.height + "px";
+                element.style.left = annotation.left + "px";
+                element.style.top = annotation.top + "px";
+                element.style.height = annotation.height + "px"
                 annotationInnerHtml = getTextLineAnnotationHtml();
                 annotationInnerHtml.style.height = annotation.height + "px";
                 annotationInnerHtml.style.width = annotation.width + "px";

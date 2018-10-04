@@ -15,7 +15,6 @@ public class AnnotationDataEntity {
     private double height;
     private String svgPath;
     private String type;
-    private String documentType;
     private String text;
     private String font;
     private boolean imported;
@@ -91,14 +90,6 @@ public class AnnotationDataEntity {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getDocumentType() {
-        return documentType;
-    }
-
-    public void setDocumentType(String documentType) {
-        this.documentType = documentType;
     }
 
     public String getText() {

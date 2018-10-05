@@ -212,7 +212,7 @@ public class ComparisonServiceImpl implements ComparisonService {
         // configure file name for results
         String directory = globalConfiguration.getComparison().getResultDirectory();
         String resultDirectory = StringUtils.isEmpty(directory) ? globalConfiguration.getComparison().getFilesDirectory() : directory;
-        String extension = ext != null ? getRightExt(ext) : "";
+        String extension = ext != null ? getRightExt(ext.toLowerCase()) : "";
         // for images of pages specify index, for all result pages file specify "all" prefix
         String idx = index == null ? "all." : index.toString() + ".";
         String suffix = idx + extension;

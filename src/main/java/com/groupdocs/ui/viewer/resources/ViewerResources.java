@@ -305,7 +305,7 @@ public class ViewerResources extends Resources {
     @Path(value = "/downloadDocument")
     @Produces(APPLICATION_OCTET_STREAM)
     public void downloadDocument(@QueryParam("path") String documentGuid, @Context HttpServletResponse response) throws IOException {
-        downloadFile(response, documentGuid, documentGuid);
+        downloadFile(response, documentGuid);
     }
 
     /**

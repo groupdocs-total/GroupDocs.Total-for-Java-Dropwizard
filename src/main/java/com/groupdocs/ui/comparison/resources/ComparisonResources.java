@@ -101,18 +101,7 @@ public class ComparisonResources extends Resources {
                                  @QueryParam("ext") String ext,
                                  @Context HttpServletResponse response) {
         String filePath = comparisonService.calculateResultFileName(documentGuid, index, ext);
-        File file = new File(filePath);
-        // set response content info
-        addFileDownloadHeaders(response, file.getName(), file.length());
-        // download the document
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath));
-             ServletOutputStream outputStream = response.getOutputStream()) {
-
-            IOUtils.copy(inputStream, outputStream);
-        } catch (Exception ex){
-            logger.error("Exception in downloading document", ex);
-            throw new TotalGroupDocsException(ex.getMessage(), ex);
-        }
+        downloadFile(response, filePath);
     }
 
     /**

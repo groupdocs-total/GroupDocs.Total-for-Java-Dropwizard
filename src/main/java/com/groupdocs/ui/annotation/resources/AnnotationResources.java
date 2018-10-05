@@ -35,6 +35,7 @@ import com.groupdocs.ui.common.exception.TotalGroupDocsException;
 import com.groupdocs.ui.common.resources.Resources;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
@@ -165,10 +166,11 @@ public class AnnotationResources extends Resources {
             documentDescription = annotationImageHandler.getDocumentInfo(fileName, password);
 
             String documentType = documentDescription.getDocumentType();
+            String fileExtension = StringUtils.lowerCase(FilenameUtils.getExtension(documentGuid));
             // check if document type is image
-            if (Arrays.asList(supportedImageFormats).contains(FilenameUtils.getExtension(documentGuid))) {
+            if (Arrays.asList(supportedImageFormats).contains(fileExtension)) {
                 documentType = "image";
-            } else if (Arrays.asList(supportedAutoCadFormats).contains(FilenameUtils.getExtension(documentGuid))){
+            } else if (Arrays.asList(supportedAutoCadFormats).contains(fileExtension)){
                 documentType = "diagram";
             }
             // check if document contains annotations
@@ -247,14 +249,15 @@ public class AnnotationResources extends Resources {
     @Produces(APPLICATION_OCTET_STREAM)
     public void downloadDocument(@QueryParam("path") String documentGuid,
                                  @QueryParam("annotated") Boolean annotated,
-                                 @Context HttpServletResponse response) throws IOException {
+                                 @Context HttpServletResponse response) {
         // get document path
-        String fileName = new File(documentGuid).getName();
+        String fileName = FilenameUtils.getName(documentGuid);
         // choose directory
-        String directory = annotated ? directoryUtils.getOutputDirectory().getPath() : directoryUtils.getFilesDirectory().getPath();
-        String pathToDownload = String.format("%s%s%s", directory, File.separator, fileName);
+        String pathToDownload = annotated ?
+                String.format("%s%s%s", directoryUtils.getOutputDirectory().getPath(), File.separator, fileName) :
+                documentGuid;
         // download the file
-        downloadFile(response, documentGuid, pathToDownload);
+        downloadFile(response, pathToDownload);
     }
 
     /**
@@ -304,7 +307,7 @@ public class AnnotationResources extends Resources {
             password = textCoordinatesRequest.getPassword();
             int pageNumber = textCoordinatesRequest.getPageNumber();
             // get document info
-            DocumentInfoContainer info = annotationImageHandler.getDocumentInfo(new File(documentGuid).getName(), password);
+            DocumentInfoContainer info = annotationImageHandler.getDocumentInfo(FilenameUtils.getName(documentGuid), password);
             // get all rows info for specific page
             List<RowData> rows = info.getPages().get(pageNumber - 1).getRows();
             // initiate list of the TextRowEntity
@@ -369,16 +372,16 @@ public class AnnotationResources extends Resources {
             if(annotations.size() > 0) {
                 // Add annotation to the document
                 int type = getDocumentType(documentType);
-                InputStream cleanDoc = new FileInputStream(documentGuid);
-                InputStream result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, type);
                 // Save result stream to file.
-                File outPut = new File(documentGuid);
-                String path = globalConfiguration.getAnnotation().getOutputDirectory() + File.separator + outPut.getName();
-                OutputStream fileStream = new FileOutputStream(path);
+                String fileName = new File(documentGuid).getName();
+                String path = globalConfiguration.getAnnotation().getOutputDirectory() + File.separator + fileName;
+                try (InputStream cleanDoc = new FileInputStream(documentGuid);
+                     InputStream result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, type);
+                     OutputStream fileStream = new FileOutputStream(path)) {
+
+                    IOUtils.copyLarge(result, fileStream);
+                }
                 annotatedDocument.setGuid(path);
-                IOUtils.copy(result, fileStream);
-                fileStream.close();
-                result.close();
             } else if (notSupportedException != null) {
                 throw new NotSupportedException(notSupportedException.getMessage(), notSupportedException);
             }

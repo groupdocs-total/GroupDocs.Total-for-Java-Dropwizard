@@ -823,14 +823,12 @@ function getCommentBaseHtml(){
  */
 function download (button){
     var annotated = false;
-    var listPath = documentGuid.split("/");
-	var documentName = listPath[listPath.length - 1];
     if($(button).attr("id") == "gd-annotated-download"){
         annotated = true;       
-    } 
-    if(typeof documentName != "undefined" && documentName != ""){
+    }
+    if(typeof documentGuid != "undefined" && documentGuid != ""){
          // Open download dialog
-         window.location.assign(getApplicationPath("downloadDocument/?path=") + documentName + "&annotated=" + annotated);
+         window.location.assign(getApplicationPath("downloadDocument/?path=") + documentGuid + "&annotated=" + annotated);
     } else {
          // open error popup
          printMessage("Please open document first");

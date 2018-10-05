@@ -125,20 +125,19 @@ public abstract class Resources {
      * Download file
      *
      * @param response http response
-     * @param documentGuid doc guid
      * @param pathToFile path to file
      */
-    protected void downloadFile(HttpServletResponse response, String documentGuid, String pathToFile) {
-        String fileName = new File(documentGuid).getName();
-        // set response content disposition
-        fillResponseHeaders(response, fileName);
+    protected void downloadFile(HttpServletResponse response, String pathToFile) {
+        long length;
         try (InputStream inputStream = new FileInputStream(pathToFile);
              OutputStream outputStream = response.getOutputStream()){
             // download the document
-            IOUtils.copy(inputStream, outputStream);
+            length = IOUtils.copyLarge(inputStream, outputStream);
         } catch (Exception ex){
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
+        // set response content disposition
+        addFileDownloadHeaders(response, FilenameUtils.getName(pathToFile), length);
     }
 
     /**

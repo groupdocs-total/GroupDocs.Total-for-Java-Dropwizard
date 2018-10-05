@@ -236,12 +236,12 @@ public class SignatureResources extends Resources {
                                  @QueryParam("signed") Boolean signed,
                                  @Context HttpServletResponse response) throws IOException {
         // get document path
-        String fileName = new File(documentGuid).getName();
+        String fileName = FilenameUtils.getName(documentGuid);
         // choose directory
         String directory = signed ? directoryUtils.getOutputDirectory().getPath() : directoryUtils.getFilesDirectory().getPath();
         String pathToDownload = String.format("%s%s%s", directory, File.separator, fileName);
 
-        downloadFile(response, documentGuid, pathToDownload);
+        downloadFile(response, pathToDownload);
     }
 
     /**

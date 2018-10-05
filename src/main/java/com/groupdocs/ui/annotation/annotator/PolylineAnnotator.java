@@ -5,6 +5,7 @@ import com.groupdocs.annotation.domain.AnnotationType;
 import com.groupdocs.annotation.domain.PageData;
 import com.groupdocs.annotation.domain.Rectangle;
 import com.groupdocs.ui.annotation.entity.web.AnnotationDataEntity;
+import com.groupdocs.ui.annotation.entity.web.CommentsEntity;
 
 import java.text.ParseException;
 
@@ -59,8 +60,9 @@ public class PolylineAnnotator extends Annotator {
      * @param polylineAnnotation annotation info
      */
     protected void fillCreatorName(AnnotationInfo polylineAnnotation) {
-        if (annotationData.getComments() != null && annotationData.getComments()[0] != null) {
-            polylineAnnotation.setCreatorName(annotationData.getComments()[0].getUserName());
+        CommentsEntity[] comments = annotationData.getComments();
+        if (comments != null && comments.length > 0 && comments[0] != null) {
+            polylineAnnotation.setCreatorName(comments[0].getUserName());
         }
     }
 

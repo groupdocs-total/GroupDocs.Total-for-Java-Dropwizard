@@ -117,7 +117,7 @@ public abstract class Resources {
      * @param response http response to fill header
      * @param fileName name of file
      */
-    protected void fillResponseHeaders(HttpServletResponse response, String fileName) {
+    protected void fillResponseHeaderDisposition(HttpServletResponse response, String fileName) {
         response.setHeader("Content-disposition", "attachment; filename=" + fileName);
     }
 
@@ -128,6 +128,9 @@ public abstract class Resources {
      * @param pathToFile path to file
      */
     protected void downloadFile(HttpServletResponse response, String pathToFile) {
+        String fileName = FilenameUtils.getName(pathToFile);
+        // don't delete, should be before writing
+        fillResponseHeaderDisposition(response, fileName);
         long length;
         try (InputStream inputStream = new FileInputStream(pathToFile);
              OutputStream outputStream = response.getOutputStream()){
@@ -137,7 +140,7 @@ public abstract class Resources {
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
         // set response content disposition
-        addFileDownloadHeaders(response, FilenameUtils.getName(pathToFile), length);
+        addFileDownloadHeaders(response, fileName, length);
     }
 
     /**

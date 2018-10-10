@@ -61,7 +61,7 @@
 .gd-qr-params .gd-qr-color-picker {
     width: 75px;
     height: 27px;
-    border: 1px solid #dcdcdc;  
+    border: 1px solid #dcdcdc;
 }
 
 .gd-qr-params table {
@@ -71,7 +71,7 @@
 
 .gd-optical-label {
     font-size: 13px;
-    text-align: left;   
+    text-align: left;
 }
 
 .gd-border-style-wrapper {

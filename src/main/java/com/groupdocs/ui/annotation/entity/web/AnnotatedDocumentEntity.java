@@ -4,10 +4,17 @@ import com.groupdocs.ui.common.entity.web.DocumentDescriptionEntity;
 
 /**
  * AnnotatedDocumentEntity
+ *
  * @author Aspose Pty Ltd
  */
 public class AnnotatedDocumentEntity extends DocumentDescriptionEntity {
+    /**
+     * Document Guid
+     */
     private String guid;
+    /**
+     * List of annotation data
+     */
     private AnnotationDataEntity[] annotations;
 
     public String getGuid() {

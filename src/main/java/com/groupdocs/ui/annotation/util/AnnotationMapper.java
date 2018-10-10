@@ -2,6 +2,7 @@ package com.groupdocs.ui.annotation.util;
 
 import com.groupdocs.annotation.domain.AnnotationInfo;
 import com.groupdocs.annotation.domain.AnnotationReplyInfo;
+import com.groupdocs.annotation.domain.Rectangle;
 import com.groupdocs.ui.annotation.entity.web.AnnotationDataEntity;
 import com.groupdocs.ui.annotation.entity.web.CommentsEntity;
 
@@ -52,15 +53,16 @@ public class AnnotationMapper {
         AnnotationDataEntity annotation = new AnnotationDataEntity();
         annotation.setFont(annotationInfo.getFontFamily());
         annotation.setFontSize(annotationInfo.getFontSize());
-        annotation.setHeight(annotationInfo.getBox().getHeight());
-        annotation.setLeft(annotationInfo.getBox().getX());
+        Rectangle box = annotationInfo.getBox();
+        annotation.setHeight(box.getHeight());
+        annotation.setLeft(box.getX());
+        annotation.setTop(box.getY());
+        annotation.setWidth(box.getWidth());
         annotation.setPageNumber(annotationInfo.getPageNumber() + 1);
         annotation.setSvgPath(annotationInfo.getSvgPath());
         String text = (annotationInfo.getText() == null) ? annotationInfo.getFieldText() : annotationInfo.getText();
         annotation.setText(text);
-        annotation.setTop(annotationInfo.getBox().getY());
         annotation.setType(AnnotationTypes.instance.getAnnotationType(annotationInfo.getType()));
-        annotation.setWidth(annotationInfo.getBox().getWidth());
         // set each reply data
         AnnotationReplyInfo[] replies = annotationInfo.getReplies();
         if (replies != null && replies.length > 0) {

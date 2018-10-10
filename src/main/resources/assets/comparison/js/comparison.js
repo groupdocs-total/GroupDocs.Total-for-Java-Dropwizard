@@ -105,6 +105,13 @@ $(document).ready(function(){
     ******************************************************************
     */
     //////////////////////////////////////////////////
+    // Toggle comparison tab
+    //////////////////////////////////////////////////
+    $('.gd-lbl-toggle').on('click', function(e){
+        $(".gd-comparison-bar-wrapper").toggleClass("active");
+    });
+
+    //////////////////////////////////////////////////
     // Toggle navigation dropdown menus
     //////////////////////////////////////////////////
     $('.gd-nav-toggle').on('click', function(e){
@@ -682,7 +689,8 @@ $(document).ready(function(){
 
     $('#gd-add-file-multicompare').on('click', function(e){
         var prefix = 'idx' + idx;
-        $('#gd-files-blocks').append(getHtmlDragAndDropArea(prefix));
+        var newDragnDrop = getHtmlDragAndDropArea(prefix)
+        $(newDragnDrop).insertBefore("#gd-add-multicompare");
         initDropZone(prefix);
         initCloseButton(prefix);
         $('#gd-upload-input-' + prefix).on('change', function(e){
@@ -713,7 +721,7 @@ $(document).ready(function(){
         idx = idx + 1;
     });
     //
-// END of document ready function
+    // END of document ready function
 });
 
 /*
@@ -1155,28 +1163,28 @@ function addFileForUploading(uploadFiles, url) {
     if(url){
         // append URL
         table.append('<div class="swiper-container">'+
-            '<div class="swiper-wrapper">'+
-            '<div class="swiper-slide">'+
-            '<i class="fa ' + getDocumentFormat(url.split('/').pop()).icon + '"></i>'+
-            '<div class="gd-filetree-name" data-uploaded="false" data-value="' + url + '">'+
-            '<div class="gd-file-name">' + url.split('/').pop() + '</div>'+
-            '<span id="gd-upload-size"> type: ' + url.split('/').pop().split('.').pop() +'</span>'+
-            '</div>'+
-            '<div id="gd-pregress-bar-' + tableRowsNumber + '" class="gd-pregress p0 small green">'+
-            '<div class="slice">'+
-            '<div class="bar"></div>'+
-            '<div class="fill"></div>'+
-            '</div>'+
-            '</div>'+
-            '<div id="gd-upload-complete-' + tableRowsNumber + '" class="gd-upload-complete"><i class="fa fa-check-circle"></i></div>'+
-            '<div id="gd-upload-failure-' + tableRowsNumber + '" class="gd-upload-complete-fail"><i class="fa fa-exclamation-circle"></i></div>'+
-            '</div>'+
-            '<div class="swiper-slide gd-desktop swiper-slide-cancel">'+
-            '<div class="files-table-remove">'+
-            '<button class="btn gd-cancel-button"><i class="fa fa-trash"></i></button>'+
-            '</div>'+
-            '</div>'+
-            '</div>'+
+                '<div class="swiper-wrapper">'+
+                    '<div class="swiper-slide">'+
+                        '<i class="fa ' + getDocumentFormat(url.split('/').pop()).icon + '"></i>'+
+                        '<div class="gd-filetree-name" data-uploaded="false" data-value="' + url + '">'+
+                            '<div class="gd-file-name">' + url.split('/').pop() + '</div>'+
+                            '<span id="gd-upload-size"> type: ' + url.split('/').pop().split('.').pop() +'</span>'+
+                        '</div>'+
+                        '<div id="gd-pregress-bar-' + tableRowsNumber + '" class="gd-pregress p0 small green gd-upload-status">'+
+                            '<div class="slice">'+
+                                '<div class="bar"></div>'+
+                                '<div class="fill"></div>'+
+                            '</div>'+
+                        '</div>'+
+                        '<div id="gd-upload-complete-' + tableRowsNumber + '" class="gd-upload-complete gd-upload-status"><i class="fa fa-check-circle"></i></div>'+
+                        '<div id="gd-upload-failure-' + tableRowsNumber + '" class="gd-upload-complete-fail gd-upload-status"><i class="fa fa-exclamation-circle"></i></div>'+
+                    '</div>'+
+                    '<div class="swiper-slide gd-desktop swiper-slide-cancel">'+
+                        '<div class="files-table-remove">'+
+                            '<button class="btn gd-cancel-button"><i class="fa fa-trash"></i></button>'+
+                        '</div>'+
+                    '</div>'+
+                '</div>'+
             '</div>');
         // increase table rows counter after adding new record
         tableRowsNumber++
@@ -1195,30 +1203,30 @@ function addFileForUploading(uploadFiles, url) {
             }
             // append document
             table.append('<div class="swiper-container">'+
-                '<div class="swiper-wrapper">'+
-                '<div class="swiper-slide">'+
-                '<i class="fa ' + docFormat.icon + '"></i>'+
-                '<div class="gd-filetree-name" data-uploaded="false">'+
-                '<div class="gd-file-name">' + file.name + '</div>'+
-                '<span id="gd-upload-size">size: ' + new_size +'</span>'+
-                '<span id="gd-upload-size"> type: ' + file.name.split('.').pop() +'</span>'+
-                '</div>'+
-                '<div id="gd-pregress-bar-' + tableRowsNumber + '" class="gd-pregress p0 small green">'+
-                '<div class="slice">'+
-                '<div class="bar"></div>'+
-                '<div class="fill"></div>'+
-                '</div>'+
-                '</div>'+
-                '<div id="gd-upload-complete-' + tableRowsNumber + '" class="gd-upload-complete"><i class="fa fa-check-circle"></i></div>'+
-                '<div id="gd-upload-failure-' + tableRowsNumber + '" class="gd-upload-complete-fail"><i class="fa fa-exclamation-circle"></i></div>'+
-                '</div>'+
-                '<div class="swiper-slide gd-desktop swiper-slide-cancel">'+
-                '<div class="files-table-remove">'+
-                '<button class="btn gd-cancel-button"><i class="fa fa-trash"></i> Remove</button>'+
-                '</div>'+
-                '</div>'+
-                '</div>'+
-                '</div>');
+                            '<div class="swiper-wrapper">'+
+                                '<div class="swiper-slide">'+
+                                    '<i class="fa ' + docFormat.icon + '"></i>'+
+                                    '<div class="gd-filetree-name" data-uploaded="false">'+
+                                        '<div class="gd-file-name">' + file.name + '</div>'+
+                                        '<span id="gd-upload-size">size: ' + new_size +'</span>'+
+                                        '<span id="gd-upload-size"> type: ' + file.name.split('.').pop() +'</span>'+
+                                    '</div>'+
+                                    '<div id="gd-pregress-bar-' + tableRowsNumber + '" class="gd-pregress p0 small green gd-upload-status">'+
+                                        '<div class="slice">'+
+                                            '<div class="bar"></div>'+
+                                            '<div class="fill"></div>'+
+                                        '</div>'+
+                                    '</div>'+
+                                    '<div id="gd-upload-complete-' + tableRowsNumber + '" class="gd-upload-complete gd-upload-status"><i class="fa fa-check-circle"></i></div>'+
+                                    '<div id="gd-upload-failure-' + tableRowsNumber + '" class="gd-upload-complete-fail gd-upload-status"><i class="fa fa-exclamation-circle"></i></div>'+
+                                '</div>'+
+                                '<div class="swiper-slide gd-desktop swiper-slide-cancel">'+
+                                    '<div class="files-table-remove">'+
+                                        '<button class="btn gd-cancel-button"><i class="fa fa-trash"></i> Remove</button>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div>');
             // increase table rows counter after adding new record
             tableRowsNumber++
         });
@@ -1290,8 +1298,8 @@ function addFileForComparing(uploadFiles, url, prefix) {
             '<div class="swiper-wrapper">'+
             '<div class="swiper-slide swiper-slide-comparison">'+
             '<i class="fas gd-upload-files-table-i ' + getDocumentFormat(url.split('/').pop()).icon + '"></i>'+
-            '<div class="gd-filetree-name-compare" data-uploaded="false" data-value="' + url + '">'+
-            '<div class="gd-file-name" id="gd-file-name-' + prefix + '">' + url.split('/').pop() + '</div>'+
+            '<div class="gd-filetree-name-compare" data-uploaded="false" data-value="' + url.split(/[\\\/]/).pop() + '">'+
+            '<div class="gd-file-name" id="gd-file-name-' + prefix + '">' + url.split(/[\\\/]/).pop() + '</div>'+
             '<span id="gd-upload-size"> type: ' + url.split('/').pop().split('.').pop() +'</span>'+
             '</div>'+
             '<div class="inner-addon left-addon btn gd-password-wrap" id="gd-password-wrap-' + prefix + '">'+
@@ -1435,530 +1443,533 @@ function uploadDocument(file, index, url = ''){
             }
         },
         error: function(xhr, status, error) {
-            var err = eval("(" + xhr.responseText + ")");
-            console.log(err.message);
-            // open error popup
-            printMessage(err.message);
+            if (xhr && xhr.responseText) {
+                var err = eval("(" + xhr.responseText + ")");
+                console.log(err.message);
+                // open error popup
+                printMessage(err.message);
+            }
             $("#gd-upload-complete-" + index).fadeOut();
             $("#gd-upload-failure-" + index).fadeIn();
         }
     });
 }
 
-/**
- * Print results
- */
-function printResults(){
-    // get current document content
-    var documentContainer = $("#gd-panzoom");
-    // force each document page to be printed as a new page
-    var cssPrint = '<style>'+
-        '@media print'+
-        '{.gd-wrapper {page-break-after:always;}';
-    // set correct page orientation if page were rotated
-    documentContainer.find(".gd-page").each(function(index, page) {
-        if($(page).css("transform") != "none"){
-            cssPrint = cssPrint + "#" + $(page).attr("id") + "{transform: rotate(0deg) !important;}";
-        }
-    });
-    cssPrint = cssPrint + '}</style>';
-    // open print dialog
-    var windowObject = window.open('', "PrintWindow", "width=750,height=650,top=50,left=50,toolbars=yes,scrollbars=yes,status=yes,resizable=yes");
-    // add current document into the print window
-    windowObject.document.writeln(cssPrint);
-    // add current document into the print window
-    windowObject.document.writeln(documentContainer[0].innerHTML);
-    windowObject.document.close();
-    windowObject.focus();
-    windowObject.print();
-    windowObject.close();
-}
-
-/**
- * Close modal
- */
-function closeModal(){
-    toggleModalDialog(false, '');
-}
-
-/**
- * Get HTML content for file browser modal
- **/
-function getHtmlFileBrowser(){
-    return '<section id="gd-browse-section" class="tab-slider-body">'+
-        '<div id="gd-modal-spinner"><i class="fas fa-circle-notch fa-spin"></i> &nbsp;Loading... Please wait.</div>'+
-        '<table id="gd-modal-filebroswer" class="gd-modal-table">'+
-        '<thead>'+
-        '<tr>'+
-        '<th class="col-md-1"> </th>'+
-        '<th class="col-md-5">Document</th>'+
-        '<th class="col-md-3">Format</th>'+
-        '<th class="col-md-3">Size</th>'+
-        '</tr>'+
-        '</thead>'+
-        '<tbody>'+
-        '<tr>'+
-        '<td class="text-center gd-go-up"><i class="fas fa-level-up"></i></td>'+
-        '<td class="gd-filetree-up gd-go-up">...</td>'+
-        '<td></td>'+
-        '<td></td>'+
-        '</tr>' +
-    // list of files
-    '</tbody>'+
-    '</table>'+
-    '</section>';
-}
-
-/**
- * Get HTML content for drag and drop area
- **/
-function getHtmlDragAndDropArea(prefix){
-    // close icon for multi comparing
-    var close = '';
-    if (prefix && prefix.startsWith('idx')) {
-        close = '<div class="gd-close-dad-area" id="gd-close-dad-area-' + prefix + '"> <i class="fas fa-window-close"></i></div>';
-    }
-
-    // drag and drop section
-    var htmlSection = '<section id="gd-upload-section-' + prefix + '" class="tab-slider-body">'+
-        close +
-        '<div class="gd-drag-n-drop-wrap-compare" id="gd-dropZone-' + prefix + '">'+
-        '<div class="gd-drag-n-drop-icon"><i class="fas fa-cloud-download-alt fa-5x" aria-hidden="true"></i></div>'+
-        '<h2>Drag &amp; Drop the ' + replacePrefix(prefix) + ' file here</h2>'+
-        '<h4>OR</h4>'+
-        '<div class="gd-drag-n-drop-buttons">'+
-        '<label class="btn btn-primary gd-upload-section-label">'+
-        '<i class="fas fa-file"></i>'+
-        'SELECT FILE'+
-        '<input id="gd-upload-input-' + prefix + '" type="file" multiple style="display: none;">'+
-        '</label>'+
-        '<label class="btn gd-upload-section-label" id="gd-url-button-' + prefix + '">'+
-        '<i class="fas fa-link"></i>'+
-        'URL'+
-        '</label>'+
-        '</div>'+
-        '</div>'+
-        '<div class="inner-addon left-addon btn gd-url-wrap" id="gd-url-wrap-' + prefix + '" style="display: none;">'+
-        '<input type="url" class="form-control" id="gd-url-' + prefix + '" placeholder="Enter your file URL">'+
-        '<button class="btn gd-url-cancel" id="gd-url-cancel-' + prefix + '"><i class="fas fa-trash"></i></button>'+
-        '<button class="btn btn-primary gd-add-url" id="gd-add-url-' + prefix + '">Add</button>'+
-        '</div>'+
-        '<div id="gd-upload-files-table-' + prefix + '" class="gd-upload-files-table-idx">'+
-        // list of files
-        '</div>'+
-        '<div class="gd-browse-document gd-modal-buttons" id="gd-open-document-' + prefix + '">'+
-        '<i class="fas fa-folder-open"></i>BROWSE files'+
-        '</section>';
-    return htmlSection;
-}
-
-/**
- * Replace prefix for file more than second
- *
- * @param prefix
- * @returns 'first', 'second' for 1, 2. After 2 returns 'next'
- */
-function replacePrefix(prefix) {
-    if (prefix == 'first' || prefix == 'second') {
-        return prefix;
-    }
-    return 'next';
-}
-
-/**
- * Toggle top navigation menus zoom
- * @param {object} target - dropdown target to be opened/closed
- */
-function toggleNavDropdown(target){
-    var isOpened = target.hasClass('opened');
-    if(!isOpened){
-        $(target).addClass('opened');
-        $(target)
-            .css('opacity', 0)
-            .slideDown('fast')
-            .animate(
-                { opacity: 1 },
-                { queue: false, duration: 'fast' }
-            );
-    }else{
-        $(target).removeClass('opened');
-        $(target)
-            .css('opacity', 1)
-            .slideUp('fast')
-            .animate(
-                { opacity: 0 },
-                { queue: false, duration: 'fast' }
-            );
-    }
-}
-
-/**
- * Init remove button for selection area
- * @param prefix - prefix for selection area
- */
-function initCloseButton(prefix) {
-    $('#gd-close-dad-area-' + prefix).on('click', function(e) {
-        fillFileVariables(prefix, '', '', '');
-        $('#gd-upload-section-' + prefix).remove();
-    });
-}
-
-/**
- * Init drop zone for file selection area
- * @param prefix - prefix for selection area
- */
-function initDropZone(prefix) {
-    var dropZone = $('#gd-dropZone-' + prefix);
-    if (typeof dropZone[0] != "undefined") {
-        //Drag n drop functional
-        if ($('#gd-dropZone-' + prefix).length) {
-            if (typeof (window.FileReader) == 'undefined') {
-                dropZone.text("Your browser doesn't support Drag and Drop");
-                dropZone.addClass('error');
-            }
-        }
-
-        dropZone[0].ondragover = function (event) {
-            event.stopPropagation();
-            event.preventDefault();
-            dropZone.addClass('hover');
-            return false;
-        };
-
-        dropZone[0].ondragleave = function (event) {
-            event.stopPropagation();
-            event.preventDefault();
-            dropZone.removeClass('hover');
-            return false;
-        };
-
-        dropZone[0].ondrop = function (event) {
-            event.stopPropagation();
-            event.preventDefault();
-            dropZone.removeClass('hover');
-            var files = event.dataTransfer.files;
-            addFileForComparing(files, null, prefix);
-        };
-    }
-}
-
-/*
-******************************************************************
-******************************************************************
-GROUPDOCS.COMAPRISON PLUGIN
-******************************************************************
-******************************************************************
-*/
-(function( $ ) {
-    /*
-    ******************************************************************
-    STATIC VALUES
-    ******************************************************************
-    */
-    var gd_navbar = '#gd-navbar';
-
-    /*
-    ******************************************************************
-    METHODS
-    ******************************************************************
-    */
-    var methods = {
-        init : function( options ) {
-            // set defaults
-            var defaults = {
-                applicationPath: null,
-                preloadResultPageCount: 1,
-                zoom : true,
-                download: true,
-                upload: true,
-                print: true,
-                rewrite: true,
-                multiComparing: false
-            };
-            options = $.extend(defaults, options);
-
-            // set global option params
-            applicationPath = options.applicationPath;
-            preloadResultPageCount = options.preloadResultPageCount;
-            rewrite = options.rewrite;
-            multiComparing = options.multiComparing;
-
-            // assembly html base
-            this.append(getHtmlBase);
-            this.append(getHtmlModalDialog);
-
-            $(gd_navbar).append(getHtmlComparisonPanel);
-            $(gd_navbar).append(getHtmlNavSplitter);
-
-            // assembly nav bar
-            if(options.download){
-                $(gd_navbar).append(getHtmlNavDownloadPanel);
-                $(gd_navbar).append(getHtmlNavSplitter);
-            }
-            if(options.upload){
-                $(gd_navbar).append(getHtmlNavUploadPanel);
-                $(gd_navbar).append(getHtmlNavSplitter);
-            }
-            if(options.print){
-                $(gd_navbar).append(getHtmlNavPrintPanel);
-                $(gd_navbar).append(getHtmlNavSplitter);
-            }
-            if(options.zoom){
-                $(gd_navbar).append(getHtmlNavZoomPanel);
-                $(gd_navbar).append(getHtmlNavSplitter);
-            }
-
-            initDropZone('first');
-            initDropZone('second');
-
-        }
-    };
-
-    /*
-    ******************************************************************
-    INIT PLUGIN
-    ******************************************************************
-    */
-    $.fn.comparison = function( method ) {
-        if ( methods[method] ) {
-            return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
-        } else if ( typeof method === 'object' || ! method ) {
-            return methods.init.apply( this, arguments );
-        } else {
-            $.error( 'Method' +  method + ' does not exist on jQuery.comparison' );
-        }
-    };
-
-    /*
-    ******************************************************************
-    HTML MARKUP
-    ******************************************************************
-    */
-    function getHtmlComparisonPanel(){
-        return '<li id="gd-btn-compare" class="gd-btn-compare">'+
-            '<span id="gd-compare-value">' +
-            '<i class="fas fa-book-open"></i>'+
-            '<span class="gd-tooltip">Compare</span>'+
-            '</span>'+
-            '</li>'+
-            '<li id="gd-btn-clean-compare" class="gd-btn-clean-compare">'+
-            '<span id="gd-clean-compare">' +
-            '<i class="fas fa-trash-alt"></i>'+
-            '<span class="gd-tooltip">Clean comparing</span>'+
-            '</span>'+
-            '</li>';
-    }
-
-    function getHtmlBase(){
-        return '<div id="gd-container">'+
-            '<div class="wrapper">'+
-            // header BEGIN
-            '<div id="gd-header">'+
-            '<div id="gd-header-logo">'+
-            '</div>'+
-
-            // nav bar BEGIN
-            '<ul id="' + gd_navbar.slice(1) + '">'+
-            // nav bar content
-            '</ul>'+
-            // nav bar END
-            '</div>'+
-            // header END
-            '<div id="gd-select-compare-files">'+
-                '<div id="gd-files-blocks" class="gd-files-blocks">'+
-                getHtmlDragAndDropArea('first') + getHtmlDragAndDropArea('second') +
-                '</div>'+
-                getHtmlMultiCompare() +
-            '</div>'+
-            // pages BEGIN
-            '<div id="gd-pages">'+
-                '<div id="gd-compare-spinner" style="display: none;"><i class="fas fa-circle-notch fa-spin"></i> &nbsp;Comparing... Please wait.</div>'+
-                '<div id="gd-panzoom">'+
-                // list of pages
-                '</div>'+
-            '</div>'+
-            '</div>'+
-            // pages END
-
-            '</div>'+
-            '</div>';
-    }
-
-    function getHtmlMultiCompare() {
-        if (multiComparing) {
-            return '<section id="gd-add-multicompare" >'+
-                '<div id="gd-add-file-multicompare" class="gd-add-file-multicompare">' +
-                '<i class="fas fa-plus-circle"></i>' +
-                '</div>' +
-                '</section>';
-        } else {
-            return '';
-        }
-    }
-
-    function getHtmlModalDialog(){
-        return 	'<div class="gd-modal fade" id="modalDialog">'+
-            '<div class="gd-modal-dialog">'+
-            '<div class="gd-modal-content" id="gd-modal-content">'+
-            // header
-            '<div class="gd-modal-header">'+
-            '<div class="gd-modal-close gd-modal-close-action"><span>x</span></div>'+
-            '<h4 class="gd-modal-title"></h4>'+
-            '</div>'+
-            // body
-            '<div class="gd-modal-body">'+
-            // modal content will be here
-            '</div>'+
-            // footer
-            '<div class="gd-modal-footer">'+
-            // empty footer
-            '</div>'+
-            '</div><!-- /.modal-content -->'+
-            '</div><!-- /.modal-dialog -->'+
-            '</div>';
-    }
-
-    function getHtmlNavSplitter(){
-        return '<li class="gd-nav-separator" role="separator"></li>';
-    }
-
-    function getHtmlNavDownloadPanel() {
-        return '<li class="gd-nav-toggle" id="gd-download-val-container">'+
-            '<span id="gd-download-value">' +
-            '<i class="fa fa-download"></i>' +
-            '<span class="gd-tooltip">Download</span>' +
-            '</span>'+
-            '<span class="gd-nav-caret"></span>'+
-            '<ul class="gd-nav-dropdown-menu gd-nav-dropdown" id="gd-btn-download-value">'+
-                '<li id="gd-btn-download-all">Download All Results</li>' +
-                '<li id="gd-btn-download-summary">Download Summary</li>' +
-            '</ul>'+
-            '</li>';
-    }
-
-    function getHtmlNavPrintPanel(){
-        return '<li id="gd-btn-print"><i class="fas fa-print"></i><span class="gd-tooltip">Print</span></li>';
-    }
-
-    function getHtmlNavUploadPanel(){
-        return '<li id="gd-btn-upload"><i class="fas fa-upload"></i><span class="gd-tooltip">Upload</span></li>';
-    }
-
-    function getHtmlNavZoomPanel(){
-        return '<li class="gd-nav-toggle" id="gd-zoom-val-container">'+
-            '<span id="gd-zoom-value">100%</span>'+
-            '<span class="gd-nav-caret"></span>'+
-            '<ul class="gd-nav-dropdown-menu gd-nav-dropdown" id="gd-btn-zoom-value">'+
-            '<li>25%</li>'+
-            '<li>50%</li>'+
-            '<li>100%</li>'+
-            '<li>150%</li>'+
-            '<li>200%</li>'+
-            '<li>300%</li>'+
-            '<li role="separator" class="gd-nav-dropdown-menu-separator"></li>'+
-            '<li>Fit Width</li>'+
-            '<li>Fit Height</li>'+
-            '</ul>'+
-            '</li>'+
-            '<li id="gd-btn-zoom-in">'+
-            '<i class="fa fa-search-plus"></i>'+
-            '<span class="gd-tooltip">Zoom In</span>'+
-            '</li>'+
-            '<li id="gd-btn-zoom-out">'+
-            '<i class="fa fa-search-minus"></i>'+
-            '<span class="gd-tooltip">Zoom Out</span>'+
-            '</li>';
-    }
-
-})(jQuery);
-
-/*
-******************************************************************
-******************************************************************
-JQUERY SCROLL TO PLUGIN
-******************************************************************
-******************************************************************
-*/
-$.fn.scrollTo = function( target, options, callback ){
-    if(typeof options == 'function' && arguments.length == 2){ callback = options; options = target; }
-    var settings = $.extend({
-        scrollTarget : target,
-        offsetTop    : 50,
-        duration     : 500,
-        zoom         : 100,
-        easing       : 'swing'
-    }, options);
-    return this.each(function(){
-        var scrollPane = $(this);
-        var scrollTarget = (typeof settings.scrollTarget == "number") ? settings.scrollTarget : $(settings.scrollTarget);
-        if(typeof settings.scrollTarget != "number"){
-            var scrollYTop = scrollTarget.offset().top * settings.zoom / 100;
-        }
-        var scrollY = (typeof scrollTarget == "number") ? scrollTarget : scrollYTop + scrollPane.scrollTop() - parseInt(settings.offsetTop);
-        scrollPane.animate({scrollTop : scrollY }, parseInt(settings.duration), settings.easing, function(){
-            if (typeof callback == 'function') {
-                callback.call(this);
+    /**
+     * Print results
+     */
+    function printResults(){
+        // get current document content
+        var documentContainer = $("#gd-panzoom");
+        // force each document page to be printed as a new page
+        var cssPrint = '<style>'+
+            '@media print'+
+            '{.gd-wrapper {page-break-after:always;}';
+        // set correct page orientation if page were rotated
+        documentContainer.find(".gd-page").each(function(index, page) {
+            if($(page).css("transform") != "none"){
+                cssPrint = cssPrint + "#" + $(page).attr("id") + "{transform: rotate(0deg) !important;}";
             }
         });
-    });
-}
-
-/*
-******************************************************************
-******************************************************************
-JQUERY CHECK IF IN VIEWPORT PLUGIN
-******************************************************************
-******************************************************************
-*/
-$.fn.isOnScreen = function(x, y){
-
-    if(x == null || typeof x == 'undefined') x = 1;
-    if(y == null || typeof y == 'undefined') y = 1;
-
-    var win = $(window);
-
-    var viewport = {
-        top : win.scrollTop(),
-        left : win.scrollLeft()
-    };
-    viewport.right = viewport.left + win.width();
-    viewport.bottom = viewport.top + win.height();
-
-    var height = this.outerHeight();
-    var width = this.outerWidth();
-
-    if(!width || !height){
-        return false;
+        cssPrint = cssPrint + '}</style>';
+        // open print dialog
+        var windowObject = window.open('', "PrintWindow", "width=750,height=650,top=50,left=50,toolbars=yes,scrollbars=yes,status=yes,resizable=yes");
+        // add current document into the print window
+        windowObject.document.writeln(cssPrint);
+        // add current document into the print window
+        windowObject.document.writeln(documentContainer[0].innerHTML);
+        windowObject.document.close();
+        windowObject.focus();
+        windowObject.print();
+        windowObject.close();
     }
 
-    var bounds = this.offset();
-    bounds.right = bounds.left + width;
-    bounds.bottom = bounds.top + height;
-
-    var visible = (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
-
-    if(!visible){
-        return false;
+    /**
+     * Close modal
+     */
+    function closeModal(){
+        toggleModalDialog(false, '');
     }
 
-    var deltas = {
-        top : Math.min( 1, ( bounds.bottom - viewport.top ) / height),
-        bottom : Math.min(1, ( viewport.bottom - bounds.top ) / height),
-        left : Math.min(1, ( bounds.right - viewport.left ) / width),
-        right : Math.min(1, ( viewport.right - bounds.left ) / width)
+    /**
+     * Get HTML content for file browser modal
+     **/
+    function getHtmlFileBrowser(){
+        return '<section id="gd-browse-section" class="tab-slider-body">'+
+            '<div id="gd-modal-spinner"><i class="fas fa-circle-notch fa-spin"></i> &nbsp;Loading... Please wait.</div>'+
+            '<table id="gd-modal-filebroswer" class="gd-modal-table">'+
+            '<thead>'+
+            '<tr>'+
+            '<th class="col-md-1"> </th>'+
+            '<th class="col-md-5">Document</th>'+
+            '<th class="col-md-3">Format</th>'+
+            '<th class="col-md-3">Size</th>'+
+            '</tr>'+
+            '</thead>'+
+            '<tbody>'+
+            '<tr>'+
+            '<td class="text-center gd-go-up"><i class="fas fa-level-up"></i></td>'+
+            '<td class="gd-filetree-up gd-go-up">...</td>'+
+            '<td></td>'+
+            '<td></td>'+
+            '</tr>' +
+        // list of files
+        '</tbody>'+
+        '</table>'+
+        '</section>';
+    }
+
+    /**
+     * Get HTML content for drag and drop area
+     **/
+    function getHtmlDragAndDropArea(prefix){
+        // close icon for multi comparing
+        var close = '';
+        if (prefix && prefix.startsWith('idx')) {
+            close = '<div class="gd-close-dad-area" id="gd-close-dad-area-' + prefix + '"> <i class="fas fa-window-close"></i></div>';
+        }
+
+        // drag and drop section
+        var htmlSection = '<section id="gd-upload-section-' + prefix + '" class="tab-slider-body">'+
+                            close +
+                            '<div class="gd-drag-n-drop-wrap-compare" id="gd-dropZone-' + prefix + '">'+
+                                '<div class="gd-drag-n-drop-icon"><i class="fas fa-cloud-download-alt fa-5x" aria-hidden="true"></i></div>'+
+                                '<h2>Drag &amp; Drop the ' + replacePrefix(prefix) + ' file here</h2>'+
+                                '<h4>OR</h4>'+
+                                '<div class="gd-drag-n-drop-buttons">'+
+                                    '<label class="btn btn-primary gd-upload-section-label">'+
+                                        '<i class="fas fa-file"></i>'+
+                                        'SELECT FILE'+
+                                        '<input id="gd-upload-input-' + prefix + '" type="file" multiple style="display: none;">'+
+                                    '</label>'+
+                                    '<label class="btn gd-upload-section-label" id="gd-url-button-' + prefix + '">'+
+                                        '<i class="fas fa-link"></i>'+
+                                        'URL'+
+                                    '</label>'+
+                                '</div>'+
+                                 '<div class="gd-browse-document gd-modal-buttons" id="gd-open-document-' + prefix + '">'+
+                                    '<i class="fas fa-folder-open"></i>BROWSE files'+
+                                '</div>'+
+                            '</div>'+
+            '<div class="inner-addon left-addon btn gd-url-wrap" id="gd-url-wrap-' + prefix + '" style="display: none;">'+
+                '<input type="url" class="form-control" id="gd-url-' + prefix + '" placeholder="Enter your file URL">'+
+                '<button class="btn gd-url-cancel" id="gd-url-cancel-' + prefix + '"><i class="fas fa-trash"></i></button>'+
+                '<button class="btn btn-primary gd-add-url" id="gd-add-url-' + prefix + '">Add</button>'+
+            '</div>'+
+            '<div id="gd-upload-files-table-' + prefix + '" class="gd-upload-files-table-idx">'+
+            // list of files
+            '</div>'+
+            '</section>';
+        return htmlSection;
+    }
+
+    /**
+     * Replace prefix for file more than second
+     *
+     * @param prefix
+     * @returns 'first', 'second' for 1, 2. After 2 returns 'next'
+     */
+    function replacePrefix(prefix) {
+        if (prefix == 'first' || prefix == 'second') {
+            return prefix;
+        }
+        return 'next';
+    }
+
+    /**
+     * Toggle top navigation menus zoom
+     * @param {object} target - dropdown target to be opened/closed
+     */
+    function toggleNavDropdown(target){
+        var isOpened = target.hasClass('opened');
+        if(!isOpened){
+            $(target).addClass('opened');
+            $(target)
+                .css('opacity', 0)
+                .slideDown('fast')
+                .animate(
+                    { opacity: 1 },
+                    { queue: false, duration: 'fast' }
+                );
+        }else{
+            $(target).removeClass('opened');
+            $(target)
+                .css('opacity', 1)
+                .slideUp('fast')
+                .animate(
+                    { opacity: 0 },
+                    { queue: false, duration: 'fast' }
+                );
+        }
+    }
+
+    /**
+     * Init remove button for selection area
+     * @param prefix - prefix for selection area
+     */
+    function initCloseButton(prefix) {
+        $('#gd-close-dad-area-' + prefix).on('click', function(e) {
+            fillFileVariables(prefix, '', '', '');
+            $('#gd-upload-section-' + prefix).remove();
+        });
+    }
+
+    /**
+     * Init drop zone for file selection area
+     * @param prefix - prefix for selection area
+     */
+    function initDropZone(prefix) {
+        var dropZone = $('#gd-dropZone-' + prefix);
+        if (typeof dropZone[0] != "undefined") {
+            //Drag n drop functional
+            if ($('#gd-dropZone-' + prefix).length) {
+                if (typeof (window.FileReader) == 'undefined') {
+                    dropZone.text("Your browser doesn't support Drag and Drop");
+                    dropZone.addClass('error');
+                }
+            }
+
+            dropZone[0].ondragover = function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                dropZone.addClass('hover');
+                return false;
+            };
+
+            dropZone[0].ondragleave = function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                dropZone.removeClass('hover');
+                return false;
+            };
+
+            dropZone[0].ondrop = function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                dropZone.removeClass('hover');
+                var files = event.dataTransfer.files;
+                addFileForComparing(files, null, prefix);
+            };
+        }
+    }
+
+    /*
+    ******************************************************************
+    ******************************************************************
+    GROUPDOCS.COMAPRISON PLUGIN
+    ******************************************************************
+    ******************************************************************
+    */
+    (function( $ ) {
+        /*
+        ******************************************************************
+        STATIC VALUES
+        ******************************************************************
+        */
+        var gd_navbar = '#gd-navbar';
+
+        /*
+        ******************************************************************
+        METHODS
+        ******************************************************************
+        */
+        var methods = {
+            init : function( options ) {
+                // set defaults
+                var defaults = {
+                    applicationPath: null,
+                    preloadResultPageCount: 1,
+                    zoom : true,
+                    download: true,
+                    upload: true,
+                    print: true,
+                    rewrite: true,
+                    multiComparing: false
+                };
+                options = $.extend(defaults, options);
+
+                // set global option params
+                applicationPath = options.applicationPath;
+                preloadResultPageCount = options.preloadResultPageCount;
+                rewrite = options.rewrite;
+                multiComparing = options.multiComparing;
+
+                // assembly html base
+                this.append(getHtmlBase);
+                this.append(getHtmlModalDialog);
+
+                $(gd_navbar).append(getHtmlComparisonPanel);
+                $(gd_navbar).append(getHtmlNavSplitter);
+
+                // assembly nav bar
+                if(options.download){
+                    $(gd_navbar).append(getHtmlNavDownloadPanel);
+                    $(gd_navbar).append(getHtmlNavSplitter);
+                }
+                if(options.upload){
+                    $(gd_navbar).append(getHtmlNavUploadPanel);
+                    $(gd_navbar).append(getHtmlNavSplitter);
+                }
+                if(options.print){
+                    $(gd_navbar).append(getHtmlNavPrintPanel);
+                    $(gd_navbar).append(getHtmlNavSplitter);
+                }
+                if(options.zoom){
+                    $(gd_navbar).append(getHtmlNavZoomPanel);
+                    $(gd_navbar).append(getHtmlNavSplitter);
+                }
+
+                initDropZone('first');
+                initDropZone('second');
+
+            }
+        };
+
+        /*
+        ******************************************************************
+        INIT PLUGIN
+        ******************************************************************
+        */
+        $.fn.comparison = function( method ) {
+            if ( methods[method] ) {
+                return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
+            } else if ( typeof method === 'object' || ! method ) {
+                return methods.init.apply( this, arguments );
+            } else {
+                $.error( 'Method' +  method + ' does not exist on jQuery.comparison' );
+            }
+        };
+
+        /*
+        ******************************************************************
+        HTML MARKUP
+        ******************************************************************
+        */
+        function getHtmlComparisonPanel(){
+            return '<li id="gd-btn-compare" class="gd-btn-compare">'+
+                '<span id="gd-compare-value">' +
+                '<i class="fas fa-book-open"></i>'+
+                '<span class="gd-tooltip">Compare</span>'+
+                '</span>'+
+                '</li>'+
+                '<li id="gd-btn-clean-compare" class="gd-btn-clean-compare">'+
+                '<span id="gd-clean-compare">' +
+                '<i class="fas fa-trash-alt"></i>'+
+                '<span class="gd-tooltip">Clean comparing</span>'+
+                '</span>'+
+                '</li>';
+        }
+
+        function getHtmlBase(){
+            return '<div id="gd-container">'+
+                    '<div class="wrapper">'+
+                        // header BEGIN
+                        '<div id="gd-header">'+
+                            '<div id="gd-header-logo"></div>'+
+
+                            // nav bar BEGIN
+                            '<ul id="' + gd_navbar.slice(1) + '">'+
+                                // nav bar content
+                            '</ul>'+
+                            // nav bar END
+                        '</div>'+
+                        // header END
+                        '<div class="gd-comparison-bar-wrapper active">'+
+                            '<input id="gd-comparison-toggle" class="gd-comparison-toggle" type="checkbox" />'+
+					        '<label for="gd-comparison-toggle" class="gd-lbl-toggle"></label>'+
+                            '<div id="gd-select-compare-files">'+
+                                '<div id="gd-files-blocks" class="gd-files-blocks">'+
+                                    getHtmlDragAndDropArea('first') + getHtmlDragAndDropArea('second') +  getHtmlMultiCompare() +
+                                '</div>'+
+                            '</div>'+
+                        '</div>'+
+                        // pages BEGIN
+                        '<div id="gd-pages">'+
+                            '<div id="gd-compare-spinner" style="display: none;"><i class="fas fa-circle-notch fa-spin"></i> &nbsp;Comparing... Please wait.</div>'+
+                            '<div id="gd-panzoom">'+
+                                // list of pages
+                            '</div>'+
+                        '</div>'+
+                        // pages END
+                    '</div>'+
+                '</div>';
+        }
+
+        function getHtmlMultiCompare() {
+            if (multiComparing) {
+                return '<section id="gd-add-multicompare" >'+
+                    '<div id="gd-add-file-multicompare" class="gd-add-file-multicompare">' +
+                    '<i class="fas fa-plus-circle"></i>' +
+                    '</div>' +
+                    '</section>';
+            } else {
+                return '';
+            }
+        }
+
+        function getHtmlModalDialog(){
+            return 	'<div class="gd-modal fade" id="modalDialog">'+
+                        '<div class="gd-modal-dialog">'+
+                            '<div class="gd-modal-content" id="gd-modal-content">'+
+                                // header
+                                '<div class="gd-modal-header">'+
+                                    '<div class="gd-modal-close gd-modal-close-action"><span>x</span></div>'+
+                                    '<h4 class="gd-modal-title"></h4>'+
+                                '</div>'+
+                                // body
+                                '<div class="gd-modal-body">'+
+                                    // modal content will be here
+                                '</div>'+
+                                // footer
+                                '<div class="gd-modal-footer">'+
+                                // empty footer
+                                '</div>'+
+                            '</div><!-- /.modal-content -->'+
+                        '</div><!-- /.modal-dialog -->'+
+                '</div>';
+        }
+
+        function getHtmlNavSplitter(){
+            return '<li class="gd-nav-separator" role="separator"></li>';
+        }
+
+        function getHtmlNavDownloadPanel() {
+            return '<li class="gd-nav-toggle" id="gd-download-val-container">'+
+                '<span id="gd-download-value">' +
+                '<i class="fa fa-download"></i>' +
+                '<span class="gd-tooltip">Download</span>' +
+                '</span>'+
+                '<span class="gd-nav-caret"></span>'+
+                '<ul class="gd-nav-dropdown-menu gd-nav-dropdown" id="gd-btn-download-value">'+
+                    '<li id="gd-btn-download-all">Download All Results</li>' +
+                    '<li id="gd-btn-download-summary">Download Summary</li>' +
+                '</ul>'+
+                '</li>';
+        }
+
+        function getHtmlNavPrintPanel(){
+            return '<li id="gd-btn-print"><i class="fas fa-print"></i><span class="gd-tooltip">Print</span></li>';
+        }
+
+        function getHtmlNavUploadPanel(){
+            return '<li id="gd-btn-upload"><i class="fas fa-upload"></i><span class="gd-tooltip">Upload</span></li>';
+        }
+
+        function getHtmlNavZoomPanel(){
+            return '<li class="gd-nav-toggle" id="gd-zoom-val-container">'+
+                '<span id="gd-zoom-value">100%</span>'+
+                '<span class="gd-nav-caret"></span>'+
+                '<ul class="gd-nav-dropdown-menu gd-nav-dropdown" id="gd-btn-zoom-value">'+
+                '<li>25%</li>'+
+                '<li>50%</li>'+
+                '<li>100%</li>'+
+                '<li>150%</li>'+
+                '<li>200%</li>'+
+                '<li>300%</li>'+
+                '<li role="separator" class="gd-nav-dropdown-menu-separator"></li>'+
+                '<li>Fit Width</li>'+
+                '<li>Fit Height</li>'+
+                '</ul>'+
+                '</li>'+
+                '<li id="gd-btn-zoom-in">'+
+                '<i class="fa fa-search-plus"></i>'+
+                '<span class="gd-tooltip">Zoom In</span>'+
+                '</li>'+
+                '<li id="gd-btn-zoom-out">'+
+                '<i class="fa fa-search-minus"></i>'+
+                '<span class="gd-tooltip">Zoom Out</span>'+
+                '</li>';
+        }
+
+    })(jQuery);
+
+    /*
+    ******************************************************************
+    ******************************************************************
+    JQUERY SCROLL TO PLUGIN
+    ******************************************************************
+    ******************************************************************
+    */
+    $.fn.scrollTo = function( target, options, callback ){
+        if(typeof options == 'function' && arguments.length == 2){ callback = options; options = target; }
+        var settings = $.extend({
+            scrollTarget : target,
+            offsetTop    : 50,
+            duration     : 500,
+            zoom         : 100,
+            easing       : 'swing'
+        }, options);
+        return this.each(function(){
+            var scrollPane = $(this);
+            var scrollTarget = (typeof settings.scrollTarget == "number") ? settings.scrollTarget : $(settings.scrollTarget);
+            if(typeof settings.scrollTarget != "number"){
+                var scrollYTop = scrollTarget.offset().top * settings.zoom / 100;
+            }
+            var scrollY = (typeof scrollTarget == "number") ? scrollTarget : scrollYTop + scrollPane.scrollTop() - parseInt(settings.offsetTop);
+            scrollPane.animate({scrollTop : scrollY }, parseInt(settings.duration), settings.easing, function(){
+                if (typeof callback == 'function') {
+                    callback.call(this);
+                }
+            });
+        });
+    }
+
+    /*
+    ******************************************************************
+    ******************************************************************
+    JQUERY CHECK IF IN VIEWPORT PLUGIN
+    ******************************************************************
+    ******************************************************************
+    */
+    $.fn.isOnScreen = function(x, y){
+
+        if(x == null || typeof x == 'undefined') x = 1;
+        if(y == null || typeof y == 'undefined') y = 1;
+
+        var win = $(window);
+
+        var viewport = {
+            top : win.scrollTop(),
+            left : win.scrollLeft()
+        };
+        viewport.right = viewport.left + win.width();
+        viewport.bottom = viewport.top + win.height();
+
+        var height = this.outerHeight();
+        var width = this.outerWidth();
+
+        if(!width || !height){
+            return false;
+        }
+
+        var bounds = this.offset();
+        bounds.right = bounds.left + width;
+        bounds.bottom = bounds.top + height;
+
+        var visible = (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
+
+        if(!visible){
+            return false;
+        }
+
+        var deltas = {
+            top : Math.min( 1, ( bounds.bottom - viewport.top ) / height),
+            bottom : Math.min(1, ( viewport.bottom - bounds.top ) / height),
+            left : Math.min(1, ( bounds.right - viewport.left ) / width),
+            right : Math.min(1, ( viewport.right - bounds.left ) / width)
+        };
+
+        return (deltas.left * deltas.right) >= x && (deltas.top * deltas.bottom) >= y;
     };
 
-    return (deltas.left * deltas.right) >= x && (deltas.top * deltas.bottom) >= y;
-};
-
-/*
-******************************************************************
-******************************************************************
-CHECK IF MOBILE
-******************************************************************
-******************************************************************
-*/
-var isMobile = function(){
-    return 'ontouchstart' in window // works on most browsers
-        || 'onmsgesturechange' in window; // works on ie10
-};
+    /*
+    ******************************************************************
+    ******************************************************************
+    CHECK IF MOBILE
+    ******************************************************************
+    ******************************************************************
+    */
+    var isMobile = function(){
+        return 'ontouchstart' in window // works on most browsers
+            || 'onmsgesturechange' in window; // works on ie10
+    };

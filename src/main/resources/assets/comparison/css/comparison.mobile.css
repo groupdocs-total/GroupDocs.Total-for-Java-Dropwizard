@@ -1,15 +1,38 @@
 @media (max-width: 1024px) {
+    .gd-comparison-toggle {
+        left: auto;
+        right: 42px;
+        position: inherit;
+    }
+    .gd-lbl-toggle {
+        left: 937px;
+    }
     .gd-drag-n-drop-wrap-compare  {
-        width: 100%;
-        background: transparent;
+        width: 92%;
+        background: #f5f5f5;
         border: 0;
         height: auto;
     }
-
+    .gd-lbl-toggle::before {
+        border-top: 74px solid transparent;
+        border-bottom: 74px solid transparent;
+        border-left: 25px solid currentColor;
+    }
+    .gd-drag-n-drop-wrap-compare h2, h4 {
+        display: none;
+    }
+    .gd-drag-n-drop-buttons {
+        padding-top: 37px;
+    }
+    .gd-browse-document i {
+        font-size: 90px;
+    }
+    .gd-modal-buttons {
+        font-size: 34px;
+    }
     .gd-add-url {
-        right: -7px;
-        font-size: 20px;
-        height: inherit;
+        font-size: 53px;
+        width: 151px;
     }
 
     .gd-url-cancel {
@@ -17,7 +40,7 @@
     }
 
     .gd-url-wrap > input {
-        margin-left: 30px;
+        margin-left: 62px;
     }
 
     .gd-upload-files-table-idx {
@@ -72,10 +95,13 @@
     }
 
     #gd-select-compare-files {
-        padding-top: 100px;
+        padding-top: 39px;
+        padding-left: 45px;
         overflow-y: scroll;
         height: 100%;
         display: block;
+        height: 97%;
+        width: 100%;
     }
 
     .gd-password-wrap {
@@ -84,7 +110,8 @@
     }
 
     #gd-navbar > li {
-        padding: 15px 15px;
+        padding: 32px 36px;
+        font-size: 48px;
     }
 
     .gd-drag-n-drop-buttons .btn {

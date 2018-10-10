@@ -14,6 +14,7 @@ import com.groupdocs.ui.common.entity.web.request.FileTreeRequest;
 import com.groupdocs.ui.common.exception.TotalGroupDocsException;
 import com.groupdocs.ui.common.util.comparator.FileNameComparator;
 import com.groupdocs.ui.common.util.comparator.FileTypeComparator;
+import com.groupdocs.ui.comparison.config.ComparisonConfiguration;
 import com.groupdocs.ui.comparison.model.request.CompareRequest;
 import com.groupdocs.ui.comparison.model.request.LoadResultPageRequest;
 import com.groupdocs.ui.comparison.model.response.CompareResultResponse;
@@ -47,6 +48,17 @@ public class ComparisonServiceImpl implements ComparisonService {
 
     public ComparisonServiceImpl(GlobalConfiguration globalConfiguration) {
         this.globalConfiguration = globalConfiguration;
+        // check files directories
+        ComparisonConfiguration comparisonConfiguration = globalConfiguration.getComparison();
+        if (StringUtils.isEmpty(comparisonConfiguration.getFilesDirectory())) {
+            logger.error("Files directory must be specified!");
+            throw new IllegalStateException("Files directory must be specified!");
+        } else {
+            new File(comparisonConfiguration.getFilesDirectory()).mkdirs();
+            if (!StringUtils.isEmpty(comparisonConfiguration.getResultDirectory())) {
+                new File(comparisonConfiguration.getResultDirectory()).mkdirs();
+            }
+        }
     }
 
     /**

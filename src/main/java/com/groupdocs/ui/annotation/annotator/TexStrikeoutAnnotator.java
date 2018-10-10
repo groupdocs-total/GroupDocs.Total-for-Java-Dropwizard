@@ -22,15 +22,14 @@ public class TexStrikeoutAnnotator extends AbstractSvgAnnotator {
 
     @Override
     public AnnotationInfo annotateWord() throws ParseException {
-        setFixTop(true);
         // init possible types of annotations
         AnnotationInfo strikeoutAnnotation = initAnnotationInfo();
+        fixBox(strikeoutAnnotation);
         return strikeoutAnnotation;
     }
 
     @Override
     public AnnotationInfo annotatePdf() throws ParseException {
-        setFixTop(false);
         AnnotationInfo strikeoutAnnotation = initAnnotationInfo();
         strikeoutAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
         strikeoutAnnotation.setPenColor(0);
@@ -45,8 +44,8 @@ public class TexStrikeoutAnnotator extends AbstractSvgAnnotator {
 
     @Override
     public AnnotationInfo annotateSlides() throws ParseException {
-        setFixTop(true);
         AnnotationInfo strikeoutAnnotation = initAnnotationInfo();
+        fixBox(strikeoutAnnotation);
         strikeoutAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
         strikeoutAnnotation.setPenColor(0);
         return strikeoutAnnotation;

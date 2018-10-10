@@ -6,19 +6,58 @@ package com.groupdocs.ui.annotation.entity.web;
  * @author Aspose Pty Ltd
  */
 public class AnnotationDataEntity {
+    /**
+     * Annotation Id
+     */
     private int id;
+    /**
+     * The number of page in document
+     */
     private int pageNumber;
+    /**
+     * The size of font of annotation
+     */
     private double fontSize;
+    /**
+     * Annotation position. Left position.
+     */
     private double left;
+    /**
+     * Annotation position. Top position.
+     */
     private double top;
+    /**
+     * Annotation position. Width of annotation.
+     */
     private double width;
+    /**
+     * Annotation position. Height of annotation.
+     */
     private double height;
+    /**
+     * SVG path
+     */
     private String svgPath;
+    /**
+     * The type of annotation (text, watermark, ect)
+     */
     private String type;
+    /**
+     * Annotation text
+     */
     private String text;
+    /**
+     * The annotation font
+     */
     private String font;
-    private boolean imported;
+    /**
+     * List of comments in annotation
+     */
     private CommentsEntity[] comments;
+    /**
+     * Imported annotations
+     */
+    private boolean imported;
 
     public int getId() {
         return id;
@@ -108,19 +147,19 @@ public class AnnotationDataEntity {
         this.font = font;
     }
 
-    public boolean isImported() {
-        return imported;
-    }
-
-    public void setImported(boolean imported) {
-        this.imported = imported;
-    }
-
     public CommentsEntity[] getComments() {
         return comments;
     }
 
     public void setComments(CommentsEntity[] comments) {
         this.comments = comments;
+    }
+
+    public boolean isImported() {
+        return imported;
+    }
+
+    public void setImported(boolean imported) {
+        this.imported = imported;
     }
 }

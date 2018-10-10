@@ -22,17 +22,16 @@ public class TexUnderlineAnnotator extends AbstractSvgAnnotator {
 
     @Override
     public AnnotationInfo annotateWord() throws ParseException {
-        setFixTop(true);
         // init possible types of annotations
         AnnotationInfo underlineAnnotation = initAnnotationInfo();
         // set line color
         underlineAnnotation.setPenColor(1201033);
+        fixBox(underlineAnnotation);
         return underlineAnnotation;
     }
 
     @Override
     public AnnotationInfo annotatePdf() throws ParseException {
-        setFixTop(false);
         AnnotationInfo underlineAnnotation = initAnnotationInfo();
         underlineAnnotation.setGuid(String.valueOf(annotationData.getId()));
         underlineAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
@@ -47,8 +46,8 @@ public class TexUnderlineAnnotator extends AbstractSvgAnnotator {
 
     @Override
     public AnnotationInfo annotateSlides() throws ParseException {
-        setFixTop(true);
         AnnotationInfo underlineAnnotation = initAnnotationInfo();
+        fixBox(underlineAnnotation);
         underlineAnnotation.setPenColor(0);
         underlineAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
         return underlineAnnotation;

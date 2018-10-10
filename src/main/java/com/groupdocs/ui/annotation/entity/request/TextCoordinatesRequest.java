@@ -2,11 +2,21 @@ package com.groupdocs.ui.annotation.entity.request;
 
 /**
  * TextCoordinatesRequest
+ *
  * @author Aspose Pty Ltd
  */
 public class TextCoordinatesRequest {
+    /**
+     * Guid of document
+     */
     private String guid;
+    /**
+     * Password of document
+     */
     private String password;
+    /**
+     * The number of page in document
+     */
     private int pageNumber;
 
     public String getPassword() {

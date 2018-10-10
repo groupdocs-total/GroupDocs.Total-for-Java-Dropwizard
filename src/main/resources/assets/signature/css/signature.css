@@ -17,7 +17,7 @@ FIX DOCUMENT PAGE POSITION FOR IMAGE SIGNATURE
 MODAL
 ******************************************
 */
-.gd-signature-modal-dialog {   
+.gd-signature-modal-dialog {
     width: 700px !important;
     height: 500px !important;
 }
@@ -67,7 +67,7 @@ MODAL
 }
 #gd-signature-upload-input::-webkit-file-upload-button{
     height: 88px;
-    cursor: pointer;    
+    cursor: pointer;
 }
 /*
 ******************************************
@@ -183,7 +183,7 @@ BROWSE SIGNATURES SLIDE
     display: inline-block;   
     cursor: pointer;
     padding-top: 2px;
-    margin-right: 6px;  
+    margin-right: 6px;
     border-style: solid;
     border-width: 1px;
 }

@@ -114,7 +114,6 @@
 		
 		/**
 		 * Draw text field annotation
-		 * @param {Object} canvas - document page to add annotation
 		 * @param {Array} annotationsList - List of all annotations
 		 * @param {Object} annotation - Current annotation
 		 * @param {int} annotationsCounter - Current annotation number
@@ -178,14 +177,14 @@
 			element.className = 'gd-annotation';  			
 			element.innerHTML = getTextFieldAnnotationHtml(annotationsCounter, annotation.text, annotation.font, annotation.fontSize);				
 			element.style.left = annotation.left + "px";
-			element.style.top = annotation.top + "px";
 				
 			canvas.prepend(element);	
 			$(".gd-typewriter-text").click(function (e) {
 				e.stopPropagation()
 				$(this).focus();
 			})		
-							
+			var toolbarHeight = $(element).find(".gd-text-area-toolbar").height() + parseInt($(element).find(".gd-text-area-toolbar").css("margin-bottom")) + parseInt($(element).find(".gd-text-area-toolbar").css("padding"));
+			element.style.top = annotation.top - toolbarHeight + "px";
 			annotationsList.push(annotation);	
 			makeResizable(annotation);		
 			$(".gd-typewriter-text").each(function(index, typeWriter){

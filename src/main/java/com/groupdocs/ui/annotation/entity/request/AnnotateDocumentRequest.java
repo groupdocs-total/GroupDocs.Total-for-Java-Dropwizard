@@ -5,11 +5,18 @@ import com.groupdocs.ui.common.entity.web.request.LoadDocumentRequest;
 
 /**
  * AnnotateDocumentRequest
+ *
  * @author Aspose Pty Ltd
  */
 public class AnnotateDocumentRequest extends LoadDocumentRequest {
-    private String documentType;
+    /**
+     * List of annotation data
+     */
     private AnnotationDataEntity[] annotationsData;
+    /**
+     * Document type
+     */
+    private String documentType;
 
     public AnnotationDataEntity[] getAnnotationsData() {
         return annotationsData;

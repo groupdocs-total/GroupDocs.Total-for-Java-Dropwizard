@@ -3,7 +3,7 @@ package com.groupdocs.ui.annotation.importer;
 import com.groupdocs.annotation.domain.AnnotationInfo;
 import com.groupdocs.annotation.handler.AnnotationImageHandler;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 
 /**
  * Importer
@@ -11,7 +11,7 @@ import java.io.FileInputStream;
  * @author Aspose Pty Ltd
  */
 public class Importer {
-    protected FileInputStream documentStream;
+    protected InputStream documentStream;
     protected AnnotationImageHandler annotator;
 
     /**
@@ -19,7 +19,7 @@ public class Importer {
      *
      * @param documentStream
      */
-    public Importer(FileInputStream documentStream, AnnotationImageHandler annotator) {
+    public Importer(InputStream documentStream, AnnotationImageHandler annotator) {
         this.documentStream = documentStream;
         this.annotator = annotator;
     }

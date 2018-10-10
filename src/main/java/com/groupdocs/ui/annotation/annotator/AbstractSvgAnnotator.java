@@ -9,8 +9,6 @@ import java.text.ParseException;
 
 public abstract class AbstractSvgAnnotator extends Annotator {
 
-    private boolean fixTop = false;
-
     public AbstractSvgAnnotator(AnnotationDataEntity annotationData, PageData pageData) {
         super(annotationData, pageData);
     }
@@ -20,11 +18,17 @@ public abstract class AbstractSvgAnnotator extends Annotator {
         AnnotationInfo annotationInfo = super.initAnnotationInfo();
         // set draw annotation properties
         annotationInfo.setSvgPath(buildSvgPath());
-        if (fixTop) {
-            double topPosition = pageData.getHeight() - annotationData.getTop();
-            annotationInfo.getBox().setY((float) topPosition);
-        }
         return annotationInfo;
+    }
+
+    /**
+     * Use this method for fixing box coordinates if needed
+     *
+     * @param annotationInfo
+     */
+    protected void fixBox(AnnotationInfo annotationInfo) {
+        double topPosition = pageData.getHeight() - annotationData.getTop();
+        annotationInfo.getBox().setY((float) topPosition);
     }
 
     /**
@@ -69,7 +73,4 @@ public abstract class AbstractSvgAnnotator extends Annotator {
         return new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight());
     }
 
-    public void setFixTop(boolean fixTop) {
-        this.fixTop = fixTop;
-    }
 }

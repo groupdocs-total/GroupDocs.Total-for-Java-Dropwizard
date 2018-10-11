@@ -194,6 +194,9 @@
     margin-top: 60px;
     z-index: 1;
 }
+.swiper-wrapper {
+    height: 100px !important;
+}
 .gd-upload-complete-fail {
     right: 55px;
     top: 3px;

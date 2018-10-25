@@ -75,6 +75,9 @@ viewer:
   # Page rotation
   # Set false to disable pages rotation
   rotate: true
+  # Using cache
+  # Set true to enable cache
+  cache: true
 
 ################################################
 # GroupDocs.Signature configurations

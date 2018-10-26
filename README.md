@@ -1,5 +1,5 @@
 # GroupDocs.Total for Java Dropwizard Example
-###### version 0.4.12
+###### version 0.4.13
 
 
 ## System Requirements

@@ -52,7 +52,7 @@ public class SignatureLoader {
                     // ignore current file and skip to next one
                     continue;
                 } else {
-                    SignatureFileDescriptionEntity fileDescription = getSignatureFileDescriptionEntity(file, false);
+                    SignatureFileDescriptionEntity fileDescription = getSignatureFileDescriptionEntity(file, true);
                     // add object to array list
                     fileList.add(fileDescription);
                 }

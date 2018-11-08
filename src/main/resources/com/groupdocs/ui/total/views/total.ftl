@@ -3,7 +3,8 @@
 <html>
     <head>
         <title>GroupDocs.Total for Java Dropwizard</title>
-        <link type="text/css" rel="stylesheet" href="assets/common/css/font-awesome.min.css"/>
+        <link type="text/css" rel="stylesheet" href="assets/common/css/all.min.css">
+        <link type="text/css" rel="stylesheet" href="assets/common/css/v4-shims.min.css">
         <link type="text/css" rel="stylesheet" href="assets/total/css/total.css"/>
     </head>
     <body>

@@ -3,6 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>GroupDocs.Comparison for Java Spring</title>
+    <link type="text/css" rel="stylesheet" href="assets/common/css/all.min.css">
+    <link type="text/css" rel="stylesheet" href="assets/common/css/v4-shims.min.css">
     <link type="text/css" rel="stylesheet" href="assets/comparison/css/all.css"/>
     <link type="text/css" rel="stylesheet" href="assets/common/css/swiper.min.css">
     <link type="text/css" rel="stylesheet" href="assets/common/css/circle-progress.css"/>

@@ -3,9 +3,9 @@
 <html>
     <head>
         <title>GroupDocs.Total for Java Dropwizard</title>
-        <link type="text/css" rel="stylesheet" href="assets/common/css/all.min.css">
-        <link type="text/css" rel="stylesheet" href="assets/common/css/v4-shims.min.css">
-        <link type="text/css" rel="stylesheet" href="assets/total/css/total.css"/>
+        <link type="text/css" rel="stylesheet" href="/assets/common/css/all.min.css">
+        <link type="text/css" rel="stylesheet" href="/assets/common/css/v4-shims.min.css">
+        <link type="text/css" rel="stylesheet" href="/assets/total/css/total.css"/>
     </head>
     <body>
         <div id="container">
@@ -17,7 +17,7 @@
                 <ul>
                     <li>
                         <a href="viewer">
-                            <img src="assets/total/images/groupdocs-viewer.png"/>
+                            <img src="/assets/total/images/groupdocs-viewer.png"/>
                             <div>
                                 <h5>GroupDocs</h5>
                                 <h6>Viewer</h6>
@@ -26,7 +26,7 @@
                     </li>
                     <li>
                         <a href="signature">
-                            <img src="assets/total/images/groupdocs-signature.png"/>
+                            <img src="/assets/total/images/groupdocs-signature.png"/>
                             <div>
                                 <h5>GroupDocs</h5>
                                 <h6>Signature</h6>
@@ -35,7 +35,7 @@
                     </li>
                     <li>
                         <a href="annotation">
-                            <img src="assets/total/images/groupdocs-annotation.png"/>
+                            <img src="/assets/total/images/groupdocs-annotation.png"/>
                             <div>
                                 <h5>GroupDocs</h5>
                                 <h6>Annotation</h6>
@@ -44,7 +44,7 @@
                     </li>
                     <li>
                         <a href="comparison">
-                            <img src="assets/total/images/groupdocs-comparison.png"/>
+                            <img src="/assets/total/images/groupdocs-comparison.png"/>
                             <div>
                                 <h5>GroupDocs</h5>
                                 <h6>Comparison</h6>
@@ -53,7 +53,7 @@
                     </li>
                     <li>
                         <a href="">
-                            <img src="assets/total/images/groupdocs-conversion-d.png"/>
+                            <img src="/assets/total/images/groupdocs-conversion-d.png"/>
                             <div class="coming-soon">
                                 <h5>GroupDocs</h5>
                                 <h6>Conversion</h6>
@@ -62,7 +62,7 @@
                     </li>
                     <li>
                         <a href="">
-                            <img src="assets/total/images/groupdocs-metadata-d.png"/>
+                            <img src="/assets/total/images/groupdocs-metadata-d.png"/>
                             <div class="coming-soon">
                                 <h5>GroupDocs</h5>
                                 <h6>Metadata</h6>
@@ -71,7 +71,7 @@
                     </li>
                     <li>
                         <a href="">
-                            <img src="assets/total/images/groupdocs-search-d.png"/>
+                            <img src="/assets/total/images/groupdocs-search-d.png"/>
                             <div class="coming-soon">
                                 <h5>GroupDocs</h5>
                                 <h6>Redaction</h6>
@@ -80,7 +80,7 @@
                     </li>
                     <li>
                         <a href="">
-                            <img src="assets/total/images/groupdocs-text-d.png"/>
+                            <img src="/assets/total/images/groupdocs-text-d.png"/>
                             <div class="coming-soon">
                                 <h5>GroupDocs</h5>
                                 <h6>Text</h6>
@@ -89,7 +89,7 @@
                     </li>
                     <li>
                         <a href="">
-                            <img src="assets/total/images/groupdocs-watermark-d.png"/>
+                            <img src="/assets/total/images/groupdocs-watermark-d.png"/>
                             <div class="coming-soon">
                                 <h5>GroupDocs</h5>
                                 <h6>Watermark</h6>
@@ -98,7 +98,7 @@
                     </li>
                     <li>
                         <a href="">
-                            <img src="assets/total/images/groupdocs-editor-d.png"/>
+                            <img src="/assets/total/images/groupdocs-editor-d.png"/>
                             <div class="coming-soon">
                                 <h5>GroupDocs</h5>
                                 <h6>Editor</h6>
@@ -107,7 +107,7 @@
                     </li>
                     <li>
                         <a href="">
-                            <img src="assets/total/images/groupdocs-assembly-d.png"/>
+                            <img src="/assets/total/images/groupdocs-assembly-d.png"/>
                             <div class="coming-soon">
                                 <h5>GroupDocs</h5>
                                 <h6>Assembly</h6>

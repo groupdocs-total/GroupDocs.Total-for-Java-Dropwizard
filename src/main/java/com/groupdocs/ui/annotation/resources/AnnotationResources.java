@@ -83,10 +83,13 @@ public class AnnotationResources extends Resources {
         // set directory to store annotated documents
         globalConfiguration.getAnnotation().setOutputDirectory(directoryUtils.getOutputDirectory().getPath());
         config.getFontDirectories().add(globalConfiguration.getAnnotation().getFontsDirectory());
-        // set GroupDocs license
-        License license = new License();
-        license.setLicense(globalConfiguration.getApplication().getLicensePath());
-
+        try {
+            // set GroupDocs license
+            License license = new License();
+            license.setLicense(globalConfiguration.getApplication().getLicensePath());
+        } catch (Throwable exc) {
+            logger.error("Can not verify Annotation license!");
+        }
         // initialize total instance for the Image mode
         annotationImageHandler = new AnnotationImageHandler(config);
     }

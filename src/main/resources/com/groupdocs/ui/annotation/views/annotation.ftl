@@ -17,6 +17,7 @@
         <script type="text/javascript" src="/assets/common/js/jquery-ui.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/jquery.ui.touch-punch.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/jquery.initialize.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery.timeago.js"></script>
         <script type="text/javascript" src="/assets/viewer/js/viewer.js"></script>
         <script type="text/javascript" src="/assets/annotation/js/svg.min.js"></script>
         <script type="text/javascript" src="/assets/annotation/js/svg.draw.js"></script>

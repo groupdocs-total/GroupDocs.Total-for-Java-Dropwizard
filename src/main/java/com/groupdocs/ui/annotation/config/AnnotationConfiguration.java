@@ -2,15 +2,19 @@ package com.groupdocs.ui.annotation.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.Valid;
+
+import static com.groupdocs.ui.common.config.DefaultDirectories.defaultAnnotationDirectory;
+import static com.groupdocs.ui.common.config.DefaultDirectories.relativePathToAbsolute;
 
 /**
  * AnnotationConfiguration
  *
  * @author Aspose Pty Ltd
  */
-public class AnnotationConfiguration extends Configuration{
+public class AnnotationConfiguration extends Configuration {
 
     @Valid
     @JsonProperty
@@ -97,7 +101,7 @@ public class AnnotationConfiguration extends Configuration{
     }
 
     public void setFilesDirectory(String filesDirectory) {
-        this.filesDirectory = filesDirectory;
+        this.filesDirectory = StringUtils.isEmpty(filesDirectory) ? defaultAnnotationDirectory() : relativePathToAbsolute(filesDirectory);
     }
 
     public String getDefaultDocument() {

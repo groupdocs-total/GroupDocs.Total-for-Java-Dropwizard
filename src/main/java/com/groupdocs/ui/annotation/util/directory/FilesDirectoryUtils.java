@@ -2,8 +2,6 @@ package com.groupdocs.ui.annotation.util.directory;
 
 import com.groupdocs.ui.annotation.config.AnnotationConfiguration;
 
-import java.io.File;
-
 /**
  * FilesDirectoryUtils
  * Compare and sort file types - folders first
@@ -18,11 +16,6 @@ public class FilesDirectoryUtils implements IDirectoryUtils {
      */
     public FilesDirectoryUtils(AnnotationConfiguration annotationConfiguration){
         this.annotationConfiguration = annotationConfiguration;
-
-        // set files directory
-        if(!new File(annotationConfiguration.getFilesDirectory()).exists()) {
-            annotationConfiguration.setFilesDirectory(new File("").getAbsolutePath() + annotationConfiguration.getFilesDirectory());
-        }
     }
 
     /**

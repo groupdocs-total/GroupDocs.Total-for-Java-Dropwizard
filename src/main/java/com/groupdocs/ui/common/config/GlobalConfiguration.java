@@ -15,7 +15,7 @@ import javax.validation.Valid;
  *
  * @author Aspose Pty Ltd
  */
-public class GlobalConfiguration extends Configuration{
+public class GlobalConfiguration extends Configuration {
 
     @Valid
     @JsonProperty

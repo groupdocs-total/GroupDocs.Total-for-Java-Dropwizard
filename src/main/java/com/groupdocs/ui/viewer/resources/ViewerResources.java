@@ -85,8 +85,6 @@ public class ViewerResources extends Resources {
         config.setUseCache(globalConfiguration.getViewer().isCache());
         config.getFontDirectories().add(globalConfiguration.getViewer().getFontsDirectory());
 
-        new File(filesDirectory).mkdirs();
-
         try {
             // set GroupDocs license
             License license = new License();

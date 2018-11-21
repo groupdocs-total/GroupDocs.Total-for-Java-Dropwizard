@@ -17,7 +17,6 @@ public class DefaultDirectories {
 
     public static String defaultLicenseDirectory() {
         Path defaultLic = FileSystems.getDefault().getPath(LICENSES + File.separator + LIC).toAbsolutePath();
-        makeDirs(defaultLic.toFile());
         return defaultLic.toString();
     }
 
@@ -56,11 +55,14 @@ public class DefaultDirectories {
         if (StringUtils.isNotEmpty(path)) {
             for (Path root : rootDirectories) {
                 if (path.startsWith(root.toString())) {
+                    makeDirs(new File(path));
                     return path;
                 }
             }
         }
 
-        return FileSystems.getDefault().getPath(path).toAbsolutePath().toString();
+        Path absolutePath = FileSystems.getDefault().getPath(path).toAbsolutePath();
+        makeDirs(absolutePath.toFile());
+        return absolutePath.toString();
     }
 }

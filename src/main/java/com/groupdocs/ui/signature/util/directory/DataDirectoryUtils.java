@@ -16,7 +16,7 @@ import java.io.File;
  * @author Aspose Pty Ltd
  */
 public class DataDirectoryUtils implements IDirectoryUtils{
-    private final String DATA_FOLDER = "/SignatureData";
+    private final String DATA_FOLDER = File.separator + "SignatureData";
     private SignatureConfiguration signatureConfiguration;
 
     private CertificateDataDirectoryEntity certificateDirectory;

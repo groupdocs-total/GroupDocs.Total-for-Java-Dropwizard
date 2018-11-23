@@ -1,16 +1,20 @@
 package com.groupdocs.ui.signature.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.groupdocs.ui.common.config.CommonConfiguration;
+import io.dropwizard.Configuration;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.Valid;
+
+import static com.groupdocs.ui.common.config.DefaultDirectories.defaultSignatureDirectory;
+import static com.groupdocs.ui.common.config.DefaultDirectories.relativePathToAbsolute;
 
 /**
  * SignatureConfiguration
  *
  * @author Aspose Pty Ltd
  */
-public class SignatureConfiguration extends CommonConfiguration{
+public class SignatureConfiguration extends Configuration {
 
     @Valid
     @JsonProperty
@@ -69,7 +73,7 @@ public class SignatureConfiguration extends CommonConfiguration{
     }
 
     public void setFilesDirectory(String filesDirectory) {
-        this.filesDirectory = filesDirectory;
+        this.filesDirectory = StringUtils.isEmpty(filesDirectory) ? defaultSignatureDirectory() : relativePathToAbsolute(filesDirectory);
     }
 
     public String getDefaultDocument() {

@@ -49,16 +49,13 @@ public class ComparisonServiceImpl implements ComparisonService {
         this.globalConfiguration = globalConfiguration;
         // check files directories
         ComparisonConfiguration comparisonConfiguration = globalConfiguration.getComparison();
-        if (StringUtils.isEmpty(comparisonConfiguration.getFilesDirectory())) {
-            String filesDirectory = Paths.get("").toAbsolutePath().toString();
-            logger.debug("Files directory wasn't set. Use current directory {}.", filesDirectory);
-            comparisonConfiguration.setFilesDirectory(filesDirectory);
-        } else {
-            new File(comparisonConfiguration.getFilesDirectory()).mkdirs();
-            if (!StringUtils.isEmpty(comparisonConfiguration.getResultDirectory())) {
-                new File(comparisonConfiguration.getResultDirectory()).mkdirs();
-            }
+        String filesDirectory = comparisonConfiguration.getFilesDirectory();
+        String resultDirectory = comparisonConfiguration.getResultDirectory();
+        if (StringUtils.isEmpty(resultDirectory)) {
+            resultDirectory = filesDirectory + File.separator + "Temp";
+            comparisonConfiguration.setResultDirectory(resultDirectory);
         }
+        new File(resultDirectory).mkdirs();
     }
 
     /**
@@ -222,8 +219,7 @@ public class ComparisonServiceImpl implements ComparisonService {
     @Override
     public String calculateResultFileName(String documentGuid, Integer index, String ext) {
         // configure file name for results
-        String directory = globalConfiguration.getComparison().getResultDirectory();
-        String resultDirectory = StringUtils.isEmpty(directory) ? globalConfiguration.getComparison().getFilesDirectory() : directory;
+        String resultDirectory = globalConfiguration.getComparison().getResultDirectory();
         String extension = ext != null ? getRightExt(ext.toLowerCase()) : "";
         // for images of pages specify index, for all result pages file specify "all" prefix
         String idx = index == null ? "all." : index.toString() + ".";

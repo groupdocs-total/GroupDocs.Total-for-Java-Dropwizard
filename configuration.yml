@@ -15,8 +15,8 @@ server:
 ################################################
 application:
     # License path
-    # Absolute path to GroupDocs license file
-    licensePath:  C:/GroupDocs/Java/Total/GroupDocs.Total.Java.lic
+    # Absolute or relative path to GroupDocs license file
+    licensePath: Licenses/GroupDocs.Total.Java.lic
 
 ################################################
 # Common configurations
@@ -47,8 +47,8 @@ common:
 ################################################
 viewer:
   # Files directory path
-  # Absolute path to files directory
-  filesDirectory: 'C:/GroupDocs/Documents/Viewer/'
+  # Absolute or relative path to files directory
+  filesDirectory: DocumentSamples/Viewer
   # Fonts path
   # Absolute path to custom fonts directory
   fontsDirectory: ''
@@ -84,8 +84,8 @@ viewer:
 ################################################
 signature:
   # Files directory path
-  # Absolute path to files directory
-  filesDirectory: 'C:/GroupDocs/Documents/Signature/'
+  # Absolute or relative path to files directory
+  filesDirectory: DocumentSamples/Signature
   # Output directory path
   # Absolute path to signed files directory
   outputDirectory: ''
@@ -122,7 +122,7 @@ signature:
 annotation:
   # Files directory path
   # Absolute or relative path to files directory
-  filesDirectory: 'C:/GroupDocs/Documents/Annotation/'
+  filesDirectory: DocumentSamples/Annotation
   # Default document
   # Absolute or relative path to default document
   defaultDocument: ''
@@ -172,11 +172,11 @@ annotation:
 ################################################
 comparison:
   # Files directory path
-  # Absolute path to files directory
-  filesDirectory: C:/GroupDocs/Documents/Comparison/
+  # Absolute or relative path to files directory
+  filesDirectory: DocumentSamples/Comparison
   # FResult files directory path
   # Absolute path to result files directory
-  resultDirectory: C:/GroupDocs/Documents/Comparison/compare/
+  resultDirectory:
   # Result pages preload
   # How many pages from a result document should be loaded, remaining pages will be loaded on page scrolling
   # Set 0 to load all pages at once

@@ -2,13 +2,15 @@ package com.groupdocs.ui.signature.util.directory;
 
 import com.groupdocs.ui.signature.config.SignatureConfiguration;
 
+import java.io.File;
+
 /**
  * OutputDirectoryUtils
  * Compare and sort file types - folders first
  * @author Aspose Pty Ltd
  */
 public class OutputDirectoryUtils implements IDirectoryUtils {
-    private final String OUTPUT_FOLDER = "/Output";
+    private final String OUTPUT_FOLDER = File.separator + "Output";
     private SignatureConfiguration signatureConfiguration;
 
     /**

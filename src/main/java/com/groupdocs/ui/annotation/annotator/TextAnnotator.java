@@ -70,7 +70,7 @@ public class TextAnnotator extends AbstractSvgAnnotator {
 
     @Override
     protected Rectangle getBox() {
-        return new Rectangle(annotationData.getLeft() / 4, annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight());
+        return new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight());
     }
 
     @Override

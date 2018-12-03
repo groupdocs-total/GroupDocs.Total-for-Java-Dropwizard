@@ -17,6 +17,8 @@ public class AnnotatedDocumentEntity extends DocumentDescriptionEntity {
      */
     private AnnotationDataEntity[] annotations;
 
+    private String data;
+
     public String getGuid() {
         return guid;
     }
@@ -32,4 +34,8 @@ public class AnnotatedDocumentEntity extends DocumentDescriptionEntity {
     public void setAnnotations(AnnotationDataEntity[] annotations) {
         this.annotations = annotations;
     }
+
+    public String getData(){return data;}
+
+    public void setData(String image){ this.data = image;}
 }

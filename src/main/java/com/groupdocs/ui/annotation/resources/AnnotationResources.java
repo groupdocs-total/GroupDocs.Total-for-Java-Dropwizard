@@ -163,6 +163,11 @@ public class AnnotationResources extends Resources {
             // get/set parameters
             String documentGuid = loadDocumentRequest.getGuid();
             String password = loadDocumentRequest.getPassword();
+            ImageOptions imageOptions = new ImageOptions();
+            // set password for protected document
+            if (!password.isEmpty()) {
+                imageOptions.setPassword(password);
+            }
             DocumentInfoContainer documentDescription;
             // get document info container
             String fileName = FilenameUtils.getName(documentGuid);
@@ -179,7 +184,12 @@ public class AnnotationResources extends Resources {
             // check if document contains annotations
             AnnotationInfo[] annotations = getAnnotations(documentGuid, documentType);
             // initiate pages description list
+            List<PageImage> pageImages = null;
             List<AnnotatedDocumentEntity> pagesDescription = new ArrayList<>();
+            // TODO: remove once perf. issue is fixed
+            if(globalConfiguration.getAnnotation().getPreloadPageCount() == 0){
+                pageImages = annotationImageHandler.getPages(fileName, imageOptions);
+            }
             // get info about each document page
             for(int i = 0; i < documentDescription.getPages().size(); i++) {
                 //initiate custom Document description object
@@ -193,6 +203,12 @@ public class AnnotationResources extends Resources {
                 // set annotations data if document page contains annotations
                 if(annotations != null && annotations.length > 0) {
                    description.setAnnotations(AnnotationMapper.instance.mapForPage(annotations, description.getNumber()));
+                }
+                // TODO: remove once perf. issue is fixed
+                if(pageImages != null) {
+                    byte[] bytes = IOUtils.toByteArray(pageImages.get(i).getStream());
+                    String encodedImage = Base64.getEncoder().encodeToString(bytes);
+                    description.setData(encodedImage);
                 }
                 pagesDescription.add(description);
             }

@@ -372,11 +372,11 @@ public class AnnotationResources extends Resources {
                 documentType = "image";
             }
             // initiate annotator object
-            Annotator annotator = null;
+            InputStream file = new FileInputStream(documentGuid);
+            file = annotationImageHandler.removeAnnotationStream(file);
             Exception notSupportedException = null;
-            for(int i = 0; i < annotationsData.length; i++) {
+            for (AnnotationDataEntity annotationData : annotationsData) {
                 // create annotator
-                AnnotationDataEntity annotationData = annotationsData[i];
                 PageData pageData = documentInfo.getPages().get(annotationData.getPageNumber() - 1);
                 // add annotation, if current annotation type isn't supported by the current document type it will be ignored
                 try {
@@ -387,22 +387,19 @@ public class AnnotationResources extends Resources {
                     throw new TotalGroupDocsException(ex.getMessage(), ex);
                 }
             }
+            String fileName = new File(documentGuid).getName();
+            String path = globalConfiguration.getAnnotation().getOutputDirectory() + File.separator + fileName;
             // check if annotations array contains at least one annotation to add
             if(annotations.size() > 0) {
                 // Add annotation to the document
                 int type = getDocumentType(documentType);
                 // Save result stream to file.
-                String fileName = new File(documentGuid).getName();
-                String path = globalConfiguration.getAnnotation().getOutputDirectory() + File.separator + fileName;
-                try (InputStream cleanDoc = new FileInputStream(documentGuid);
-                     InputStream result = annotationImageHandler.exportAnnotationsToDocument(cleanDoc, annotations, type);
-                     OutputStream fileStream = new FileOutputStream(path)) {
-
-                    IOUtils.copyLarge(result, fileStream);
-                }
+                file = annotationImageHandler.exportAnnotationsToDocument(file, annotations, type);
+            }
+            (new File(path)).delete();
+            try (OutputStream fileStream = new FileOutputStream(path)) {
+                IOUtils.copyLarge(file, fileStream);
                 annotatedDocument.setGuid(path);
-            } else if (notSupportedException != null) {
-                throw new NotSupportedException(notSupportedException.getMessage(), notSupportedException);
             }
         } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);

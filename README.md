@@ -1,6 +1,8 @@
 # GroupDocs.Total for Java Dropwizard Example
 ###### version 0.4.19
 
+[![Build Status](https://travis-ci.org/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard.svg?branch=master)](https://travis-ci.org/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard)
+[![Maintainability](https://api.codeclimate.com/v1/badges/83ca13ac2b000eafba60/maintainability)](https://codeclimate.com/github/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard/maintainability)
 
 ## System Requirements
 - Java 8 (JDK 1.8)

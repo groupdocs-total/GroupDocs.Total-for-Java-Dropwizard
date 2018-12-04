@@ -45,6 +45,11 @@ public class MainService extends Application<GlobalConfiguration> {
 
     private boolean defaultConfiguration;
 
+    public MainService() {
+        super();
+        this.defaultConfiguration = false;
+    }
+
     public MainService(boolean defaultConfiguration) {
         super();
         this.defaultConfiguration = defaultConfiguration;

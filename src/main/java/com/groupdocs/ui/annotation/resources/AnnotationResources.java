@@ -5,7 +5,6 @@ import com.groupdocs.annotation.common.license.License;
 import com.groupdocs.annotation.domain.AnnotationInfo;
 import com.groupdocs.annotation.domain.FileDescription;
 import com.groupdocs.annotation.domain.PageData;
-import com.groupdocs.annotation.domain.RowData;
 import com.groupdocs.annotation.domain.config.AnnotationConfig;
 import com.groupdocs.annotation.domain.containers.DocumentInfoContainer;
 import com.groupdocs.annotation.domain.containers.FileTreeContainer;
@@ -16,10 +15,8 @@ import com.groupdocs.annotation.handler.AnnotationImageHandler;
 import com.groupdocs.ui.annotation.annotator.Annotator;
 import com.groupdocs.ui.annotation.annotator.AnnotatorFactory;
 import com.groupdocs.ui.annotation.entity.request.AnnotateDocumentRequest;
-import com.groupdocs.ui.annotation.entity.request.TextCoordinatesRequest;
 import com.groupdocs.ui.annotation.entity.web.AnnotatedDocumentEntity;
 import com.groupdocs.ui.annotation.entity.web.AnnotationDataEntity;
-import com.groupdocs.ui.annotation.entity.web.TextRowEntity;
 import com.groupdocs.ui.annotation.importer.Importer;
 import com.groupdocs.ui.annotation.util.AnnotationMapper;
 import com.groupdocs.ui.annotation.util.directory.DirectoryUtils;
@@ -233,7 +230,6 @@ public class AnnotationResources extends Resources {
             String documentGuid = loadDocumentPageRequest.getGuid();
             int pageNumber = loadDocumentPageRequest.getPage();
             String password = loadDocumentPageRequest.getPassword();
-            LoadedPageEntity loadedPage = new LoadedPageEntity();
             // set options
             ImageOptions imageOptions = new ImageOptions();
             imageOptions.setPageNumber(pageNumber);
@@ -246,10 +242,12 @@ public class AnnotationResources extends Resources {
             InputStream document = new FileInputStream(documentGuid);
             List<PageImage> images = annotationImageHandler.getPages(document, imageOptions);
 
+            LoadedPageEntity loadedPage = new LoadedPageEntity();
+
             byte[] bytes = IOUtils.toByteArray(images.get(pageNumber - 1).getStream());
             // encode ByteArray into String
-            String incodedImage = new String(Base64.getEncoder().encode(bytes));
-            loadedPage.setPageImage(incodedImage);
+            String encodedImage = new String(Base64.getEncoder().encode(bytes));
+            loadedPage.setPageImage(encodedImage);
             // return loaded page object
             return loadedPage;
         }catch (Exception ex){
@@ -307,42 +305,6 @@ public class AnnotationResources extends Resources {
     @Override
     protected String getStoragePath(Map<String, Object> params) {
         return globalConfiguration.getAnnotation().getFilesDirectory();
-    }
-
-    /**
-     * get text coordinates
-     * @param textCoordinatesRequest
-     * @return list of each text row with coordinates
-     */
-    @POST
-    @Path(value = "/textCoordinates")
-    @Produces(APPLICATION_JSON)
-    @Consumes(APPLICATION_JSON)
-    public List<TextRowEntity> textCoordinates(TextCoordinatesRequest textCoordinatesRequest) {
-        String password = "";
-        try {
-            // get/set parameters
-            String documentGuid = textCoordinatesRequest.getGuid();
-            password = textCoordinatesRequest.getPassword();
-            int pageNumber = textCoordinatesRequest.getPageNumber();
-            // get document info
-            DocumentInfoContainer info = annotationImageHandler.getDocumentInfo(FilenameUtils.getName(documentGuid), password);
-            // get all rows info for specific page
-            List<RowData> rows = info.getPages().get(pageNumber - 1).getRows();
-            // initiate list of the TextRowEntity
-            List<TextRowEntity> textCoordinates = new ArrayList<TextRowEntity>();
-            // get each row info
-            for(int i = 0; i < rows.size(); i++ ) {
-                TextRowEntity textRow = new TextRowEntity();
-                textRow.setTextCoordinates(info.getPages().get(pageNumber - 1).getRows().get(i).getTextCoordinates());
-                textRow.setLineTop(info.getPages().get(pageNumber - 1).getRows().get(i).getLineTop());
-                textRow.setLineHeight(info.getPages().get(pageNumber - 1).getRows().get(i).getLineHeight());
-                textCoordinates.add(textRow);
-            }
-            return textCoordinates;
-        }catch (Exception ex){
-            throw new TotalGroupDocsException(ex.getMessage(), ex);
-        }
     }
 
     /**

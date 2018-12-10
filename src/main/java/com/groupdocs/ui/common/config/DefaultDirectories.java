@@ -23,11 +23,9 @@ public class DefaultDirectories {
         Path defaultLicFolder = FileSystems.getDefault().getPath(LICENSES).toAbsolutePath();
         File licFolder = defaultLicFolder.toFile();
         if (licFolder.exists()) {
-            for (File file : licFolder.listFiles()) {
-                if (file.getName().endsWith(LIC)) {
-                    Path defaultLic = FileSystems.getDefault().getPath(LICENSES + File.separator + file.getName()).toAbsolutePath();
-                    return defaultLic.toString();
-                }
+            Path defaultLicFile = getDefaultLicFile(licFolder);
+            if (defaultLicFile != null) {
+                return defaultLicFile.toString();
             }
         }
         licFolder.mkdirs();
@@ -81,5 +79,14 @@ public class DefaultDirectories {
         Path absolutePath = FileSystems.getDefault().getPath(path).toAbsolutePath();
         makeDirs(absolutePath.toFile());
         return absolutePath.toString();
+    }
+
+    public static Path getDefaultLicFile(File licFolder) {
+        for (File file : licFolder.listFiles()) {
+            if (file.getName().endsWith(LIC)) {
+                return FileSystems.getDefault().getPath(LICENSES + File.separator + file.getName()).toAbsolutePath();
+            }
+        }
+        return null;
     }
 }

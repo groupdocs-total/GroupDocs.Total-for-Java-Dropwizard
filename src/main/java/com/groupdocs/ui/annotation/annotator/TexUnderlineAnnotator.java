@@ -54,8 +54,9 @@ public class TexUnderlineAnnotator extends AbstractSvgAnnotator {
     }
 
     @Override
-    public AnnotationInfo annotateImage() {
-        throw new UnsupportedOperationException(String.format(MESSAGE, annotationData.getType()));
+    public AnnotationInfo annotateImage() throws ParseException {
+        AnnotationInfo annotationInfo = initAnnotationInfo();
+        return annotationInfo;
     }
 
     @Override

@@ -22,8 +22,8 @@ public class PolylineAnnotator extends Annotator {
     }
 
     @Override
-    public AnnotationInfo annotateWord() {
-        throw new UnsupportedOperationException(String.format("Annotation of type %s for this file type is not supported", annotationData.getType()));
+    public AnnotationInfo annotateWord() throws ParseException {
+        return initAnnotationInfo();
     }
 
 
@@ -44,7 +44,7 @@ public class PolylineAnnotator extends Annotator {
 
     @Override
     public AnnotationInfo annotateCells() {
-        throw new UnsupportedOperationException(String.format("Annotation of type %s for this file type is not supported", annotationData.getType()));
+        throw new UnsupportedOperationException(String.format(MESSAGE, annotationData.getType()));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class PolylineAnnotator extends Annotator {
 
     @Override
     protected Rectangle getBox() {
-        return new Rectangle(0, 0, 0, 0);
+        return new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight());
     }
 
     @Override

@@ -21,8 +21,10 @@ public class WatermarkAnnotator extends AbstractTextAnnotator {
     }
 
     @Override
-    public AnnotationInfo annotateWord() {
-        throw new UnsupportedOperationException(String.format(MESSAGE, annotationData.getType()));
+    public AnnotationInfo annotateWord() throws ParseException {
+        AnnotationInfo watermarkAnnotation = initAnnotationInfo();
+        watermarkAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
+        return watermarkAnnotation;
     }
 
     @Override

@@ -22,8 +22,9 @@ public class DistanceAnnotator extends AbstractBoxAnnotator {
     }
 
     @Override
-    public AnnotationInfo annotateWord() {
-        throw new UnsupportedOperationException(String.format(MESSAGE, annotationData.getType()));
+    public AnnotationInfo annotateWord() throws ParseException {
+        AnnotationInfo distanceAnnotation = initAnnotationInfo();
+        return distanceAnnotation;
     }
 
     @Override

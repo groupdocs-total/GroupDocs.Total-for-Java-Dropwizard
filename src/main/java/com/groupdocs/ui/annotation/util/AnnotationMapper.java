@@ -59,10 +59,17 @@ public class AnnotationMapper {
         annotation.setTop(box.getY());
         annotation.setWidth(box.getWidth());
         annotation.setPageNumber(annotationInfo.getPageNumber() + 1);
-        annotation.setSvgPath(annotationInfo.getSvgPath());
+        if (annotationInfo.getSvgPath() != null) {
+            annotation.setSvgPath(annotationInfo.getSvgPath().replace("l", "L"));
+        }
         String text = (annotationInfo.getText() == null) ? annotationInfo.getFieldText() : annotationInfo.getText();
         annotation.setText(text);
         annotation.setType(AnnotationTypes.instance.getAnnotationType(annotationInfo.getType()));
+        setReplies(annotationInfo, annotation);
+        return annotation;
+    }
+
+    public void setReplies(AnnotationInfo annotationInfo, AnnotationDataEntity annotation) {
         // set each reply data
         AnnotationReplyInfo[] replies = annotationInfo.getReplies();
         if (replies != null && replies.length > 0) {
@@ -78,6 +85,5 @@ public class AnnotationMapper {
             }
             annotation.setComments(comments);
         }
-        return annotation;
     }
 }

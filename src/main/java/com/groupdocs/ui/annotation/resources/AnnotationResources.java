@@ -1,5 +1,6 @@
 package com.groupdocs.ui.annotation.resources;
 
+import com.google.common.collect.Lists;
 import com.groupdocs.annotation.common.exception.AnnotatorException;
 import com.groupdocs.annotation.common.license.License;
 import com.groupdocs.annotation.domain.AnnotationInfo;
@@ -12,13 +13,13 @@ import com.groupdocs.annotation.domain.image.PageImage;
 import com.groupdocs.annotation.domain.options.FileTreeOptions;
 import com.groupdocs.annotation.domain.options.ImageOptions;
 import com.groupdocs.annotation.handler.AnnotationImageHandler;
-import com.groupdocs.ui.annotation.annotator.Annotator;
 import com.groupdocs.ui.annotation.annotator.AnnotatorFactory;
 import com.groupdocs.ui.annotation.entity.request.AnnotateDocumentRequest;
 import com.groupdocs.ui.annotation.entity.web.AnnotatedDocumentEntity;
 import com.groupdocs.ui.annotation.entity.web.AnnotationDataEntity;
 import com.groupdocs.ui.annotation.importer.Importer;
 import com.groupdocs.ui.annotation.util.AnnotationMapper;
+import com.groupdocs.ui.annotation.util.SupportedAnnotations;
 import com.groupdocs.ui.annotation.util.directory.DirectoryUtils;
 import com.groupdocs.ui.annotation.views.Annotation;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
@@ -60,7 +61,7 @@ public class AnnotationResources extends Resources {
     private final AnnotationImageHandler annotationImageHandler;
     private DirectoryUtils directoryUtils;
     private String[] supportedImageFormats = {"bmp", "jpeg", "jpg", "tiff", "tif", "png", "gif", "emf", "wmf", "dwg", "dicom", "djvu"};
-    private String[] supportedAutoCadFormats = {"dxf", "dwg"};
+    private static final List<String> supportedDiagramFormats = Lists.newArrayList(".vsd", ".vdx", ".vss", ".vsx", ".vst", ".vtx", ".vsdx", ".vdw", ".vstx", ".vssx");
 
     /**
      * Constructor
@@ -175,7 +176,7 @@ public class AnnotationResources extends Resources {
             // check if document type is image
             if (Arrays.asList(supportedImageFormats).contains(fileExtension)) {
                 documentType = "image";
-            } else if (Arrays.asList(supportedAutoCadFormats).contains(fileExtension)){
+            } else if (Arrays.asList(supportedDiagramFormats).contains(fileExtension)){
                 documentType = "diagram";
             }
             // check if document contains annotations
@@ -187,11 +188,13 @@ public class AnnotationResources extends Resources {
             if(globalConfiguration.getAnnotation().getPreloadPageCount() == 0){
                 pageImages = annotationImageHandler.getPages(fileName, imageOptions);
             }
+            String[] supportedAnnotations = SupportedAnnotations.getSupportedAnnotations(documentType);
             // get info about each document page
             for(int i = 0; i < documentDescription.getPages().size(); i++) {
                 //initiate custom Document description object
                 AnnotatedDocumentEntity description = new AnnotatedDocumentEntity();
                 description.setGuid(documentGuid);
+                description.setSupportedAnnotations(supportedAnnotations);
                 // set current page info for result
                 PageData pageData = documentDescription.getPages().get(i);
                 description.setHeight(pageData.getHeight());

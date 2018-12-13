@@ -59,8 +59,8 @@ public class TextAnnotator extends AbstractSvgAnnotator {
     }
 
     @Override
-    public AnnotationInfo annotateImage() {
-        throw new UnsupportedOperationException(String.format(MESSAGE, annotationData.getType()));
+    public AnnotationInfo annotateImage() throws ParseException {
+        return initAnnotationInfo();
     }
 
     @Override

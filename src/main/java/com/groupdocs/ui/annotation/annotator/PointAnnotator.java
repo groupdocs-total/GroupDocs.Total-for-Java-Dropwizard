@@ -18,8 +18,8 @@ public class PointAnnotator extends Annotator {
     }
 
     @Override
-    public AnnotationInfo annotateWord() {
-        throw new UnsupportedOperationException(String.format(MESSAGE, annotationData.getType()));
+    public AnnotationInfo annotateWord() throws ParseException {
+        return initAnnotationInfo();
     }
 
     @Override
@@ -53,8 +53,8 @@ public class PointAnnotator extends Annotator {
 
 
     @Override
-    public AnnotationInfo annotateDiagram() {
-        throw new UnsupportedOperationException(String.format(MESSAGE, annotationData.getType()));
+    public AnnotationInfo annotateDiagram() throws ParseException {
+        return initAnnotationInfo();
     }
 
     @Override

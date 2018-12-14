@@ -1,9 +1,7 @@
 package com.groupdocs.ui.viewer.resources;
 
 import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
-import com.groupdocs.ui.common.entity.web.LoadedPageEntity;
-import com.groupdocs.ui.common.entity.web.UploadedDocumentEntity;
+import com.groupdocs.ui.common.entity.web.*;
 import com.groupdocs.ui.common.entity.web.request.FileTreeRequest;
 import com.groupdocs.ui.common.entity.web.request.LoadDocumentPageRequest;
 import com.groupdocs.ui.common.entity.web.request.LoadDocumentRequest;
@@ -168,7 +166,7 @@ public class ViewerResources extends Resources {
     @Path(value = "/loadDocumentDescription")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public List<PageData> loadDocumentDescription(LoadDocumentRequest loadDocumentRequest){
+    public LoadDocumentEntity loadDocumentDescription(LoadDocumentRequest loadDocumentRequest){
         String password = "";
         try {
             // get/set parameters
@@ -187,8 +185,21 @@ public class ViewerResources extends Resources {
             }
             // get document info container
             documentInfoContainer = viewerHandler.getDocumentInfo(documentGuid, documentInfoOptions);
+            List<PageDescriptionEntity> pages = new ArrayList<>();
+            for (PageData page: documentInfoContainer.getPages()) {
+                PageDescriptionEntity pageDescriptionEntity = new PageDescriptionEntity();
+                pageDescriptionEntity.setNumber(page.getNumber());
+                pageDescriptionEntity.setAngle(page.getAngle());
+                pageDescriptionEntity.setHeight(page.getHeight());
+                pageDescriptionEntity.setWidth(page.getWidth());
+                pages.add(pageDescriptionEntity);
+            }
+
+            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+            loadDocumentEntity.setGuid(loadDocumentRequest.getGuid());
+            loadDocumentEntity.setPages(pages);
             // return document description
-            return documentInfoContainer.getPages();
+            return loadDocumentEntity;
         }catch (GroupDocsViewerException ex){
             // Set exception message
             String message = ex.getMessage();

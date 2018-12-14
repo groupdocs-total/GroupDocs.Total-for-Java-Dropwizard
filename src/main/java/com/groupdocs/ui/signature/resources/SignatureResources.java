@@ -10,7 +10,8 @@ import com.groupdocs.signature.options.SignatureOptionsCollection;
 import com.groupdocs.signature.options.loadoptions.LoadOptions;
 import com.groupdocs.signature.options.saveoptions.SaveOptions;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
-import com.groupdocs.ui.common.entity.web.DocumentDescriptionEntity;
+import com.groupdocs.ui.common.entity.web.LoadDocumentEntity;
+import com.groupdocs.ui.common.entity.web.PageDescriptionEntity;
 import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
 import com.groupdocs.ui.common.entity.web.LoadedPageEntity;
 import com.groupdocs.ui.common.entity.web.request.LoadDocumentPageRequest;
@@ -170,7 +171,7 @@ public class SignatureResources extends Resources {
     @Path(value = "/loadDocumentDescription")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public List<DocumentDescriptionEntity> loadDocumentDescription(LoadDocumentRequest loadDocumentRequest){
+    public LoadDocumentEntity loadDocumentDescription(LoadDocumentRequest loadDocumentRequest){
         try {
             // get/set parameters
             String documentGuid = loadDocumentRequest.getGuid();
@@ -178,11 +179,11 @@ public class SignatureResources extends Resources {
             DocumentDescription documentDescription;
             // get document info container
             documentDescription = signatureHandler.getDocumentDescription(documentGuid, password);
-            List<DocumentDescriptionEntity> pagesDescription = new ArrayList<>();
+            List<PageDescriptionEntity> pagesDescription = new ArrayList<>();
             // get info about each document page
             for(int i = 1; i <= documentDescription.getPageCount(); i++) {
                 //initiate custom Document description object
-                DocumentDescriptionEntity description = new DocumentDescriptionEntity();
+                PageDescriptionEntity description = new PageDescriptionEntity();
                 // get current page size
                 java.awt.Dimension pageSize = signatureHandler.getDocumentPageSize(documentGuid, i, password, (double)0, (double)0, null);
                 // set current page info for result
@@ -191,8 +192,11 @@ public class SignatureResources extends Resources {
                 description.setNumber(i);
                 pagesDescription.add(description);
             }
+            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+            loadDocumentEntity.setGuid(loadDocumentRequest.getGuid());
+            loadDocumentEntity.setPages(pagesDescription);
             // return document description
-            return pagesDescription;
+            return loadDocumentEntity;
         }catch (Exception ex){
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }

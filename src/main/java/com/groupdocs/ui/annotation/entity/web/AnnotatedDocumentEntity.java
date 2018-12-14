@@ -1,30 +1,25 @@
 package com.groupdocs.ui.annotation.entity.web;
 
-import com.groupdocs.ui.common.entity.web.DocumentDescriptionEntity;
+import java.util.List;
 
 /**
  * AnnotatedDocumentEntity
  *
  * @author Aspose Pty Ltd
  */
-public class AnnotatedDocumentEntity extends DocumentDescriptionEntity {
+public class AnnotatedDocumentEntity {
     /**
      * Document Guid
      */
     private String guid;
     /**
-     * List of annotation data
-     */
-    private AnnotationDataEntity[] annotations;
-    /**
-     * Annotation data
-     */
-    private String data;
-    /**
      * List of supported types of annotations
      */
     public String[] supportedAnnotations;
-
+    /**
+     * list of pages
+     */
+    private List<PageDataDescriptionEntity> pages;
 
     public String getGuid() {
         return guid;
@@ -34,23 +29,19 @@ public class AnnotatedDocumentEntity extends DocumentDescriptionEntity {
         this.guid = guid;
     }
 
-    public AnnotationDataEntity[] getAnnotations() {
-        return annotations;
-    }
-
-    public void setAnnotations(AnnotationDataEntity[] annotations) {
-        this.annotations = annotations;
-    }
-
-    public String getData(){return data;}
-
-    public void setData(String image){ this.data = image;}
-
     public String[] getSupportedAnnotations() {
         return supportedAnnotations;
     }
 
     public void setSupportedAnnotations(String[] supportedAnnotations) {
         this.supportedAnnotations = supportedAnnotations;
+    }
+
+    public List<PageDataDescriptionEntity> getPages() {
+        return pages;
+    }
+
+    public void setPages(List<PageDataDescriptionEntity> pages) {
+        this.pages = pages;
     }
 }

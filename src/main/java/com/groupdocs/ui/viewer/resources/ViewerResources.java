@@ -42,7 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
-import java.nio.file.Paths;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -167,16 +167,10 @@ public class ViewerResources extends Resources {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public LoadDocumentEntity loadDocumentDescription(LoadDocumentRequest loadDocumentRequest){
-        String password = "";
+        // get/set parameters
+        String documentGuid = getGuid(loadDocumentRequest.getGuid());
+        String password = loadDocumentRequest.getPassword();
         try {
-            // get/set parameters
-            String documentGuid = loadDocumentRequest.getGuid();
-            password = loadDocumentRequest.getPassword();
-            // check if documentGuid contains path or only file name
-            if(!Paths.get(documentGuid).isAbsolute()){
-                documentGuid = globalConfiguration.getViewer().getFilesDirectory() + File.separator + documentGuid;
-            }
-            DocumentInfoContainer documentInfoContainer;
             // get document info options
             DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
             // set password for protected document
@@ -184,16 +178,8 @@ public class ViewerResources extends Resources {
                 documentInfoOptions.setPassword(password);
             }
             // get document info container
-            documentInfoContainer = viewerHandler.getDocumentInfo(documentGuid, documentInfoOptions);
-            List<PageDescriptionEntity> pages = new ArrayList<>();
-            for (PageData page: documentInfoContainer.getPages()) {
-                PageDescriptionEntity pageDescriptionEntity = new PageDescriptionEntity();
-                pageDescriptionEntity.setNumber(page.getNumber());
-                pageDescriptionEntity.setAngle(page.getAngle());
-                pageDescriptionEntity.setHeight(page.getHeight());
-                pageDescriptionEntity.setWidth(page.getWidth());
-                pages.add(pageDescriptionEntity);
-            }
+            DocumentInfoContainer documentInfoContainer = viewerHandler.getDocumentInfo(documentGuid, documentInfoOptions);
+            List<PageDescriptionEntity> pages = getPageDescriptionEntities(documentInfoContainer.getPages());
 
             LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
             loadDocumentEntity.setGuid(loadDocumentRequest.getGuid());
@@ -212,6 +198,30 @@ public class ViewerResources extends Resources {
         }catch (Exception ex){
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
+    }
+
+    protected List<PageDescriptionEntity> getPageDescriptionEntities(List<PageData> containerPages) {
+        List<PageDescriptionEntity> pages = new ArrayList<>();
+        for (PageData page: containerPages) {
+            PageDescriptionEntity pageDescriptionEntity = new PageDescriptionEntity();
+            pageDescriptionEntity.setNumber(page.getNumber());
+            pageDescriptionEntity.setAngle(page.getAngle());
+            pageDescriptionEntity.setHeight(page.getHeight());
+            pageDescriptionEntity.setWidth(page.getWidth());
+            pages.add(pageDescriptionEntity);
+        }
+        return pages;
+    }
+
+    private String getGuid(String guid) {
+        Iterable<java.nio.file.Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
+        // check if documentGuid contains path or only file name
+        for (java.nio.file.Path root : rootDirectories) {
+            if (guid.startsWith(root.toString())) {
+                return guid;
+            }
+        }
+        return globalConfiguration.getViewer().getFilesDirectory() + File.separator + guid;
     }
 
     /**

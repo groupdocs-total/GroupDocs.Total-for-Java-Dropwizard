@@ -83,37 +83,45 @@ public class ViewerServiceImpl implements ViewerService {
         String relDirPath = fileTreeRequest.getPath();
         // get file list from storage path
         FileListOptions fileListOptions = new FileListOptions(relDirPath);
-        // get temp directory name
-        String tempDirectoryName = new com.groupdocs.viewer.config.ViewerConfig().getCacheFolderName();
+        FileListContainer fileListContainer;
         try {
-            FileListContainer fileListContainer = viewerHandler.getFileList(fileListOptions);
-
-            List<FileDescriptionEntity> fileList = new ArrayList<>();
-            // parse files/folders list
-            for (FileDescription fd : fileListContainer.getFiles()) {
-                FileDescriptionEntity fileDescription = new FileDescriptionEntity();
-                fileDescription.setGuid(fd.getGuid());
-                // check if current file/folder is temp directory or is hidden
-                if (tempDirectoryName.equals(fd.getName()) || new File(fileDescription.getGuid()).isHidden()) {
-                    // ignore current file and skip to next one
-                    continue;
-                } else {
-                    // set file/folder name
-                    fileDescription.setName(fd.getName());
-                }
-                // set file type
-                fileDescription.setDocType(fd.getDocumentType());
-                // set is directory true/false
-                fileDescription.setDirectory(fd.isDirectory());
-                // set file size
-                fileDescription.setSize(fd.getSize());
-                // add object to array list
-                fileList.add(fileDescription);
-            }
-            return fileList;
+            fileListContainer = viewerHandler.getFileList(fileListOptions);
         } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
+        List<FileDescriptionEntity> fileList = new ArrayList<>();
+        // parse files/folders list
+        for (FileDescription fd : fileListContainer.getFiles()) {
+            FileDescriptionEntity fileDescription = getFileDescriptionEntity(fd);
+            if (fileDescription != null) {
+                // add object to array list
+                fileList.add(fileDescription);
+            }
+        }
+        return fileList;
+
+    }
+
+    protected FileDescriptionEntity getFileDescriptionEntity(FileDescription fd) {
+        FileDescriptionEntity fileDescription = new FileDescriptionEntity();
+        fileDescription.setGuid(fd.getGuid());
+        // get temp directory name
+        String tempDirectoryName = new ViewerConfig().getCacheFolderName();
+        // check if current file/folder is temp directory or is hidden
+        if (tempDirectoryName.equals(fd.getName()) || new File(fileDescription.getGuid()).isHidden()) {
+            // ignore current file and skip to next one
+            return null;
+        } else {
+            // set file/folder name
+            fileDescription.setName(fd.getName());
+        }
+        // set file type
+        fileDescription.setDocType(fd.getDocumentType());
+        // set is directory true/false
+        fileDescription.setDirectory(fd.isDirectory());
+        // set file size
+        fileDescription.setSize(fd.getSize());
+        return fileDescription;
     }
 
     @Override
@@ -121,13 +129,13 @@ public class ViewerServiceImpl implements ViewerService {
         // get/set parameters
         String documentGuid = getGuid(loadDocumentRequest.getGuid());
         String password = loadDocumentRequest.getPassword();
+        // get document info options
+        DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
+        // set password for protected document
+        if (StringUtils.isNotEmpty(password)) {
+            documentInfoOptions.setPassword(password);
+        }
         try {
-            // get document info options
-            DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
-            // set password for protected document
-            if (StringUtils.isNotEmpty(password)) {
-                documentInfoOptions.setPassword(password);
-            }
             // get document info container
             DocumentInfoContainer documentInfoContainer = viewerHandler.getDocumentInfo(documentGuid, documentInfoOptions);
             List<PageDescriptionEntity> pages = getPageDescriptionEntities(documentInfoContainer.getPages());
@@ -167,25 +175,12 @@ public class ViewerServiceImpl implements ViewerService {
             String angle;
             // set options
             if (globalConfiguration.getViewer().isHtmlMode()) {
-                HtmlOptions htmlOptions = new HtmlOptions();
-                htmlOptions.setPageNumber(pageNumber);
-                htmlOptions.setCountPagesToRender(1);
-                htmlOptions.setResourcesEmbedded(true);
-                // set password for protected document
-                if (StringUtils.isNotEmpty(password)) {
-                    htmlOptions.setPassword(password);
-                }
+                HtmlOptions htmlOptions = getHtmlOptions(pageNumber, password);
                 // get page HTML
                 PageHtml page = (PageHtml) viewerHandler.getPages(documentGuid, htmlOptions).get(0);
                 loadedPage.setPageHtml(page.getHtmlContent());
             } else {
-                ImageOptions imageOptions = new ImageOptions();
-                imageOptions.setPageNumber(pageNumber);
-                imageOptions.setCountPagesToRender(1);
-                // set password for protected document
-                if (StringUtils.isNotEmpty(password)) {
-                    imageOptions.setPassword(password);
-                }
+                ImageOptions imageOptions = getImageOptions(pageNumber, password);
                 // get page image
                 PageImage page = (PageImage) viewerHandler.getPages(documentGuid, imageOptions).get(0);
                 byte[] bytes = IOUtils.toByteArray(page.getStream());
@@ -203,12 +198,34 @@ public class ViewerServiceImpl implements ViewerService {
         }
     }
 
+    protected ImageOptions getImageOptions(int pageNumber, String password) {
+        ImageOptions imageOptions = new ImageOptions();
+        imageOptions.setPageNumber(pageNumber);
+        imageOptions.setCountPagesToRender(1);
+        // set password for protected document
+        if (StringUtils.isNotEmpty(password)) {
+            imageOptions.setPassword(password);
+        }
+        return imageOptions;
+    }
+
+    protected HtmlOptions getHtmlOptions(int pageNumber, String password) {
+        HtmlOptions htmlOptions = new HtmlOptions();
+        htmlOptions.setPageNumber(pageNumber);
+        htmlOptions.setCountPagesToRender(1);
+        htmlOptions.setResourcesEmbedded(true);
+        // set password for protected document
+        if (StringUtils.isNotEmpty(password)) {
+            htmlOptions.setPassword(password);
+        }
+        return htmlOptions;
+    }
+
     @Override
     public List<RotatedPageEntity> rotateDocumentPages(RotateDocumentPagesRequest rotateDocumentPagesRequest) {
         try {
             // get/set parameters
             String documentGuid = rotateDocumentPagesRequest.getGuid();
-            int angle = rotateDocumentPagesRequest.getAngle();
             List<Integer> pages = rotateDocumentPagesRequest.getPages();
             String password = rotateDocumentPagesRequest.getPassword();
             DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
@@ -220,10 +237,8 @@ public class ViewerServiceImpl implements ViewerService {
             List<RotatedPageEntity> rotatedPages = new ArrayList<>();
             // rotate pages
             for (int i = 0; i < pages.size(); i++) {
-                // prepare rotated page info object
-                RotatedPageEntity rotatedPage = new RotatedPageEntity();
                 int pageNumber = Integer.parseInt(pages.get(i).toString());
-                RotatePageOptions rotateOptions = new RotatePageOptions(pageNumber, angle);
+                RotatePageOptions rotateOptions = new RotatePageOptions(pageNumber, rotateDocumentPagesRequest.getAngle());
                 // perform page rotation
                 String resultAngle;
                 // set password for protected document
@@ -232,10 +247,8 @@ public class ViewerServiceImpl implements ViewerService {
                 }
                 viewerHandler.rotatePage(documentGuid, rotateOptions);
                 resultAngle = String.valueOf(viewerHandler.getDocumentInfo(documentGuid, documentInfoOptions).getPages().get(pageNumber - 1).getAngle());
-                // add rotated page number
-                rotatedPage.setPageNumber(pageNumber);
-                // add rotated page angle
-                rotatedPage.setAngle(resultAngle);
+                // prepare rotated page info object
+                RotatedPageEntity rotatedPage = getRotatedPageEntity(pageNumber, resultAngle);
                 // add rotated page object into resulting list
                 rotatedPages.add(rotatedPage);
             }
@@ -243,6 +256,15 @@ public class ViewerServiceImpl implements ViewerService {
         } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
+    }
+
+    protected RotatedPageEntity getRotatedPageEntity(int pageNumber, String resultAngle) {
+        RotatedPageEntity rotatedPage = new RotatedPageEntity();
+        // add rotated page number
+        rotatedPage.setPageNumber(pageNumber);
+        // add rotated page angle
+        rotatedPage.setAngle(resultAngle);
+        return rotatedPage;
     }
 
     protected List<PageDescriptionEntity> getPageDescriptionEntities(List<PageData> containerPages) {

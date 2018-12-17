@@ -146,14 +146,7 @@ public class ViewerServiceImpl implements ViewerService {
             // return document description
             return loadDocumentEntity;
         } catch (GroupDocsViewerException ex) {
-            // Set exception message
-            String message = ex.getMessage();
-            if (GroupDocsViewerException.class.isAssignableFrom(InvalidPasswordException.class) && password.isEmpty()) {
-                message = PASSWORD_REQUIRED;
-            } else if (GroupDocsViewerException.class.isAssignableFrom(InvalidPasswordException.class) && !password.isEmpty()) {
-                message = INCORRECT_PASSWORD;
-            }
-            throw new TotalGroupDocsException(message, ex);
+            throw new TotalGroupDocsException(getExceptionMessage(password, ex), ex);
         } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
@@ -167,12 +160,6 @@ public class ViewerServiceImpl implements ViewerService {
             int pageNumber = loadDocumentPageRequest.getPage();
             String password = loadDocumentPageRequest.getPassword();
             LoadedPageEntity loadedPage = new LoadedPageEntity();
-            DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
-            // set password for protected document
-            if (StringUtils.isNotEmpty(password)) {
-                documentInfoOptions.setPassword(password);
-            }
-            String angle;
             // set options
             if (globalConfiguration.getViewer().isHtmlMode()) {
                 HtmlOptions htmlOptions = getHtmlOptions(pageNumber, password);
@@ -185,40 +172,21 @@ public class ViewerServiceImpl implements ViewerService {
                 PageImage page = (PageImage) viewerHandler.getPages(documentGuid, imageOptions).get(0);
                 byte[] bytes = IOUtils.toByteArray(page.getStream());
                 // encode ByteArray into String
-                String encodedImage = new String(Base64.getEncoder().encode(bytes));
-                loadedPage.setPageImage(encodedImage);
+                loadedPage.setPageImage(new String(Base64.getEncoder().encode(bytes)));
+            }
+            DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
+            // set password for protected document
+            if (StringUtils.isNotEmpty(password)) {
+                documentInfoOptions.setPassword(password);
             }
             // get page rotation angle
-            angle = String.valueOf(viewerHandler.getDocumentInfo(documentGuid, documentInfoOptions).getPages().get(pageNumber - 1).getAngle());
+            String angle = String.valueOf(viewerHandler.getDocumentInfo(documentGuid, documentInfoOptions).getPages().get(pageNumber - 1).getAngle());
             loadedPage.setAngle(angle);
             // return loaded page object
             return loadedPage;
         } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
-    }
-
-    protected ImageOptions getImageOptions(int pageNumber, String password) {
-        ImageOptions imageOptions = new ImageOptions();
-        imageOptions.setPageNumber(pageNumber);
-        imageOptions.setCountPagesToRender(1);
-        // set password for protected document
-        if (StringUtils.isNotEmpty(password)) {
-            imageOptions.setPassword(password);
-        }
-        return imageOptions;
-    }
-
-    protected HtmlOptions getHtmlOptions(int pageNumber, String password) {
-        HtmlOptions htmlOptions = new HtmlOptions();
-        htmlOptions.setPageNumber(pageNumber);
-        htmlOptions.setCountPagesToRender(1);
-        htmlOptions.setResourcesEmbedded(true);
-        // set password for protected document
-        if (StringUtils.isNotEmpty(password)) {
-            htmlOptions.setPassword(password);
-        }
-        return htmlOptions;
     }
 
     @Override
@@ -256,6 +224,40 @@ public class ViewerServiceImpl implements ViewerService {
         } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
+    }
+
+    protected String getExceptionMessage(String password, GroupDocsViewerException ex) {
+        // Set exception message
+        String message = ex.getMessage();
+        if (GroupDocsViewerException.class.isAssignableFrom(InvalidPasswordException.class) && password.isEmpty()) {
+            message = PASSWORD_REQUIRED;
+        } else if (GroupDocsViewerException.class.isAssignableFrom(InvalidPasswordException.class) && !password.isEmpty()) {
+            message = INCORRECT_PASSWORD;
+        }
+        return message;
+    }
+
+    protected ImageOptions getImageOptions(int pageNumber, String password) {
+        ImageOptions imageOptions = new ImageOptions();
+        imageOptions.setPageNumber(pageNumber);
+        imageOptions.setCountPagesToRender(1);
+        // set password for protected document
+        if (StringUtils.isNotEmpty(password)) {
+            imageOptions.setPassword(password);
+        }
+        return imageOptions;
+    }
+
+    protected HtmlOptions getHtmlOptions(int pageNumber, String password) {
+        HtmlOptions htmlOptions = new HtmlOptions();
+        htmlOptions.setPageNumber(pageNumber);
+        htmlOptions.setCountPagesToRender(1);
+        htmlOptions.setResourcesEmbedded(true);
+        // set password for protected document
+        if (StringUtils.isNotEmpty(password)) {
+            htmlOptions.setPassword(password);
+        }
+        return htmlOptions;
     }
 
     protected RotatedPageEntity getRotatedPageEntity(int pageNumber, String resultAngle) {

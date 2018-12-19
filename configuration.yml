@@ -86,9 +86,6 @@ signature:
   # Files directory path
   # Absolute or relative path to files directory
   filesDirectory: DocumentSamples/Signature
-  # Output directory path
-  # Absolute path to signed files directory
-  outputDirectory: ''
   # Default document
   # Absolute or relative path to default document
   defaultDocument: ''
@@ -130,9 +127,6 @@ annotation:
   # How many pages from a document should be loaded, remaining pages will be loaded on page scrolling
   # Set 0 to load all pages at once
   preloadPageCount: 0
-  # Output directory path
-  # Absolute path to annotated files directory
-  outputDirectory: ''
   # Fonts path
   # Absolute path to custom fonts directory
   fontsDirectory: ''

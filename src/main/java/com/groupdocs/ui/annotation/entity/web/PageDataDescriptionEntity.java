@@ -6,6 +6,7 @@ public class PageDataDescriptionEntity extends PageDescriptionEntity {
     /**
      * Annotation data
      */
+    // TODO: remove once perf. issue is fixed
     private String data;
     /**
      * List of annotation data

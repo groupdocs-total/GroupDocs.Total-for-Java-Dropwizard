@@ -1,5 +1,5 @@
 # GroupDocs.Total for Java Dropwizard Example
-###### version 0.4.23
+###### version 0.4.24
 
 [![Build Status](https://travis-ci.org/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard.svg?branch=master)](https://travis-ci.org/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard)
 [![Maintainability](https://api.codeclimate.com/v1/badges/83ca13ac2b000eafba60/maintainability)](https://codeclimate.com/github/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard/maintainability)

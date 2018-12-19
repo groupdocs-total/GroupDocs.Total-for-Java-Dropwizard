@@ -89,7 +89,6 @@ public class SignatureResources extends Resources {
         config.setStoragePath(directoryUtils.getFilesDirectory().getPath());
         config.setCertificatesPath(directoryUtils.getDataDirectory().getCertificateDirectory().getPath());
         config.setImagesPath(directoryUtils.getDataDirectory().getImageDirectory().getPath());
-        config.setOutputPath(directoryUtils.getOutputDirectory().getPath());
 
         try {
             // set GroupDocs license
@@ -237,15 +236,8 @@ public class SignatureResources extends Resources {
     @Path(value = "/downloadDocument")
     @Produces(APPLICATION_OCTET_STREAM)
     public void downloadDocument(@QueryParam("path") String documentGuid,
-                                 @QueryParam("signed") Boolean signed,
                                  @Context HttpServletResponse response) throws IOException {
-        // get document path
-        String fileName = FilenameUtils.getName(documentGuid);
-        // choose directory
-        String directory = signed ? directoryUtils.getOutputDirectory().getPath() : directoryUtils.getFilesDirectory().getPath();
-        String pathToDownload = String.format("%s%s%s", directory, File.separator, fileName);
-
-        downloadFile(response, pathToDownload);
+        downloadFile(response, documentGuid);
     }
 
     /**
@@ -353,11 +345,16 @@ public class SignatureResources extends Resources {
             final SaveOptions saveOptions = new SaveOptions();
             saveOptions.setOutputType(OutputType.String);
             saveOptions.setOutputFileName(signedFileName);
+            saveOptions.setOverwriteExistingFiles(true);
 
             LoadOptions loadOptions = new LoadOptions();
             if (StringUtils.isNotEmpty(password)) {
                 loadOptions.setPassword(password);
             }
+
+            String outputPath = FilenameUtils.getFullPath(documentGuid);
+            signatureHandler.getSignatureConfig().setOutputPath(outputPath);
+
             // initiate digital signer
             DigitalSigner signer = new DigitalSigner(signaturesData.get(0), password);
             // prepare signing options and sign document
@@ -637,12 +634,16 @@ public class SignatureResources extends Resources {
         final SaveOptions saveOptions = new SaveOptions();
         saveOptions.setOutputType(OutputType.String);
         saveOptions.setOutputFileName(new File(documentGuid).getName());
+        saveOptions.setOverwriteExistingFiles(true);
 
         // set password
         LoadOptions loadOptions = new LoadOptions();
         if (password != null && !password.isEmpty()) {
             loadOptions.setPassword(password);
         }
+
+        String outputPath = FilenameUtils.getFullPath(documentGuid);
+        signatureHandler.getSignatureConfig().setOutputPath(outputPath);
 
         // sign document
         SignedDocumentEntity signedDocument = new SignedDocumentEntity();
@@ -785,8 +786,6 @@ public class SignatureResources extends Resources {
             signatureHandler.getSignatureConfig().setOutputPath(previewPath);
             // sign generated image with Optical signature
             signatureHandler.sign(file.toPath().toString(), collection, saveOptions);
-            // set signed documents path back to correct path
-            signatureHandler.getSignatureConfig().setOutputPath(directoryUtils.getOutputDirectory().getPath());
             // set data for response
             opticalCodeData.setImageGuid(file.toPath().toString());
             opticalCodeData.setHeight(200);
@@ -890,8 +889,6 @@ public class SignatureResources extends Resources {
             signatureHandler.getSignatureConfig().setOutputPath(previewPath);
             // sign generated image with Text
             signatureHandler.sign(file.toPath().toString(), collection, saveOptions);
-            // set signed documents path back to correct path
-            signatureHandler.getSignatureConfig().setOutputPath(directoryUtils.getOutputDirectory().getPath());
             // set Text data for response
             textData.setImageGuid(file.toPath().toString());
             // get Text preview as Base64 String

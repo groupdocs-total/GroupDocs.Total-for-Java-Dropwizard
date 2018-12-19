@@ -79,8 +79,6 @@ public class AnnotationResources extends Resources {
         AnnotationConfig config = new AnnotationConfig();
         // set storage path
         config.setStoragePath(directoryUtils.getFilesDirectory().getPath());
-        // set directory to store annotated documents
-        globalConfiguration.getAnnotation().setOutputDirectory(directoryUtils.getOutputDirectory().getPath());
         config.getFontDirectories().add(globalConfiguration.getAnnotation().getFontsDirectory());
         try {
             // set GroupDocs license
@@ -265,23 +263,14 @@ public class AnnotationResources extends Resources {
     /**
      * Download document
      * @param documentGuid path to document parameter
-     * @param annotated
      * @param response
      */
     @GET
     @Path(value = "/downloadDocument")
     @Produces(APPLICATION_OCTET_STREAM)
     public void downloadDocument(@QueryParam("path") String documentGuid,
-                                 @QueryParam("annotated") Boolean annotated,
                                  @Context HttpServletResponse response) {
-        // get document path
-        String fileName = FilenameUtils.getName(documentGuid);
-        // choose directory
-        String pathToDownload = annotated ?
-                String.format("%s%s%s", directoryUtils.getOutputDirectory().getPath(), File.separator, fileName) :
-                documentGuid;
-        // download the file
-        downloadFile(response, pathToDownload);
+        downloadFile(response, documentGuid);
     }
 
     /**
@@ -341,34 +330,28 @@ public class AnnotationResources extends Resources {
                 documentType = "image";
             }
             // initiate annotator object
-            InputStream file = new FileInputStream(documentGuid);
-            file = annotationImageHandler.removeAnnotationStream(file);
-            Exception notSupportedException = null;
+            InputStream fileInputStream = new FileInputStream(documentGuid);
+            fileInputStream = annotationImageHandler.removeAnnotationStream(fileInputStream);
             for (AnnotationDataEntity annotationData : annotationsData) {
                 // create annotator
                 PageData pageData = documentInfo.getPages().get(annotationData.getPageNumber() - 1);
                 // add annotation, if current annotation type isn't supported by the current document type it will be ignored
                 try {
                     annotations.add(AnnotatorFactory.createAnnotator(annotationData, pageData).getAnnotationInfo(documentType));
-                } catch (UnsupportedOperationException ex) {
-                    notSupportedException = ex;
                 } catch (Exception ex) {
                     throw new TotalGroupDocsException(ex.getMessage(), ex);
                 }
             }
-            String fileName = new File(documentGuid).getName();
-            String path = globalConfiguration.getAnnotation().getOutputDirectory() + File.separator + fileName;
             // check if annotations array contains at least one annotation to add
             if(annotations.size() > 0) {
                 // Add annotation to the document
                 int type = getDocumentType(documentType);
-                // Save result stream to file.
-                file = annotationImageHandler.exportAnnotationsToDocument(file, annotations, type);
+                // Save result stream to fileInputStream.
+                fileInputStream = annotationImageHandler.exportAnnotationsToDocument(fileInputStream, annotations, type);
             }
-            (new File(path)).delete();
-            try (OutputStream fileStream = new FileOutputStream(path)) {
-                IOUtils.copyLarge(file, fileStream);
-                annotatedDocument.setGuid(path);
+            try (OutputStream fileStream = new FileOutputStream(documentGuid)) {
+                IOUtils.copyLarge(fileInputStream, fileStream);
+                annotatedDocument.setGuid(documentGuid);
             }
         } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);

@@ -9,7 +9,6 @@ import com.groupdocs.ui.signature.config.SignatureConfiguration;
  */
 public class DirectoryUtils {
     private FilesDirectoryUtils filesDirectory;
-    private OutputDirectoryUtils outputDirectory;
     private DataDirectoryUtils dataDirectory;
 
     /**
@@ -18,7 +17,6 @@ public class DirectoryUtils {
      */
     public DirectoryUtils(SignatureConfiguration signatureConfiguration){
         filesDirectory = new FilesDirectoryUtils(signatureConfiguration);
-        outputDirectory = new OutputDirectoryUtils(signatureConfiguration);
         dataDirectory = new DataDirectoryUtils(signatureConfiguration);
     }
 
@@ -28,14 +26,6 @@ public class DirectoryUtils {
      */
     public FilesDirectoryUtils getFilesDirectory() {
         return filesDirectory;
-    }
-
-    /**
-     * Get Output directory - path where to store signed documents
-     * @return OutputDirectoryUtils
-     */
-    public OutputDirectoryUtils getOutputDirectory() {
-        return outputDirectory;
     }
 
     /**

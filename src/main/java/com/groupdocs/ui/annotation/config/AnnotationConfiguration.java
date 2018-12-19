@@ -30,10 +30,6 @@ public class AnnotationConfiguration extends Configuration {
 
     @Valid
     @JsonProperty
-    private String outputDirectory;
-
-    @Valid
-    @JsonProperty
     private String fontsDirectory;
 
     @Valid
@@ -118,14 +114,6 @@ public class AnnotationConfiguration extends Configuration {
 
     public void setPreloadPageCount(int preloadPageCount) {
         this.preloadPageCount = preloadPageCount;
-    }
-
-    public String getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    public void setOutputDirectory(String outputDirectory) {
-        this.outputDirectory = outputDirectory;
     }
 
     public String getFontsDirectory() {

@@ -6,6 +6,7 @@ server:
   applicationContextPath: /
   adminContextPath: /admin
   connector:
+    bindHost: localhost
     type: http
     port: 8080
 
@@ -16,7 +17,7 @@ server:
 application:
   # License path
   # Absolute or relative path to GroupDocs license file
-  licensePath: Licenses/GroupDocs.Total.Java.lic
+  licensePath: 
 
 ################################################
 # Common configurations

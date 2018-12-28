@@ -146,10 +146,10 @@ Download [latest release](https://github.com/groupdocs-total/GroupDocs.Total-for
 **Note**: This method is **recommended** for running this sample behind firewall.
 
 ```bash
-curl -J -L -o release.tar.gz https://github.com/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard/releases/download/1.14.0/release.tar.gz
+curl -J -L -o release.tar.gz https://github.com/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard/releases/download/0.4.23/release.tar.gz
 tar -xvzf release.tar.gz
 cd release
-java -jar total-1.14.0.jar configuration.yaml
+java -jar total-0.4.23.jar configuration.yaml
 ## Open http://localhost:8080/ in your favorite browser.
 ```
 

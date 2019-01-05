@@ -29,23 +29,16 @@
     <body>
         <div id="element"></div>
         <script type="text/javascript">
-            $('#element').viewer({
+            $('#element').annotation({
                 applicationPath: 'http://${globalConfiguration.server.hostAddress}:${globalConfiguration.server.httpPort?c}/annotation',
                 defaultDocument: '${globalConfiguration.annotation.defaultDocument}',
-                htmlMode: false,
                 preloadPageCount: ${globalConfiguration.annotation.preloadPageCount?c},
-                zoom : false,
                 pageSelector: ${globalConfiguration.common.pageSelector?c},
-                search: false,
-                thumbnails: false,
-                rotate: false,
                 download: ${globalConfiguration.common.download?c},
                 upload: ${globalConfiguration.common.upload?c},
                 print: ${globalConfiguration.common.print?c},
                 browse: ${globalConfiguration.common.browse?c},
-                rewrite: ${globalConfiguration.common.rewrite?c}
-            });
-            $('#element').annotation({
+                rewrite: ${globalConfiguration.common.rewrite?c},
                 textAnnotation: ${globalConfiguration.annotation.textAnnotation?c},
                 areaAnnotation: ${globalConfiguration.annotation.areaAnnotation?c},
                 pointAnnotation: ${globalConfiguration.annotation.pointAnnotation?c},

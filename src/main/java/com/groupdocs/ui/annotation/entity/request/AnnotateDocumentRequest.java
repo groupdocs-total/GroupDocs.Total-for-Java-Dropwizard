@@ -18,6 +18,11 @@ public class AnnotateDocumentRequest extends LoadDocumentRequest {
      */
     private String documentType;
 
+    /**
+     * For print annotated file
+     */
+    private Boolean print;
+
     public AnnotationDataEntity[] getAnnotationsData() {
         return annotationsData;
     }
@@ -32,5 +37,13 @@ public class AnnotateDocumentRequest extends LoadDocumentRequest {
 
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
+    }
+
+    public Boolean getPrint() {
+        return print;
+    }
+
+    public void setPrint(Boolean print) {
+        this.print = print;
     }
 }

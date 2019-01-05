@@ -43,8 +43,6 @@ public class TextAnnotator extends AbstractSvgAnnotator {
         // init possible types of annotations
         AnnotationInfo textAnnotation = super.initAnnotationInfo();
         textAnnotation.setPageNumber(annotationData.getPageNumber());
-        // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
-        double topPosition = pageData.getHeight() - annotationData.getTop();
         textAnnotation.setAnnotationPosition(new Point(1, 1));
         textAnnotation.setBox(new Rectangle(0, 0, 0, 0));
         return textAnnotation;

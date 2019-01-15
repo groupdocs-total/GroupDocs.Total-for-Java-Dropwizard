@@ -343,37 +343,60 @@ public class AnnotationResources extends Resources {
             // initiate annotator object
             InputStream file = new FileInputStream(documentGuid);
             file = annotationImageHandler.removeAnnotationStream(file);
-            Exception notSupportedException = null;
             for (AnnotationDataEntity annotationData : annotationsData) {
                 // create annotator
                 PageData pageData = documentInfo.getPages().get(annotationData.getPageNumber() - 1);
                 // add annotation, if current annotation type isn't supported by the current document type it will be ignored
                 try {
                     annotations.add(AnnotatorFactory.createAnnotator(annotationData, pageData).getAnnotationInfo(documentType));
-                } catch (UnsupportedOperationException ex) {
-                    notSupportedException = ex;
                 } catch (Exception ex) {
                     throw new TotalGroupDocsException(ex.getMessage(), ex);
                 }
             }
-            String fileName = new File(documentGuid).getName();
+            String forPrint = annotateDocumentRequest.getPrint() ? "Temp" : "";
+            String fileName = FilenameUtils.getBaseName(documentGuid) + forPrint + "." + FilenameUtils.getExtension(documentGuid);
             String path = globalConfiguration.getAnnotation().getOutputDirectory() + File.separator + fileName;
             // check if annotations array contains at least one annotation to add
-            if(annotations.size() > 0) {
+            if (annotations.size() > 0) {
                 // Add annotation to the document
                 int type = getDocumentType(documentType);
                 // Save result stream to file.
                 file = annotationImageHandler.exportAnnotationsToDocument(file, annotations, type);
             }
             (new File(path)).delete();
-            try (OutputStream fileStream = new FileOutputStream(path)) {
-                IOUtils.copyLarge(file, fileStream);
-                annotatedDocument.setGuid(path);
+            if (annotateDocumentRequest.getPrint()) {
+                List<PageDataDescriptionEntity> annotatedPages = getAnnotatedPages(password, file);
+                annotatedDocument.setPages(annotatedPages);
+                (new File(path)).delete();
+            } else {
+                try (OutputStream fileStream = new FileOutputStream(path)) {
+                    IOUtils.copyLarge(file, fileStream);
+                    annotatedDocument.setGuid(path);
+                }
             }
         } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
         return annotatedDocument;
+    }
+
+    protected List<PageDataDescriptionEntity> getAnnotatedPages(String password, InputStream inputStream) throws IOException {
+        ImageOptions imageOptions = new ImageOptions();
+        // set password for protected document
+        if (!password.isEmpty()) {
+            imageOptions.setPassword(password);
+        }
+        List<PageImage> pages = annotationImageHandler.getPages(inputStream, imageOptions);
+        List<PageDataDescriptionEntity> pagesDescriptions = new ArrayList<>(pages.size());
+        for (PageImage pageImage : pages) {
+            byte[] bytes = IOUtils.toByteArray(pageImage.getStream());
+            String encodedImage = Base64.getEncoder().encodeToString(bytes);
+            PageDataDescriptionEntity page = new PageDataDescriptionEntity();
+            page.setData(encodedImage);
+
+            pagesDescriptions.add(page);
+        }
+        return pagesDescriptions;
     }
 
     /**

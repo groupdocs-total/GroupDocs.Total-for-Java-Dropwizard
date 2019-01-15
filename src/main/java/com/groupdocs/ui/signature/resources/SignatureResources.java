@@ -13,7 +13,6 @@ import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.entity.web.LoadDocumentEntity;
 import com.groupdocs.ui.common.entity.web.PageDescriptionEntity;
 import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
-import com.groupdocs.ui.common.entity.web.LoadedPageEntity;
 import com.groupdocs.ui.common.entity.web.request.LoadDocumentPageRequest;
 import com.groupdocs.ui.common.entity.web.request.LoadDocumentRequest;
 import com.groupdocs.ui.common.exception.TotalGroupDocsException;
@@ -181,15 +180,9 @@ public class SignatureResources extends Resources {
             documentDescription = signatureHandler.getDocumentDescription(documentGuid, password);
             List<PageDescriptionEntity> pagesDescription = new ArrayList<>();
             // get info about each document page
+            boolean loadData = globalConfiguration.getSignature().getPreloadPageCount() == 0;
             for(int i = 1; i <= documentDescription.getPageCount(); i++) {
-                //initiate custom Document description object
-                PageDescriptionEntity description = new PageDescriptionEntity();
-                // get current page size
-                java.awt.Dimension pageSize = signatureHandler.getDocumentPageSize(documentGuid, i, password, (double)0, (double)0, null);
-                // set current page info for result
-                description.setHeight(pageSize.getHeight());
-                description.setWidth(pageSize.getWidth());
-                description.setNumber(i);
+                PageDescriptionEntity description = getPageDescriptionEntity(documentGuid, password, i, loadData);
                 pagesDescription.add(description);
             }
             LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
@@ -210,20 +203,16 @@ public class SignatureResources extends Resources {
     @Path(value = "/loadDocumentPage")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public LoadedPageEntity loadDocumentPage(LoadDocumentPageRequest loadDocumentPageRequest){
+    public PageDescriptionEntity loadDocumentPage(LoadDocumentPageRequest loadDocumentPageRequest){
         try {
             // get/set parameters
             String documentGuid = loadDocumentPageRequest.getGuid();
             int pageNumber = loadDocumentPageRequest.getPage();
             String password = loadDocumentPageRequest.getPassword();
-            LoadedPageEntity loadedPage = new LoadedPageEntity();
-            // get page image
-            byte[] bytes = signatureHandler.getPageImage(documentGuid, pageNumber, password, null, 100);
-            // encode ByteArray into String
-            String encodedImage = new String(Base64.getEncoder().encode(bytes));
-            loadedPage.setPageImage(encodedImage);
+            // get page data
+            PageDescriptionEntity pageDescriptionEntity = getPageDescriptionEntity(documentGuid, password, pageNumber, true);
             // return loaded page object
-            return loadedPage;
+            return pageDescriptionEntity;
         }catch (Exception ex){
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
@@ -311,16 +300,14 @@ public class SignatureResources extends Resources {
     @Path(value = "/loadSignatureImage")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public LoadedPageEntity loadSignatureImage(LoadSignatureImageRequest loadSignatureImageRequest){
+    public PageDescriptionEntity loadSignatureImage(LoadSignatureImageRequest loadSignatureImageRequest){
         try {
             // get/set parameters
             String documentGuid = loadSignatureImageRequest.getGuid();
-            LoadedPageEntity loadedPage = new LoadedPageEntity();
+            PageDescriptionEntity loadedPage = new PageDescriptionEntity();
             // get page image
             byte[] bytes = Files.readAllBytes( new File(documentGuid).toPath());
-            // encode ByteArray into String
-            String encodedImage = new String(Base64.getEncoder().encode(bytes));
-            loadedPage.setPageImage(encodedImage);
+            loadedPage.setData(Base64.getEncoder().encodeToString(bytes));
             // return loaded page object
             return loadedPage;
         } catch (Exception ex) {
@@ -805,6 +792,25 @@ public class SignatureResources extends Resources {
                 bufImage.flush();
             }
         }
+    }
+
+    private PageDescriptionEntity getPageDescriptionEntity(String documentGuid, String password, int i, boolean withImage) throws Exception {
+        PageDescriptionEntity description = new PageDescriptionEntity();
+        // get current page size
+        Dimension pageSize = signatureHandler.getDocumentPageSize(documentGuid, i, password, (double)0, (double)0, null);
+        // set current page info for result
+        description.setHeight(pageSize.getHeight());
+        description.setWidth(pageSize.getWidth());
+        description.setNumber(i);
+        if (withImage) {
+            loadImage(documentGuid, password, i, description);
+        }
+        return description;
+    }
+
+    private void loadImage(String documentGuid, String password, int i, PageDescriptionEntity description) throws Exception {
+        byte[] pageImage = signatureHandler.getPageImage(documentGuid, i, password, null, 100);
+        description.setData(new String(Base64.getEncoder().encode(pageImage)));
     }
 
     /**

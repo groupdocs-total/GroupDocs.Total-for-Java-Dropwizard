@@ -1,7 +1,7 @@
 package com.groupdocs.ui.comparison.service;
 
 import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
-import com.groupdocs.ui.common.entity.web.LoadedPageEntity;
+import com.groupdocs.ui.common.entity.web.PageDescriptionEntity;
 import com.groupdocs.ui.common.entity.web.request.FileTreeRequest;
 import com.groupdocs.ui.comparison.model.request.CompareRequest;
 import com.groupdocs.ui.comparison.model.request.LoadResultPageRequest;
@@ -48,7 +48,7 @@ public interface ComparisonService {
      * @param loadResultPageRequest request with path to page result
      * @return page result data
      */
-    LoadedPageEntity loadResultPage(LoadResultPageRequest loadResultPageRequest);
+    PageDescriptionEntity loadResultPage(LoadResultPageRequest loadResultPageRequest);
 
     /**
      * Produce file names for results

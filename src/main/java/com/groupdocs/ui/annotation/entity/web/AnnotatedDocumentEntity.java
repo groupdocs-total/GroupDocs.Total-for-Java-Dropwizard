@@ -19,7 +19,7 @@ public class AnnotatedDocumentEntity {
     /**
      * list of pages
      */
-    private List<PageDataDescriptionEntity> pages;
+    private List<AnnotationPageDescriptionEntity> pages;
 
     public String getGuid() {
         return guid;
@@ -37,11 +37,11 @@ public class AnnotatedDocumentEntity {
         this.supportedAnnotations = supportedAnnotations;
     }
 
-    public List<PageDataDescriptionEntity> getPages() {
+    public List<AnnotationPageDescriptionEntity> getPages() {
         return pages;
     }
 
-    public void setPages(List<PageDataDescriptionEntity> pages) {
+    public void setPages(List<AnnotationPageDescriptionEntity> pages) {
         this.pages = pages;
     }
 }

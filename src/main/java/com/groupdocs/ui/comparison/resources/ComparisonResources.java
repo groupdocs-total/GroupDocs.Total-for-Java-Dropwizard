@@ -3,7 +3,7 @@ package com.groupdocs.ui.comparison.resources;
 import com.groupdocs.comparison.common.license.License;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
-import com.groupdocs.ui.common.entity.web.LoadedPageEntity;
+import com.groupdocs.ui.common.entity.web.PageDescriptionEntity;
 import com.groupdocs.ui.common.entity.web.UploadedDocumentEntity;
 import com.groupdocs.ui.common.entity.web.request.FileTreeRequest;
 import com.groupdocs.ui.common.exception.TotalGroupDocsException;
@@ -16,8 +16,6 @@ import com.groupdocs.ui.comparison.service.ComparisonService;
 import com.groupdocs.ui.comparison.service.ComparisonServiceImpl;
 import com.groupdocs.ui.comparison.views.Comparison;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.BodyPartEntity;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -25,17 +23,19 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.*;
 
@@ -228,7 +228,7 @@ public class ComparisonResources extends Resources {
     @Path(value = "/loadResultPage")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public LoadedPageEntity loadResultPage(LoadResultPageRequest loadResultPageRequest){
+    public PageDescriptionEntity loadResultPage(LoadResultPageRequest loadResultPageRequest){
         return comparisonService.loadResultPage(loadResultPageRequest);
     }
 

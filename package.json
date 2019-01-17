@@ -17,12 +17,12 @@
   },
   "homepage": "https://github.com/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard#readme",
   "dependencies": {
-    "@groupdocs.examples.jquery/annotation": "^0.6.0",
-    "@groupdocs.examples.jquery/common": "^0.6.0",
-    "@groupdocs.examples.jquery/comparison": "^0.6.0",
-    "@groupdocs.examples.jquery/signature": "^0.6.0",
-    "@groupdocs.examples.jquery/total": "^0.6.0",
-    "@groupdocs.examples.jquery/viewer": "^0.6.0"
+    "@groupdocs.examples.jquery/annotation": "^0.7.0",
+    "@groupdocs.examples.jquery/common": "^0.7.0",
+    "@groupdocs.examples.jquery/comparison": "^0.7.0",
+    "@groupdocs.examples.jquery/signature": "^0.7.0",
+    "@groupdocs.examples.jquery/total": "^0.7.0",
+    "@groupdocs.examples.jquery/viewer": "^0.7.0"
   },
   "devDependencies": {
     "gulp": "^4.0.0"

@@ -39,6 +39,7 @@
                 print: ${globalConfiguration.common.print?c},
                 browse: ${globalConfiguration.common.browse?c},
                 rewrite: ${globalConfiguration.common.rewrite?c},
+                enableRightClick: ${globalConfiguration.common.enableRightClick?c},
                 textAnnotation: ${globalConfiguration.annotation.textAnnotation?c},
                 areaAnnotation: ${globalConfiguration.annotation.areaAnnotation?c},
                 pointAnnotation: ${globalConfiguration.annotation.pointAnnotation?c},

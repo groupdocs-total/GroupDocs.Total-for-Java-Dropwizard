@@ -45,6 +45,7 @@
                 print: ${globalConfiguration.common.print?c},
                 browse: ${globalConfiguration.common.browse?c},
                 rewrite: ${globalConfiguration.common.rewrite?c},
+                enableRightClick: ${globalConfiguration.common.enableRightClick?c},
                 textSignature: ${globalConfiguration.signature.textSignature?c},
                 imageSignature:  ${globalConfiguration.signature.imageSignature?c},
                 digitalSignature:  ${globalConfiguration.signature.digitalSignature?c},

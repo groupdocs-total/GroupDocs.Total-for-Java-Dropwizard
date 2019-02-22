@@ -39,11 +39,6 @@ public class TextRedactionAnnotator extends TextAnnotator {
     }
 
     @Override
-    protected Rectangle getBox() {
-        return new Rectangle(0, 0, 0, 0);
-    }
-
-    @Override
     protected byte getType() {
         return AnnotationType.TextRedaction;
     }

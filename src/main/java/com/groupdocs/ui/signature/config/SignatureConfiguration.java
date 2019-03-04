@@ -30,10 +30,6 @@ public class SignatureConfiguration extends Configuration {
 
     @Valid
     @JsonProperty
-    private String outputDirectory;
-
-    @Valid
-    @JsonProperty
     private String dataDirectory;
 
     @Valid
@@ -90,14 +86,6 @@ public class SignatureConfiguration extends Configuration {
 
     public void setPreloadPageCount(int preloadPageCount) {
         this.preloadPageCount = preloadPageCount;
-    }
-
-    public String getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    public void setOutputDirectory(String outputDirectory) {
-        this.outputDirectory = outputDirectory;
     }
 
     public String getDataDirectory() {

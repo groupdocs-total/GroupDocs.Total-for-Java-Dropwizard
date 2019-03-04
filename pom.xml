@@ -80,8 +80,15 @@
         </dependency>
         <dependency>
             <groupId>com.groupdocs</groupId>
-            <artifactId>groupdocs-annotation</artifactId>
-            <version>18.10</version>
+            <artifactId>groupdocs-signature</artifactId>
+            <version>19.1</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.groupdocs</groupId>
+            <artifactId>groupdocs-viewer</artifactId>
+            <version>17.5.0</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.groupdocs</groupId>
@@ -91,15 +98,8 @@
         </dependency>
         <dependency>
             <groupId>com.groupdocs</groupId>
-            <artifactId>groupdocs-signature</artifactId>
-            <version>18.11</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.groupdocs</groupId>
-            <artifactId>groupdocs-viewer</artifactId>
-            <version>17.5.0</version>
-            <type>jar</type>
+            <artifactId>groupdocs-annotation</artifactId>
+            <version>18.10</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>

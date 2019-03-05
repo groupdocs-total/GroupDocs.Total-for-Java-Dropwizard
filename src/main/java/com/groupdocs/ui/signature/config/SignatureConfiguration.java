@@ -58,6 +58,10 @@ public class SignatureConfiguration extends Configuration {
 
     @Valid
     @JsonProperty
+    private boolean handSignature;
+
+    @Valid
+    @JsonProperty
     private boolean  downloadOriginal;
 
     @Valid
@@ -142,6 +146,14 @@ public class SignatureConfiguration extends Configuration {
 
     public void setStampSignature(boolean stampSignature) {
         this.stampSignature = stampSignature;
+    }
+
+    public boolean isHandSignature() {
+        return handSignature;
+    }
+
+    public void setHandSignature(boolean handSignature) {
+        this.handSignature = handSignature;
     }
 
     public boolean isDownloadOriginal() {

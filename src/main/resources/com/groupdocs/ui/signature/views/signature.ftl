@@ -59,6 +59,7 @@
                 qrCodeSignature:  ${globalConfiguration.signature.qrCodeSignature?c},
                 barCodeSignature:  ${globalConfiguration.signature.barCodeSignature?c},
                 stampSignature:  ${globalConfiguration.signature.stampSignature?c},
+                handSignature:  ${globalConfiguration.signature.handSignature?c},
                 downloadOriginal:  ${globalConfiguration.signature.downloadOriginal?c},
                 downloadSigned:  ${globalConfiguration.signature.downloadSigned?c}
             });

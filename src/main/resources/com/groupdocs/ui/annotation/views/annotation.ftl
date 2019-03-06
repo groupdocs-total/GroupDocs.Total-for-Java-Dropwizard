@@ -23,7 +23,6 @@
         <script type="text/javascript" src="/assets/annotation/js/svg.draw.js"></script>
         <script type="text/javascript" src="/assets/annotation/js/drawSvgAnnotation.js"></script>
         <script type="text/javascript" src="/assets/annotation/js/drawTextAnnotation.js"></script>
-        <script type="text/javascript" src="/assets/annotation/js/drawFieldAnnotation.js"></script>
         <script type="text/javascript" src="/assets/annotation/js/annotation.js"></script>
     </head>
     <body>

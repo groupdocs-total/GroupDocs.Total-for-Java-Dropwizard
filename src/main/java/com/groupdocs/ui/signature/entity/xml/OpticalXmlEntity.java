@@ -11,41 +11,14 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="OpticalXmlEntity", namespace="OpticalXmlEntity")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class OpticalXmlEntity extends XmlEntity {
-    private String borderColor = "rgb(0,0,0)";
-    private String encodedImage;
-    private int borderStyle;
-    private int borderWidth;
+public class OpticalXmlEntity extends XmlEntityWithImage {
+    private Boolean temp = Boolean.FALSE;
 
-    public String getEncodedImage() {
-        return encodedImage;
+    public Boolean getTemp() {
+        return temp;
     }
 
-    public void setEncodedImage(String encodedImage) {
-        this.encodedImage = encodedImage;
-    }
-
-    public int getBorderStyle() {
-        return borderStyle;
-    }
-
-    public void setBorderStyle(int borderStyle) {
-        this.borderStyle = borderStyle;
-    }
-
-    public String getBorderColor() {
-        return borderColor;
-    }
-
-    public void setBorderColor(String borderColor) {
-        this.borderColor = borderColor;
-    }
-
-    public int getBorderWidth() {
-        return borderWidth;
-    }
-
-    public void setBorderWidth(int borderWidth) {
-        this.borderWidth = borderWidth;
+    public void setTemp(Boolean temp) {
+        this.temp = temp;
     }
 }

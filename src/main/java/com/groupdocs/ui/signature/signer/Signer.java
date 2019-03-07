@@ -10,6 +10,7 @@ import java.text.ParseException;
 /**
  * Signer
  * Abstract class contains general description for the signing functionality
+ *
  * @author Aspose Pty Ltd
  */
 public abstract class Signer {
@@ -17,18 +18,20 @@ public abstract class Signer {
 
     /**
      * Constructor
+     *
      * @param signatureData
      */
-    public Signer(SignatureDataEntity signatureData){
+    public Signer(SignatureDataEntity signatureData) {
         this.signatureData = signatureData;
     }
 
     /**
      * Converts RGB color to java.awt.Color
+     *
      * @param rgbColor
      * @return Color
      */
-    protected Color getColor(String rgbColor){
+    protected Color getColor(String rgbColor) {
         String[] colors = rgbColor.split(",");
         int redColor = Integer.parseInt(colors[0].replaceAll("\\D+", ""));
         int greenColor = Integer.parseInt(colors[1].replaceAll("\\D+", ""));
@@ -37,7 +40,6 @@ public abstract class Signer {
     }
 
     /**
-     *
      * @return
      * @throws NotSupportedException
      * @throws ParseException
@@ -45,15 +47,13 @@ public abstract class Signer {
     public abstract SignOptions signPdf() throws NotSupportedException, ParseException;
 
     /**
-     *
      * @return
      * @throws NotSupportedException
      * @throws ParseException
      */
-    public abstract SignOptions signImage() throws NotSupportedException, ParseException;
+    public abstract SignOptions signImage() throws NotSupportedException;
 
     /**
-     *
      * @return
      * @throws NotSupportedException
      * @throws ParseException
@@ -61,7 +61,6 @@ public abstract class Signer {
     public abstract SignOptions signWord() throws NotSupportedException, ParseException;
 
     /**
-     *
      * @return
      * @throws NotSupportedException
      * @throws ParseException
@@ -69,7 +68,6 @@ public abstract class Signer {
     public abstract SignOptions signCells() throws NotSupportedException, ParseException;
 
     /**
-     *
      * @return
      * @throws NotSupportedException
      * @throws ParseException

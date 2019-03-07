@@ -1,9 +1,18 @@
 package com.groupdocs.ui.signature.entity.request;
 
 public class LoadSignatureImageRequest {
+    private String signatureType;
     private String guid;
     private Integer page;
     private String password;
+
+    public String getSignatureType() {
+        return signatureType;
+    }
+
+    public void setSignatureType(String signatureType) {
+        this.signatureType = signatureType;
+    }
 
     public Integer getPage() {
         return page;

@@ -30,10 +30,6 @@ public class SignatureConfiguration extends Configuration {
 
     @Valid
     @JsonProperty
-    private String outputDirectory;
-
-    @Valid
-    @JsonProperty
     private String dataDirectory;
 
     @Valid
@@ -59,6 +55,10 @@ public class SignatureConfiguration extends Configuration {
     @Valid
     @JsonProperty
     private boolean stampSignature;
+
+    @Valid
+    @JsonProperty
+    private boolean handSignature;
 
     @Valid
     @JsonProperty
@@ -90,14 +90,6 @@ public class SignatureConfiguration extends Configuration {
 
     public void setPreloadPageCount(int preloadPageCount) {
         this.preloadPageCount = preloadPageCount;
-    }
-
-    public String getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    public void setOutputDirectory(String outputDirectory) {
-        this.outputDirectory = outputDirectory;
     }
 
     public String getDataDirectory() {
@@ -154,6 +146,14 @@ public class SignatureConfiguration extends Configuration {
 
     public void setStampSignature(boolean stampSignature) {
         this.stampSignature = stampSignature;
+    }
+
+    public boolean isHandSignature() {
+        return handSignature;
+    }
+
+    public void setHandSignature(boolean handSignature) {
+        this.handSignature = handSignature;
     }
 
     public boolean isDownloadOriginal() {

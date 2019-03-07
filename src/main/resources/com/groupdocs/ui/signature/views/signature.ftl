@@ -43,7 +43,7 @@
         <div id="element"></div>
         <script type="text/javascript">
             $('#element').signature({
-                applicationPath: 'http://${globalConfiguration.server.hostAddress}:${globalConfiguration.server.httpPort?c}/signature',
+                applicationPath: 'http://${globalConfiguration.application.hostAddress}:${globalConfiguration.server.httpPort?c}/signature',
                 defaultDocument: '${globalConfiguration.signature.defaultDocument}',
                 preloadPageCount: ${globalConfiguration.signature.preloadPageCount?c},
                 pageSelector: ${globalConfiguration.common.pageSelector?c},

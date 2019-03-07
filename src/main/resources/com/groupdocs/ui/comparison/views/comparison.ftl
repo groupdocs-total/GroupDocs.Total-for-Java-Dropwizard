@@ -21,7 +21,7 @@
 <div id="element"></div>
 <script th:inline="javascript">
     $('#element').comparison({
-        applicationPath: 'http://${globalConfiguration.server.hostAddress}:${globalConfiguration.server.httpPort?c}/comparison',
+        applicationPath: 'http://${globalConfiguration.application.hostAddress}:${globalConfiguration.server.httpPort?c}/comparison',
         download: ${globalConfiguration.common.download?c},
         upload: ${globalConfiguration.common.upload?c},
         print: ${globalConfiguration.common.print?c},

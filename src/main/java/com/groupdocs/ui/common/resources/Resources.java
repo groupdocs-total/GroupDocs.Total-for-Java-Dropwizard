@@ -14,7 +14,6 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import java.io.*;
-import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
@@ -153,7 +152,7 @@ public abstract class Resources {
      * @param globalConfiguration global application configuration
      * @throws UnknownHostException
      */
-    public Resources(GlobalConfiguration globalConfiguration) throws UnknownHostException {
+    public Resources(GlobalConfiguration globalConfiguration) {
         this.globalConfiguration = globalConfiguration;
 
         // set HTTP port
@@ -162,8 +161,10 @@ public abstract class Resources {
         globalConfiguration.getServer().setHttpPort(((HttpConnectorFactory) connector).getPort());
 
         // set host address
-        globalConfiguration.getServer().setHostAddress(((HttpConnectorFactory) connector).getBindHost());
-
+        String hostAddress = globalConfiguration.getApplication().getHostAddress();
+        if (StringUtils.isEmpty(hostAddress) || hostAddress.startsWith("${")) {
+            globalConfiguration.getApplication().setHostAddress(((HttpConnectorFactory) connector).getBindHost());
+        }
     }
 
     /**

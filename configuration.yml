@@ -5,6 +5,7 @@ server:
   type: simple
   applicationContextPath: /
   adminContextPath: /admin
+  hostAddress: localhost
   connector:
     bindHost: localhost
     type: http
@@ -17,7 +18,9 @@ server:
 application:
     # License path
     # Absolute or relative path to GroupDocs license file
-    licensePath: 
+    licensePath:
+    # Host name or ip for server instance
+    hostAddress: ${application.hostAddress}
 
 ################################################
 # Common configurations

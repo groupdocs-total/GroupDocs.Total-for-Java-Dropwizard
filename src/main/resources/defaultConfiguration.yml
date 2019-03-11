@@ -6,7 +6,6 @@ server:
   applicationContextPath: /
   adminContextPath: /admin
   connector:
-    bindHost: localhost
     type: http
     port: 8080
 

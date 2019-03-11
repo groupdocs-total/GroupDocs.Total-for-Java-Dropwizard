@@ -5,9 +5,7 @@ server:
   type: simple
   applicationContextPath: /
   adminContextPath: /admin
-  hostAddress: localhost
   connector:
-    bindHost: localhost
     type: http
     port: 8080
 

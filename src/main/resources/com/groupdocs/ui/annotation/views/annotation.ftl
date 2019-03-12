@@ -29,7 +29,7 @@
         <div id="element"></div>
         <script type="text/javascript">
             $('#element').annotation({
-                applicationPath: 'http://${globalConfiguration.server.hostAddress}:${globalConfiguration.server.httpPort?c}/annotation',
+                applicationPath: 'http://${globalConfiguration.application.hostAddress}:${globalConfiguration.server.httpPort?c}/annotation',
                 defaultDocument: '${globalConfiguration.annotation.defaultDocument}',
                 preloadPageCount: ${globalConfiguration.annotation.preloadPageCount?c},
                 pageSelector: ${globalConfiguration.common.pageSelector?c},

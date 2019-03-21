@@ -53,7 +53,9 @@
                 textUnderlineAnnotation: ${globalConfiguration.annotation.textUnderlineAnnotation?c},
                 distanceAnnotation: ${globalConfiguration.annotation.distanceAnnotation?c},
                 downloadOriginal:  ${globalConfiguration.annotation.downloadOriginal?c},
-                downloadAnnotated:  ${globalConfiguration.annotation.downloadAnnotated?c}
+                downloadAnnotated:  ${globalConfiguration.annotation.downloadAnnotated?c},
+                zoom:  ${globalConfiguration.annotation.zoom?c},
+                fitWidth:  ${globalConfiguration.annotation.fitWidth?c}
             });
         </script>
     </body>

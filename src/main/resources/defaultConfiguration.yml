@@ -173,6 +173,11 @@ annotation:
   downloadOriginal: true
   # Enable/disable signed document downloading
   downloadAnnotated: true
+  # Enable/disable zoom
+  zoom: true
+  # Enable/disable fit width
+  # set true to zoom document pages fit width
+  fitWidth: true
 
 ################################################
 # GroupDocs.Comparison configurations

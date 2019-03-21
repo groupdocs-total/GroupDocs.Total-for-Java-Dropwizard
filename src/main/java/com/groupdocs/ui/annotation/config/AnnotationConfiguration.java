@@ -96,6 +96,14 @@ public class AnnotationConfiguration extends Configuration {
     @JsonProperty
     private boolean downloadAnnotated;
 
+    @Valid
+    @JsonProperty
+    private boolean zoom;
+
+    @Valid
+    @JsonProperty
+    private boolean fitWidth;
+
     public String getFilesDirectory() {
         return filesDirectory;
     }
@@ -254,5 +262,21 @@ public class AnnotationConfiguration extends Configuration {
 
     public void setDownloadAnnotated(boolean downloadAnnotated) {
         this.downloadAnnotated = downloadAnnotated;
+    }
+
+    public boolean getZoom() {
+        return zoom;
+    }
+
+    public void setZoom(boolean zoom) {
+        this.zoom = zoom;
+    }
+
+    public boolean getFitWidth() {
+        return fitWidth;
+    }
+
+    public void setFitWidth(boolean fitWidth) {
+        this.fitWidth = fitWidth;
     }
 }

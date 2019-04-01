@@ -39,6 +39,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -81,7 +82,6 @@ public class AnnotationResources extends Resources {
         // set storage path
         config.setStoragePath(directoryUtils.getFilesDirectory().getPath());
         // set directory to store annotated documents
-        globalConfiguration.getAnnotation().setOutputDirectory(directoryUtils.getOutputDirectory().getPath());
         config.getFontDirectories().add(globalConfiguration.getAnnotation().getFontsDirectory());
         try {
             // set GroupDocs license
@@ -259,7 +259,6 @@ public class AnnotationResources extends Resources {
             if (!password.isEmpty()) {
                 imageOptions.setPassword(password);
             }
-            // get page image
             InputStream document = new FileInputStream(documentGuid);
             List<PageImage> images = annotationImageHandler.getPages(document, imageOptions);
             String fileName = FilenameUtils.getName(documentGuid);
@@ -279,23 +278,15 @@ public class AnnotationResources extends Resources {
      * Download document
      *
      * @param documentGuid path to document parameter
-     * @param annotated
      * @param response
      */
     @GET
     @Path(value = "/downloadDocument")
     @Produces(APPLICATION_OCTET_STREAM)
     public void downloadDocument(@QueryParam("path") String documentGuid,
-                                 @QueryParam("annotated") Boolean annotated,
                                  @Context HttpServletResponse response) {
-        // get document path
-        String fileName = FilenameUtils.getName(documentGuid);
-        // choose directory
-        String pathToDownload = annotated ?
-                String.format("%s%s%s", directoryUtils.getOutputDirectory().getPath(), File.separator, fileName) :
-                documentGuid;
         // download the file
-        downloadFile(response, pathToDownload);
+        downloadFile(response, documentGuid);
     }
 
     /**
@@ -342,54 +333,96 @@ public class AnnotationResources extends Resources {
     public AnnotatedDocumentEntity annotate(AnnotateDocumentRequest annotateDocumentRequest) {
         AnnotatedDocumentEntity annotatedDocument = new AnnotatedDocumentEntity();
         try {
-            // get/set parameters
             String documentGuid = annotateDocumentRequest.getGuid();
-            String password = annotateDocumentRequest.getPassword();
             String documentType = getCheckedDocumentType(annotateDocumentRequest.getDocumentType(), FilenameUtils.getExtension(documentGuid));
-            AnnotationDataEntity[] annotationsData = annotateDocumentRequest.getAnnotationsData();
-            // initiate AnnotatedDocument object
-            // initiate list of annotations to add
-            List<AnnotationInfo> annotations = new ArrayList<>();
-            // get document info - required to get document page height and calculate annotation top position
-            DocumentInfoContainer documentInfo = annotationImageHandler.getDocumentInfo(new File(documentGuid).getName(), password);
-            // initiate annotator object
-            InputStream file = new FileInputStream(documentGuid);
-            file = annotationImageHandler.removeAnnotationStream(file);
-            for (AnnotationDataEntity annotationData : annotationsData) {
-                // create annotator
-                PageData pageData = documentInfo.getPages().get(annotationData.getPageNumber() - 1);
-                // add annotation, if current annotation type isn't supported by the current document type it will be ignored
-                try {
-                    annotations.add(AnnotatorFactory.createAnnotator(annotationData, pageData).getAnnotationInfo(documentType));
-                } catch (Exception ex) {
-                    throw new TotalGroupDocsException(ex.getMessage(), ex);
-                }
-            }
-            String forPrint = annotateDocumentRequest.getPrint() ? "Temp" : "";
-            String fileName = FilenameUtils.getBaseName(documentGuid) + forPrint + "." + FilenameUtils.getExtension(documentGuid);
-            String path = globalConfiguration.getAnnotation().getOutputDirectory() + File.separator + fileName;
-            // check if annotations array contains at least one annotation to add
-            if (annotations.size() > 0) {
-                // Add annotation to the document
-                int type = getDocumentType(documentType);
-                // Save result stream to file.
-                file = annotationImageHandler.exportAnnotationsToDocument(file, annotations, type);
-            }
-            (new File(path)).delete();
+            List<AnnotationInfo> annotations = getAnnotationInfos(annotateDocumentRequest, documentType);
+
+            InputStream file = annotateDocument(documentGuid, documentType, annotations);
             if (annotateDocumentRequest.getPrint()) {
-                List<AnnotationPageDescriptionEntity> annotatedPages = getAnnotatedPages(password, file);
+                List<AnnotationPageDescriptionEntity> annotatedPages = getAnnotatedPages(annotateDocumentRequest.getPassword(), file);
                 annotatedDocument.setPages(annotatedPages);
-                (new File(path)).delete();
             } else {
-                try (OutputStream fileStream = new FileOutputStream(path)) {
+                try (OutputStream fileStream = new FileOutputStream(documentGuid)) {
                     IOUtils.copyLarge(file, fileStream);
-                    annotatedDocument.setGuid(path);
+                    annotatedDocument.setGuid(documentGuid);
                 }
             }
         } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
         return annotatedDocument;
+    }
+
+    private InputStream annotateDocument(String documentGuid, String documentType, List<AnnotationInfo> annotations) throws FileNotFoundException {
+        InputStream file = annotationImageHandler.removeAnnotationStream(new FileInputStream(documentGuid));
+        // check if annotations array contains at least one annotation to add
+        if (annotations.size() > 0) {
+            // Add annotation to the document
+            int type = getDocumentType(documentType);
+            return annotationImageHandler.exportAnnotationsToDocument(file, annotations, type);
+        }
+        return file;
+    }
+
+    private List<AnnotationInfo> getAnnotationInfos(AnnotateDocumentRequest annotateDocumentRequest, String documentType) {
+        AnnotationDataEntity[] annotationsData = annotateDocumentRequest.getAnnotationsData();
+        // get document info - required to get document page height and calculate annotation top position
+        DocumentInfoContainer documentInfo = annotationImageHandler.getDocumentInfo(new File(annotateDocumentRequest.getGuid()).getName(), annotateDocumentRequest.getPassword());
+        List<AnnotationInfo> annotations = new ArrayList<>();
+        for (AnnotationDataEntity annotationData : annotationsData) {
+            // create annotator
+            PageData pageData = documentInfo.getPages().get(annotationData.getPageNumber() - 1);
+            // add annotation, if current annotation type isn't supported by the current document type it will be ignored
+            try {
+                annotations.add(AnnotatorFactory.createAnnotator(annotationData, pageData).getAnnotationInfo(documentType));
+            } catch (Exception ex) {
+                throw new TotalGroupDocsException(ex.getMessage(), ex);
+            }
+        }
+        return annotations;
+    }
+
+    /**
+     * Annotate document with annotations and download result without saving
+     *
+     * @return annotated document info
+     */
+    @POST
+    @Path(value = "/downloadAnnotated")
+    @Consumes(APPLICATION_JSON)
+    public void downloadAnnotated(AnnotateDocumentRequest annotateDocumentRequest, @Context HttpServletResponse response) {
+        AnnotationDataEntity[] annotationsData = annotateDocumentRequest.getAnnotationsData();
+        if (annotationsData == null || annotationsData.length == 0) {
+            throw new IllegalArgumentException("Annotations data is empty");
+        }
+
+        // get document path
+        String fileName = FilenameUtils.getName(annotateDocumentRequest.getGuid());
+        // set response content info
+        fillResponseHeaderDisposition(response, fileName);
+
+        long length;
+        try (InputStream inputStream = annotateByStream(annotateDocumentRequest);
+             ServletOutputStream outputStream = response.getOutputStream()) {
+            // download the document
+            length = IOUtils.copyLarge(inputStream, outputStream);
+        } catch (Exception ex) {
+            logger.error("Exception in downloading document", ex);
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
+        }
+
+        addFileDownloadHeaders(response, fileName, length);
+    }
+
+    private InputStream annotateByStream(AnnotateDocumentRequest annotateDocumentRequest) {
+        String documentGuid = annotateDocumentRequest.getGuid();
+        String documentType = getCheckedDocumentType(annotateDocumentRequest.getDocumentType(), FilenameUtils.getExtension(documentGuid));
+        List<AnnotationInfo> annotations = getAnnotationInfos(annotateDocumentRequest, documentType);
+        try {
+            return annotateDocument(documentGuid, documentType, annotations);
+        } catch (FileNotFoundException ex) {
+            throw new TotalGroupDocsException(ex.getMessage(), ex);
+        }
     }
 
     /**

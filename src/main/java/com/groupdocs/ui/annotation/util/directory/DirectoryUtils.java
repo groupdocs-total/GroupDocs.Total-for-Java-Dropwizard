@@ -9,7 +9,6 @@ import com.groupdocs.ui.annotation.config.AnnotationConfiguration;
  */
 public class DirectoryUtils {
     private FilesDirectoryUtils filesDirectory;
-    private OutputDirectoryUtils outputDirectory;
 
     /**
      * Constructor
@@ -17,7 +16,6 @@ public class DirectoryUtils {
      */
     public DirectoryUtils(AnnotationConfiguration annotationConfiguration){
         filesDirectory = new FilesDirectoryUtils(annotationConfiguration);
-        outputDirectory = new OutputDirectoryUtils(annotationConfiguration);
     }
 
     /**
@@ -26,13 +24,5 @@ public class DirectoryUtils {
      */
     public FilesDirectoryUtils getFilesDirectory() {
         return filesDirectory;
-    }
-
-    /**
-     * Get Output directory - path where to store signed documents
-     * @return OutputDirectoryUtils
-     */
-    public OutputDirectoryUtils getOutputDirectory() {
-        return outputDirectory;
     }
 }

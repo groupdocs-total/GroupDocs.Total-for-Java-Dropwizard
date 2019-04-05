@@ -67,7 +67,7 @@ public class DefaultDirectories {
         } catch (FileAlreadyExistsException ex) {
             // it is ok
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error("Exception occurred while creating directories");
         }
     }
 
@@ -88,6 +88,20 @@ public class DefaultDirectories {
         Path absolutePath = FileSystems.getDefault().getPath(path).toAbsolutePath();
         makeDirs(absolutePath);
         return absolutePath.toString();
+    }
+
+    public static boolean isAbsolutePath(String path) {
+        if (StringUtils.isEmpty(path)) {
+            return false;
+        }
+
+        Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
+        for (Path root : rootDirectories) {
+            if (path.startsWith(root.toString())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static Path getDefaultLicFile(File licFolder) {

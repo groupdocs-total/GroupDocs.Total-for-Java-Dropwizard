@@ -20,6 +20,7 @@ public abstract class AbstractTextAnnotator extends Annotator {
         annotationInfo.setFieldText(annotationData.getText());
         annotationInfo.setFontFamily(StringUtils.capitalize(annotationData.getFont()));
         annotationInfo.setFontSize(annotationData.getFontSize());
+        annotationInfo.setFontColor(annotationData.getFontColor());
         return annotationInfo;
     }
 

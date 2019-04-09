@@ -52,6 +52,7 @@ public class AnnotationMapper {
     public AnnotationDataEntity mapAnnotationDataEntity(AnnotationInfo annotationInfo) {
         AnnotationDataEntity annotation = new AnnotationDataEntity();
         annotation.setFont(annotationInfo.getFontFamily());
+        annotation.setFontColor(annotationInfo.getFontColor());
         annotation.setFontSize(annotationInfo.getFontSize());
         Rectangle box = annotationInfo.getBox();
         annotation.setHeight(box.getHeight());

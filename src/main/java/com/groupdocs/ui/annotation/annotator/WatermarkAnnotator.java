@@ -51,7 +51,6 @@ public class WatermarkAnnotator extends AbstractTextAnnotator {
     public AnnotationInfo annotateImage() throws ParseException {
         // init possible types of annotations
         AnnotationInfo watermarkAnnotation = initAnnotationInfo();
-        watermarkAnnotation.setFontColor(15988609);
         return watermarkAnnotation;
     }
 

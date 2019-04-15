@@ -58,6 +58,10 @@ public class AnnotationDataEntity {
      * Imported annotations
      */
     private boolean imported;
+    /**
+     * font color
+     */
+    private int fontColor;
 
     public int getId() {
         return id;
@@ -161,5 +165,13 @@ public class AnnotationDataEntity {
 
     public void setImported(boolean imported) {
         this.imported = imported;
+    }
+
+    public int getFontColor() {
+        return fontColor;
+    }
+
+    public void setFontColor(int fontColor) {
+        this.fontColor = fontColor;
     }
 }

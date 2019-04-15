@@ -33,6 +33,7 @@ public class TextFieldAnnotator extends AbstractTextAnnotator {
         // Text field annotation
         AnnotationInfo textFieldAnnotation = initAnnotationInfo();
         textFieldAnnotation.setAnnotationPosition(new Point(annotationData.getLeft(), annotationData.getTop()));
+        textFieldAnnotation.setBackgroundColor(16777215);
         return textFieldAnnotation;
     }
 
@@ -52,7 +53,6 @@ public class TextFieldAnnotator extends AbstractTextAnnotator {
     public AnnotationInfo annotateImage() throws ParseException {
         // init possible types of annotations
         AnnotationInfo textFieldAnnotation = initAnnotationInfo();
-        textFieldAnnotation.setFontColor(-15988609);
         return textFieldAnnotation;
     }
 
@@ -60,7 +60,6 @@ public class TextFieldAnnotator extends AbstractTextAnnotator {
     public AnnotationInfo annotateDiagram() throws ParseException {
         // init possible types of annotations
         AnnotationInfo textFieldAnnotation = initAnnotationInfo();
-        textFieldAnnotation.setFontColor(-15988609);
         return textFieldAnnotation;
     }
 

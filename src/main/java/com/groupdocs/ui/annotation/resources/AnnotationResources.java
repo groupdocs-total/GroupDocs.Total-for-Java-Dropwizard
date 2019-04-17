@@ -265,7 +265,7 @@ public class AnnotationResources extends Resources {
             DocumentInfoContainer documentDescription = annotationImageHandler.getDocumentInfo(fileName, password);
             PageData pageData = documentDescription.getPages().get(pageNumber - 1);
 
-            AnnotationPageDescriptionEntity page = getAnnotationPageDescriptionEntity(pageData, images.get(pageNumber - 1));
+            AnnotationPageDescriptionEntity page = getAnnotationPageDescriptionEntity(pageData, images.get(0));
 
             // return loaded page object
             return page;

@@ -1,5 +1,5 @@
 # GroupDocs.Total for Java Dropwizard Example
-###### version 0.4.48
+###### version 0.4.49
 
 [![Build Status](https://travis-ci.org/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard.svg?branch=master)](https://travis-ci.org/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard)
 [![Maintainability](https://api.codeclimate.com/v1/badges/83ca13ac2b000eafba60/maintainability)](https://codeclimate.com/github/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard/maintainability)
@@ -177,10 +177,10 @@ Download [latest release](https://github.com/groupdocs-total/GroupDocs.Total-for
 **Note**: This method is **recommended** for running this sample behind firewall.
 
 ```bash
-curl -J -L -o release.tar.gz https://github.com/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard/releases/download/0.4.48/release.tar.gz
+curl -J -L -o release.tar.gz https://github.com/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard/releases/download/0.4.49/release.tar.gz
 tar -xvzf release.tar.gz
 cd release
-java -jar total-0.4.48.jar configuration.yaml
+java -jar total-0.4.49.jar configuration.yaml
 ## Open http://localhost:8080/ in your favorite browser.
 ```
 

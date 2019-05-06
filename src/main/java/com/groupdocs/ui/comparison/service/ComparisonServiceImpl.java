@@ -6,6 +6,7 @@ import com.groupdocs.comparison.MultiComparer;
 import com.groupdocs.comparison.common.changes.ChangeInfo;
 import com.groupdocs.comparison.common.compareresult.ICompareResult;
 import com.groupdocs.comparison.common.comparisonsettings.ComparisonSettings;
+import com.groupdocs.ui.common.config.DefaultDirectories;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
 import com.groupdocs.ui.common.entity.web.PageDescriptionEntity;
@@ -58,7 +59,7 @@ public class ComparisonServiceImpl implements ComparisonService {
             resultDirectory = filesDirectory + File.separator + "Temp";
             comparisonConfiguration.setResultDirectory(resultDirectory);
         }
-        new File(resultDirectory).mkdirs();
+        DefaultDirectories.makeDirs(Paths.get(resultDirectory));
     }
 
     /**

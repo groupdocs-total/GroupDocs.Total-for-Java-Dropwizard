@@ -38,7 +38,7 @@ import java.util.List;
 
 import static com.groupdocs.ui.common.util.Utils.getBufferedImage;
 import static com.groupdocs.ui.common.util.Utils.getFileWithUniqueName;
-import static com.groupdocs.ui.signature.service.SignatureHandlerFactory.getFullDataPath;
+import static com.groupdocs.ui.signature.service.SignatureHandlerFactory.getFullDataPathStr;
 import static com.groupdocs.ui.signature.util.SignatureType.QR_CODE;
 import static com.groupdocs.ui.signature.util.directory.SignatureDirectory.*;
 
@@ -61,8 +61,8 @@ public class SaveSignatureServiceImpl implements SaveSignatureService {
      */
     @Override
     public FileDescriptionEntity saveStamp(SaveStampRequest saveStampRequest) {
-        String previewPath = getFullDataPath(signatureConfiguration.getDataDirectory(), STAMP_DATA_DIRECTORY.getPreviewPath());
-        String xmlPath = getFullDataPath(signatureConfiguration.getDataDirectory(), STAMP_DATA_DIRECTORY.getXMLPath());
+        String previewPath = getFullDataPathStr(signatureConfiguration.getDataDirectory(), STAMP_DATA_DIRECTORY.getPreviewPath());
+        String xmlPath = getFullDataPathStr(signatureConfiguration.getDataDirectory(), STAMP_DATA_DIRECTORY.getXMLPath());
         try {
             // get/set parameters
             String encodedImage = saveStampRequest.getImage().replace("data:image/png;base64,", "");
@@ -124,9 +124,9 @@ public class SaveSignatureServiceImpl implements SaveSignatureService {
      */
     private String createAndSaveOpticalCode(OpticalXmlEntity signatureData, SignatureDirectory dataDirectory, SignatureOptionsCollection collection) {
         // get preview path
-        String previewPath = getFullDataPath(signatureConfiguration.getDataDirectory(), dataDirectory.getPreviewPath());
+        String previewPath = getFullDataPathStr(signatureConfiguration.getDataDirectory(), dataDirectory.getPreviewPath());
         // get xml file path
-        String xmlPath = getFullDataPath(signatureConfiguration.getDataDirectory(), dataDirectory.getXMLPath());
+        String xmlPath = getFullDataPathStr(signatureConfiguration.getDataDirectory(), dataDirectory.getXMLPath());
         try {
             if (signatureData.getTemp()) {
                 BufferedImage bufImage = getBufferedImage(200, 200);
@@ -152,7 +152,7 @@ public class SaveSignatureServiceImpl implements SaveSignatureService {
      */
     @Override
     public TextXmlEntity saveText(SaveTextRequest saveTextRequest) {
-        String xmlPath = getFullDataPath(signatureConfiguration.getDataDirectory(), TEXT_DATA_DIRECTORY.getXMLPath());
+        String xmlPath = getFullDataPathStr(signatureConfiguration.getDataDirectory(), TEXT_DATA_DIRECTORY.getXMLPath());
         TextXmlEntity signatureData = saveTextRequest.getProperties();
         try {
             File file = getFileWithUniqueName(xmlPath, signatureData.getImageGuid(), XML);
@@ -173,7 +173,7 @@ public class SaveSignatureServiceImpl implements SaveSignatureService {
     @Override
     public FileDescriptionEntity saveImage(SaveImageRequest saveImageRequest) {
         try {
-            String dataDirectoryPath = getFullDataPath(signatureConfiguration.getDataDirectory(), IMAGE_DATA_DIRECTORY.getPath());
+            String dataDirectoryPath = getFullDataPathStr(signatureConfiguration.getDataDirectory(), IMAGE_DATA_DIRECTORY.getPath());
             File file = getFileWithUniqueName(dataDirectoryPath, "", PNG);
             String encodedImage = saveImageRequest.getImage().replace("data:image/png;base64,", "");
             byte[] decodedImg = Base64.getDecoder().decode(encodedImage.getBytes(StandardCharsets.UTF_8));

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import static com.groupdocs.ui.signature.service.SignatureHandlerFactory.getFullDataPath;
+import static com.groupdocs.ui.signature.service.SignatureHandlerFactory.getFullDataPathStr;
 import static com.groupdocs.ui.signature.util.SignatureType.*;
 import static com.groupdocs.ui.signature.util.directory.PathConstants.DATA_FOLDER;
 
@@ -76,7 +76,7 @@ public class SignatureServiceImpl implements SignatureService {
             String signatureTypePath = SignatureDirectory.getPathFromSignatureType(signatureType);
             String rootDirectory = StringUtils.isEmpty(signatureTypePath) ?
                     signatureConfiguration.getFilesDirectory() :
-                    getFullDataPath(signatureConfiguration.getDataDirectory(), signatureTypePath);
+                    getFullDataPathStr(signatureConfiguration.getDataDirectory(), signatureTypePath);
             // get all the files from a directory
             String relDirPath = fileTreeRequest.getPath();
             if (StringUtils.isEmpty(relDirPath)) {

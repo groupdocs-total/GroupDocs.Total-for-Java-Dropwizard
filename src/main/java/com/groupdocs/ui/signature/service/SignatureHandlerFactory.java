@@ -10,6 +10,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static com.groupdocs.ui.signature.util.directory.PathConstants.DATA_FOLDER;
 import static com.groupdocs.ui.signature.util.directory.SignatureDirectory.*;
 
 public class SignatureHandlerFactory {
@@ -26,9 +27,9 @@ public class SignatureHandlerFactory {
      */
     public synchronized static SignatureHandler createHandler(String filesDirectory, String dataDirectory) {
         if (instance == null) {
-            String directory = StringUtils.isEmpty(dataDirectory) ? filesDirectory : dataDirectory;
+            String directory = StringUtils.isEmpty(dataDirectory) ? filesDirectory + DATA_FOLDER : dataDirectory;
             // create directories
-            createDirectories(dataDirectory);
+            createDirectories(directory);
 
             // create signature application configuration
             SignatureConfig config = new SignatureConfig();

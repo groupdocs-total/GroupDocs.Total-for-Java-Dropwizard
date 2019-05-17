@@ -192,3 +192,15 @@ comparison:
   preloadResultPageCount: 2
   # Enable/disable multi comparing feature
   multiComparing: true
+
+
+################################################
+# GroupDocs.Conversion configurations
+################################################
+conversion:
+  # Files directory path
+  # Absolute or relative path to files directory
+  filesDirectory: DocumentSamples/Conversion
+  # Result files directory path
+  # Absolute path to result files directory
+  resultDirectory:

@@ -2,6 +2,7 @@ package com.groupdocs.ui.common.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.groupdocs.ui.comparison.config.ComparisonConfiguration;
+import com.groupdocs.ui.conversion.config.ConversionConfiguration;
 import com.groupdocs.ui.signature.config.SignatureConfiguration;
 import com.groupdocs.ui.viewer.config.ViewerConfiguration;
 import com.groupdocs.ui.annotation.config.AnnotationConfiguration;
@@ -45,6 +46,10 @@ public class GlobalConfiguration extends Configuration {
     @JsonProperty
     private ComparisonConfiguration comparison;
 
+    @Valid
+    @JsonProperty
+    private ConversionConfiguration conversion;
+
     /**
      * Constructor
      */
@@ -56,6 +61,7 @@ public class GlobalConfiguration extends Configuration {
         signature = new SignatureConfiguration();
         annotation = new AnnotationConfiguration();
         comparison = new ComparisonConfiguration();
+        conversion = new ConversionConfiguration();
     }
 
     /**
@@ -112,6 +118,14 @@ public class GlobalConfiguration extends Configuration {
      */
     public ComparisonConfiguration getComparison() {
         return comparison;
+    }
+
+    /**
+     * Get conversion configuration
+     * @return conversion configuration
+     */
+    public ConversionConfiguration getConversion() {
+        return conversion;
     }
 }
 

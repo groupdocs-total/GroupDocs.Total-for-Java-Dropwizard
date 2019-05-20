@@ -153,6 +153,18 @@ Coming soon
 - Multi-language support for displaying errors
 - Cross-browser support (Safari, Chrome, Opera, Firefox)
 - Cross-platform support (Windows, Linux, MacOS)
+#### [Document converter](https://github.com/groupdocs-conversion/GroupDocs.Conversion-for-Java-Dropwizard) with GroupDocs.Conversion
+- Clean, modern and intuitive design
+- Easily switchable colour theme (create your own colour theme in 5 minutes)
+- Responsive design
+- Convert individual documents
+- Batch convert multiple files
+- Mobile support (open application on any mobile device)
+- HTML and image modes
+- Convert documents
+- Upload documents
+- Cross-browser support (Safari, Chrome, Opera, Firefox)
+- Cross-platform support (Windows, Linux, MacOS)
 
 ## How to run
 

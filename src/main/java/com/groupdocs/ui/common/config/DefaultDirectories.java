@@ -18,6 +18,7 @@ public class DefaultDirectories {
     public static final String SIGNATURE = "Signature";
     public static final String COMPARISON = "Comparison";
     public static final String ANNOTATION = "Annotation";
+    public static final String CONVERSION = "Conversion";
 
     public static String defaultLicenseDirectory() {
         Path defaultLicFolder = FileSystems.getDefault().getPath(LICENSES).toAbsolutePath();
@@ -47,6 +48,10 @@ public class DefaultDirectories {
 
     public static String defaultAnnotationDirectory() {
         return getDefaultDir(ANNOTATION);
+    }
+
+    public static String defaultConversionDirectory() {
+        return getDefaultDir(CONVERSION);
     }
 
     public static String getDefaultDir(String folder) {

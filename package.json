@@ -20,6 +20,7 @@
     "@groupdocs.examples.jquery/annotation": "^0.16.0",
     "@groupdocs.examples.jquery/common": "^0.16.0",
     "@groupdocs.examples.jquery/comparison": "^0.16.0",
+    "@groupdocs.examples.jquery/conversion": "^0.16.0",
     "@groupdocs.examples.jquery/signature": "^0.16.0",
     "@groupdocs.examples.jquery/total": "^0.16.0",
     "@groupdocs.examples.jquery/viewer": "^0.16.0"

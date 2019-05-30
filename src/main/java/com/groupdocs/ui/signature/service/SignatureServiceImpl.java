@@ -102,11 +102,11 @@ public class SignatureServiceImpl implements SignatureService {
         List<SignatureFileDescriptionEntity> fileList;
         switch (signatureType) {
             case DIGITAL:
-                fileList = signatureLoader.loadFiles(relDirPath, signatureType);
+                fileList = signatureLoader.loadFiles(relDirPath, signatureConfiguration.getDataDirectory(), signatureType);
                 break;
             case IMAGE:
             case HAND:
-                fileList = signatureLoader.loadImageSignatures(relDirPath);
+                fileList = signatureLoader.loadImageSignatures(relDirPath, signatureConfiguration.getDataDirectory());
                 break;
             case TEXT:
                 fileList = signatureLoader.loadTextSignatures(relDirPath, signatureConfiguration.getDataDirectory());
@@ -114,10 +114,10 @@ public class SignatureServiceImpl implements SignatureService {
             case STAMP:
             case QR_CODE:
             case BAR_CODE:
-                fileList = signatureLoader.loadSignatures(relDirPath, signatureType);
+                fileList = signatureLoader.loadSignatures(relDirPath, signatureConfiguration.getDataDirectory(), signatureType);
                 break;
             default:
-                fileList = signatureLoader.loadFiles(relDirPath, signatureType);
+                fileList = signatureLoader.loadFiles(relDirPath, signatureConfiguration.getDataDirectory(), signatureType);
                 break;
         }
         return fileList;

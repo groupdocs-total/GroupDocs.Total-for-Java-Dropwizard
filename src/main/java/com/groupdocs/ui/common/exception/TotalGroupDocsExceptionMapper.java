@@ -33,8 +33,8 @@ public class TotalGroupDocsExceptionMapper implements ExceptionMapper<TotalGroup
         logger.error(exception.getCause() != null? exception.getCause().getLocalizedMessage() : message);
         return Response
                 .serverError()
-                .entity(exceptionEntity)
                 .type(MediaType.APPLICATION_JSON_TYPE)
+                .entity(exceptionEntity)
                 .build();
     }
 }

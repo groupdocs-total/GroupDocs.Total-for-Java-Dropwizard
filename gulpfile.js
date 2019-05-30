@@ -8,12 +8,12 @@ gulp.task('build', function() {
 
 gulp.task('copy', function() {
   return gulp
-      .src('./node_modules/@groupdocs.examples.angular/viewer/dist/**')
-      .pipe(gulp.dest('./src/main/resources/assets/static/'))
+      .src('./node_modules/@groupdocs.examples.angular/**')
+      .pipe(gulp.dest('./src/main/resources/assets/angular/'))
 });
 
 gulp.task('config', function() {
   return gulp
-      .src('./node_modules/@groupdocs.examples.angular/viewer/dist/assets/**')
-      .pipe(gulp.dest('./src/main/resources/assets/'))
+      .src('./node_modules/@groupdocs.examples.angular/viewer/dist/assets/config/**')
+      .pipe(gulp.dest('./src/main/resources/assets/config/'))
 });

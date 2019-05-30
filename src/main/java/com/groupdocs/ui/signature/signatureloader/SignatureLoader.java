@@ -36,7 +36,6 @@ public class SignatureLoader {
 
     /**
      * Constructor
-     *
      */
     public SignatureLoader() {
     }
@@ -46,8 +45,8 @@ public class SignatureLoader {
      *
      * @return List<SignatureFileDescriptionEntity>
      */
-    public List<SignatureFileDescriptionEntity> loadImageSignatures(String path) {
-        File directory = new File(path);
+    public List<SignatureFileDescriptionEntity> loadImageSignatures(String currentPath, String dataPath) {
+        File directory = new File(currentPath);
         List<SignatureFileDescriptionEntity> fileList = new ArrayList<>();
         List<File> filesList = Arrays.asList(directory.listFiles());
         try {
@@ -55,7 +54,7 @@ public class SignatureLoader {
             filesList = Ordering.from(FileDateComparator.instance).compound(FileNameComparator.instance).sortedCopy(filesList);
             for (File file : filesList) {
                 // check if current file/folder is hidden
-                if (!file.isDirectory() && checkFile(path, file)) {
+                if (!file.isDirectory() && checkFile(dataPath, file)) {
                     SignatureFileDescriptionEntity fileDescription = getSignatureFileDescriptionEntity(file, true);
                     // add object to array list
                     fileList.add(fileDescription);
@@ -72,11 +71,11 @@ public class SignatureLoader {
      *
      * @return List<SignatureFileDescriptionEntity>
      */
-    public List<SignatureFileDescriptionEntity> loadFiles(String path, String signatureType) {
-        File directory = new File(path);
+    public List<SignatureFileDescriptionEntity> loadFiles(String currentPath, String dataPath, String signatureType) {
+        File directory = new File(currentPath);
         List<File> filesList = Arrays.asList(directory.listFiles());
         try {
-            return getResultFileList(path, signatureType, filesList, false);
+            return getResultFileList(dataPath, signatureType, filesList, false);
         } catch (Exception ex) {
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
@@ -108,16 +107,16 @@ public class SignatureLoader {
      *
      * @return List<SignatureFileDescriptionEntity>
      */
-    public List<SignatureFileDescriptionEntity> loadSignatures(String path, String signatureType) {
-        String imagesPath = path + DATA_PREVIEW_FOLDER;
-        String xmlPath = path + DATA_XML_FOLDER;
+    public List<SignatureFileDescriptionEntity> loadSignatures(String currentPath, String dataPath, String signatureType) {
+        String imagesPath = currentPath + DATA_PREVIEW_FOLDER;
+        String xmlPath = currentPath + DATA_XML_FOLDER;
         File images = new File(imagesPath);
         try {
             if (images.listFiles() != null) {
                 List<File> imageFiles = Arrays.asList(images.listFiles());
                 List<File> xmlFiles = Arrays.asList(new File(xmlPath).listFiles());
                 List<File> filesList = createFilesList(imageFiles, xmlFiles);
-                return getResultFileList(path, signatureType, filesList, true);
+                return getResultFileList(dataPath, signatureType, filesList, true);
             }
             return Collections.EMPTY_LIST;
         } catch (Exception ex) {

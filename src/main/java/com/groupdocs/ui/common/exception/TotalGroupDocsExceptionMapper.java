@@ -24,7 +24,7 @@ public class TotalGroupDocsExceptionMapper implements ExceptionMapper<TotalGroup
         String message = exception.getMessage();
         exceptionEntity.setMessage(message);
         if (PASSWORD_REQUIRED.equals(message) || INCORRECT_PASSWORD.equals(message)) {
-            return Response.ok(exceptionEntity).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(exceptionEntity).build();
         }
         if (logger.isDebugEnabled()) {
             exception.printStackTrace();

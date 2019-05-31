@@ -23,7 +23,8 @@
     "@groupdocs.examples.jquery/conversion": "^0.16.0",
     "@groupdocs.examples.jquery/signature": "^0.16.0",
     "@groupdocs.examples.jquery/total": "^0.16.0",
-    "@groupdocs.examples.jquery/viewer": "^0.16.0"
+    "@groupdocs.examples.jquery/viewer": "^0.16.0",
+    "@groupdocs.examples.angular/viewer": "^0.1.3"
   },
   "devDependencies": {
     "gulp": "^4.0.2"

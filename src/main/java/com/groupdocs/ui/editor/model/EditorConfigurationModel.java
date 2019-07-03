@@ -161,11 +161,18 @@ public class EditorConfigurationModel {
 
     @Override
     public String toString() {
-        return "EditorConfiguration{" +
+        return "EditorConfigurationModel{" +
                 "filesDirectory='" + filesDirectory + '\'' +
                 ", fontsDirectory='" + fontsDirectory + '\'' +
                 ", defaultDocument='" + defaultDocument + '\'' +
                 ", createNewFile=" + createNewFile +
+                ", pageSelector=" + pageSelector +
+                ", download=" + download +
+                ", upload=" + upload +
+                ", print=" + print +
+                ", browse=" + browse +
+                ", rewrite=" + rewrite +
+                ", enableRightClick=" + enableRightClick +
                 '}';
     }
 }

@@ -7,6 +7,7 @@ import com.groupdocs.ui.common.exception.TotalGroupDocsExceptionMapper;
 import com.groupdocs.ui.common.health.TemplateHealthCheck;
 import com.groupdocs.ui.comparison.resources.ComparisonResources;
 import com.groupdocs.ui.conversion.resources.ConversionResources;
+import com.groupdocs.ui.editor.resources.EditorResources;
 import com.groupdocs.ui.signature.resources.SignatureResources;
 import com.groupdocs.ui.total.resources.TotalResources;
 import com.groupdocs.ui.viewer.resources.ViewerResources;
@@ -120,6 +121,7 @@ public class MainService extends Application<GlobalConfiguration> {
         environment.jersey().register(new ViewerResources(globalConfiguration));
         environment.jersey().register(new SignatureResources(globalConfiguration));
         environment.jersey().register(new TotalResources(globalConfiguration));
+        environment.jersey().register(new EditorResources(globalConfiguration));
 
         // Add custom exception mapper
         environment.jersey().register(new TotalGroupDocsExceptionMapper());

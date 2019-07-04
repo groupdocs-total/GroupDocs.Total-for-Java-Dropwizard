@@ -165,6 +165,19 @@ Coming soon
 - Upload documents
 - Cross-browser support (Safari, Chrome, Opera, Firefox)
 - Cross-platform support (Windows, Linux, MacOS)
+#### [Document editor](https://github.com/groupdocs-conversion/GroupDocs.Editor-for-Java-Dropwizard) with GroupDocs.Editor
+- Responsive design
+- Cross-browser support (Safari, Chrome, Opera, Firefox)
+- Cross-platform support (Windows, Linux, MacOS)
+- Clean, modern and intuitive design
+- Edit, format documents
+- Mobile support (open application on any mobile device)
+- Support over 50 documents and image formats including **DOCX**, **PDF**, **PPT**, **XLS**
+- Fully customizable navigation panel
+- Open password protected documents
+- Download documents
+- Upload documents
+- Print document
 
 ## How to run
 

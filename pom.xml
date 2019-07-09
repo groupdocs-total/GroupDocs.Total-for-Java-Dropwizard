@@ -6,7 +6,7 @@
 
     <groupId>com.groupdocs.ui</groupId>
     <artifactId>total</artifactId>
-    <version>0.4.58</version>
+    <version>0.4.59</version>
     <packaging>jar</packaging>
 
     <name>GroupDocs.Total Dropwizard</name>

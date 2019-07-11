@@ -1,14 +1,76 @@
 package com.groupdocs.ui.common.util;
 
 import com.groupdocs.ui.common.exception.TotalGroupDocsException;
+import com.groupdocs.viewer.exception.InvalidPasswordException;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
+
+import static com.groupdocs.ui.common.exception.PasswordExceptions.INCORRECT_PASSWORD;
+import static com.groupdocs.ui.common.exception.PasswordExceptions.PASSWORD_REQUIRED;
 
 public class Utils {
+    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+
+    /**
+     * Read stream and convert to string
+     *
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
+    public static String getStringFromStream(InputStream inputStream) throws IOException {
+        byte[] bytes = IOUtils.toByteArray(inputStream);
+        // encode ByteArray into String
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    /**
+     * Parse extension of the file's name
+     *
+     * @param documentGuid path to file
+     * @return extension of the file's name
+     */
+    public static String parseFileExtension(String documentGuid) {
+        String extension = FilenameUtils.getExtension(documentGuid);
+        return extension == null ? null : extension.toLowerCase();
+    }
+
+    /**
+     * Get correct message for security exceptions
+     *
+     * @param password
+     * @param ex
+     * @return
+     */
+    public static String getExceptionMessage(String password, Exception ex) {
+        // Set exception message
+        String message = ex.getMessage();
+        if (isAssignableFromException(ex) && StringUtils.isEmpty(password)) {
+            message = PASSWORD_REQUIRED;
+        } else if (isAssignableFromException(ex) && !StringUtils.isEmpty(password)) {
+            message = INCORRECT_PASSWORD;
+        } else {
+            logger.error(message, ex);
+        }
+        return message;
+    }
+
+    public static boolean isAssignableFromException(Exception ex) {
+        return ex.getClass().isAssignableFrom(InvalidPasswordException.class) ||
+                ex.getClass().getSuperclass().isAssignableFrom(com.groupdocs.comparison.common.exceptions.InvalidPasswordException.class) ||
+                ex.getClass().isAssignableFrom(com.groupdocs.comparison.common.exceptions.InvalidPasswordException.class);
+    }
+
     /**
      * Rename file if exist
      *

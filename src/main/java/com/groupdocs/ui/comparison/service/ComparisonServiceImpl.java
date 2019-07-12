@@ -105,11 +105,11 @@ public class ComparisonServiceImpl implements ComparisonService {
         }
         File directory = new File(currentPath);
         List<FileDescriptionEntity> fileList = new ArrayList<>();
-        List<File> filesList = Arrays.asList(directory.listFiles());
+        List<File> files = Arrays.asList(directory.listFiles());
         try {
             // sort list of files and folders
-            filesList = Ordering.from(FileTypeComparator.instance).compound(FileNameComparator.instance).sortedCopy(filesList);
-            for (File file : filesList) {
+            files = Ordering.from(FileTypeComparator.instance).compound(FileNameComparator.instance).sortedCopy(files);
+            for (File file : files) {
                 // check if current file/folder is hidden
                 if (file.isHidden()) {
                     // ignore current file and skip to next one

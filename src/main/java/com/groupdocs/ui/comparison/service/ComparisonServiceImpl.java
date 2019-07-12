@@ -105,19 +105,11 @@ public class ComparisonServiceImpl implements ComparisonService {
         }
         File directory = new File(currentPath);
         List<FileDescriptionEntity> fileList = new ArrayList<>();
-        List<File> files = Arrays.asList(directory.listFiles());
+        List<File> files = orderByTypeAndName(Arrays.asList(directory.listFiles()));
         try {
-            // sort list of files and folders
-            files = orderByTypeAndName(files);
             for (File file : files) {
-                // check if current file/folder is hidden
-                if (file.isHidden()) {
-                    // ignore current file and skip to next one
-                    continue;
-                } else {
-                    FileDescriptionEntity fileDescription = getFileDescriptionEntity(file);
-                    // add object to array list
-                    fileList.add(fileDescription);
+                if (!file.isHidden()) {
+                    fileList.add(getFileDescriptionEntity(file));
                 }
             }
             return fileList;

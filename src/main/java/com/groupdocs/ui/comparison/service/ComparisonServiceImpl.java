@@ -108,7 +108,7 @@ public class ComparisonServiceImpl implements ComparisonService {
         List<File> files = Arrays.asList(directory.listFiles());
         try {
             // sort list of files and folders
-            files = Ordering.from(FileTypeComparator.instance).compound(FileNameComparator.instance).sortedCopy(files);
+            files = orderByTypeAndName(files);
             for (File file : files) {
                 // check if current file/folder is hidden
                 if (file.isHidden()) {

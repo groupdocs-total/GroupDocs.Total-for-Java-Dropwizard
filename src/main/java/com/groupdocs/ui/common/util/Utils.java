@@ -1,6 +1,9 @@
 package com.groupdocs.ui.common.util;
 
+import com.google.common.collect.Ordering;
 import com.groupdocs.ui.common.exception.TotalGroupDocsException;
+import com.groupdocs.ui.common.util.comparator.FileNameComparator;
+import com.groupdocs.ui.common.util.comparator.FileTypeComparator;
 import com.groupdocs.viewer.exception.InvalidPasswordException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -14,12 +17,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
+import java.util.List;
 
 import static com.groupdocs.ui.common.exception.PasswordExceptions.INCORRECT_PASSWORD;
 import static com.groupdocs.ui.common.exception.PasswordExceptions.PASSWORD_REQUIRED;
 
 public class Utils {
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+
+    public static java.util.List<File> orderByTypeAndName(List<File> files) {
+        return Ordering.from(FileTypeComparator.instance).compound(FileNameComparator.instance).sortedCopy(files);
+    }
 
     /**
      * Read stream and convert to string

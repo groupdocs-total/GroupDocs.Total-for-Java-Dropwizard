@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static com.groupdocs.ui.common.util.Utils.orderByTypeAndName;
+
 public class ConversionServiceImpl implements ConversionService {
 
     private static final Logger logger = LoggerFactory.getLogger(ConversionServiceImpl.class);
@@ -76,7 +78,7 @@ public class ConversionServiceImpl implements ConversionService {
         List<File> filesList = Arrays.asList(directory.listFiles());
         try {
             // sort list of files and folders
-            filesList = Ordering.from(FileTypeComparator.instance).compound(FileNameComparator.instance).sortedCopy(filesList);
+            filesList = orderByTypeAndName(filesList);
             for (File file : filesList) {
                 // check if current file/folder is hidden
                 if (file.isHidden()) {

@@ -157,14 +157,11 @@ public class ComparisonServiceImpl implements ComparisonService {
         }
 
         String extension = parseFileExtension(firstPath);
-        CompareResultResponse compareResultResponse = null;
         try {
-            compareResultResponse = getCompareResultResponse(extension, compareResult, compareResultRevers);
+            return getCompareResultResponse(extension, compareResult, compareResultRevers);
         } catch (Exception e) {
             throw new TotalGroupDocsException(e.getMessage());
         }
-
-        return compareResultResponse;
     }
 
     protected CompareResultResponse getCompareResultResponse(String fileExt, ICompareResult compareResult, ICompareResult compareResultRevers) throws Exception {
@@ -211,7 +208,7 @@ public class ComparisonServiceImpl implements ComparisonService {
         return compareResultResponse;
     }
 
-    private void addChanges(List<ChangeInfo> changeInfoList, ChangeInfo[] changes) {
+    private void addReversChanges(List<ChangeInfo> changeInfoList, ChangeInfo[] changes) {
         for (int i = 0; i < changes.length; i++) {
             ChangeInfo change = changes[i];
             if (TypeChanged.Deleted != change.getType()) {
@@ -220,7 +217,7 @@ public class ComparisonServiceImpl implements ComparisonService {
         }
     }
 
-    private void addReversChanges(List<ChangeInfo> changeInfoList, ChangeInfo[] reversChanges) {
+    private void addChanges(List<ChangeInfo> changeInfoList, ChangeInfo[] reversChanges) {
         for (int i = 0; i < reversChanges.length; i++) {
             ChangeInfo reversChange = reversChanges[i];
             if (TypeChanged.Inserted == reversChange.getType()) {

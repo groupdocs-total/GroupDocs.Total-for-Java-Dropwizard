@@ -97,9 +97,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="">
-                            <img src="/assets/total/images/groupdocs-editor-d.png"/>
-                            <div class="coming-soon">
+                        <a href="editor">
+                            <img src="/assets/total/images/groupdocs-editor.png"/>
+                            <div>
                                 <h5>GroupDocs</h5>
                                 <h6>Editor</h6>
                             </div>

@@ -20,6 +20,8 @@ This web application demonstrates the following document manipulation capabiliti
 - Annotate & write on documents 
 - Digitally sign documents
 - Compare documents 
+- Edit documents
+- Convert documents
 
 **Note:** without a license application will run in trial mode, purchase [GroupDocs.Total for Java license](https://purchase.groupdocs.com/order-online-step-1-of-8.aspx) or request [GroupDocs.Total for Java temporary license](https://purchase.groupdocs.com/temporary-license).
 
@@ -165,6 +167,19 @@ Coming soon
 - Upload documents
 - Cross-browser support (Safari, Chrome, Opera, Firefox)
 - Cross-platform support (Windows, Linux, MacOS)
+#### [Document editor](https://github.com/groupdocs-conversion/GroupDocs.Editor-for-Java-Dropwizard) with GroupDocs.Editor
+- Responsive design
+- Cross-browser support (Safari, Chrome, Opera, Firefox)
+- Cross-platform support (Windows, Linux, MacOS)
+- Clean, modern and intuitive design
+- Edit, format documents
+- Mobile support (open application on any mobile device)
+- Support over 50 documents and image formats including **DOCX**, **ODT**, **XLS**
+- Fully customizable navigation panel
+- Open password protected documents
+- Download documents
+- Upload documents
+- Print document
 
 ## How to run
 

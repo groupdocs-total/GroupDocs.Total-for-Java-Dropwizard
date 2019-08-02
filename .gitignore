@@ -17,3 +17,4 @@ Licenses/*
 DocumentSamples/*
 src/test/resources/*
 !src/test/resources/calibre.docx
+LoggerInfo.txt

@@ -11,6 +11,7 @@ import com.groupdocs.ui.common.entity.web.request.LoadDocumentPageRequest;
 import com.groupdocs.ui.common.entity.web.request.LoadDocumentRequest;
 import com.groupdocs.ui.common.exception.TotalGroupDocsException;
 import com.groupdocs.ui.common.resources.Resources;
+import com.groupdocs.ui.comparison.model.ComparisonConfigurationModel;
 import com.groupdocs.ui.comparison.model.request.CompareRequest;
 import com.groupdocs.ui.comparison.model.response.CompareResultResponse;
 import com.groupdocs.ui.comparison.service.ComparisonService;
@@ -53,6 +54,13 @@ public class ComparisonResources extends Resources {
         } catch (Throwable exc) {
             logger.error("Can not verify Comparison license!");
         }
+    }
+
+    @GET
+    @Path(value = "/loadConfig")
+    @Produces(APPLICATION_JSON)
+    public ComparisonConfigurationModel loadConfig() {
+        return ComparisonConfigurationModel.createComparisonConfiguration(globalConfiguration.getComparison(), globalConfiguration.getCommon());
     }
 
     /**

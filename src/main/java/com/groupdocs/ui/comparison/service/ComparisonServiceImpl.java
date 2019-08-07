@@ -2,6 +2,7 @@ package com.groupdocs.ui.comparison.service;
 
 import com.groupdocs.comparison.Comparer;
 import com.groupdocs.comparison.common.PageImage;
+import com.groupdocs.comparison.common.changes.ChangeInfo;
 import com.groupdocs.comparison.common.compareresult.ICompareResult;
 import com.groupdocs.comparison.common.comparisonsettings.ComparisonSettings;
 import com.groupdocs.comparison.common.license.License;
@@ -163,8 +164,7 @@ public class ComparisonServiceImpl implements ComparisonService {
             throw new TotalGroupDocsException("Something went wrong. We've got null result.");
         }
 
-        boolean isHtml = HTML.equals(fileExt) || HTM.equals(fileExt);
-        CompareResultResponse compareResultResponse = createCompareResultResponse(compareResult, isHtml);
+        CompareResultResponse compareResultResponse = createCompareResultResponse(compareResult, fileExt);
 
         String guid = UUID.randomUUID().toString();
         String savedFile = saveFile(guid, compareResult.getStream(), fileExt);
@@ -180,20 +180,37 @@ public class ComparisonServiceImpl implements ComparisonService {
      * Convert results of comparing and save result files
      *
      * @param compareResult results
-     * @param isHtml
+     * @param fileExt
      * @return results response
      */
-    private CompareResultResponse createCompareResultResponse(ICompareResult compareResult, boolean isHtml) throws Exception {
+    private CompareResultResponse createCompareResultResponse(ICompareResult compareResult, String fileExt) throws Exception {
         CompareResultResponse compareResultResponse = new CompareResultResponse();
 
-        compareResultResponse.setChanges(compareResult.getChanges());
+        // FIXME: temporary fix
+        ChangeInfo[] changes = getChangeInfos(compareResult, fileExt);
 
+        compareResultResponse.setChanges(changes);
+
+        boolean isHtml = HTML.equals(fileExt) || HTM.equals(fileExt);
         if (isHtml) {
             String resultDirectory = getResultDirectory();
             compareResult.saveDocument(resultDirectory + File.separator + TEMP_HTML);
         }
 
         return compareResultResponse;
+    }
+
+    private ChangeInfo[] getChangeInfos(ICompareResult compareResult, String fileExt) {
+        ChangeInfo[] changes = compareResult.getChanges();
+        for (int i = 0; i < changes.length; i++) {
+            ChangeInfo change = changes[i];
+            if (DOC.equals(fileExt) || DOCX.equals(fileExt)) {
+                change.getBox().setY(change.getPageInfo().getHeight() - change.getBox().getY());
+            }
+            int id = change.getPageInfo().getId();
+            change.getPageInfo().setId(id > 0 ? id - 1 : id);
+        }
+        return changes;
     }
 
     /**
@@ -310,7 +327,7 @@ public class ComparisonServiceImpl implements ComparisonService {
     private ICompareResult compareFiles(LoadDocumentRequest loadDocumentRequestFirst, LoadDocumentRequest loadDocumentRequestSecond) {
         Comparer comparer = new Comparer();
         ComparisonSettings settings = new ComparisonSettings();
-        settings.setShowDeletedContent(false);
+        settings.setShowDeletedContent(true);
         settings.setStyleChangeDetection(true);
         settings.setCalculateComponentCoordinates(true);
         ICompareResult compareResult = comparer.compare(

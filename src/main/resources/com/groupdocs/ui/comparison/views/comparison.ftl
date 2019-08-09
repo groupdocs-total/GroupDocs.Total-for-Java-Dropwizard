@@ -10,15 +10,15 @@
 </head>
 <body>
 <client-root></client-root>
-<script src="angular/comparison/runtime-es2015.js" type="module"></script>
-<script src="angular/comparison/polyfills-es2015.js" type="module"></script>
-<script src="angular/comparison/runtime-es5.js" nomodule></script>
-<script src="angular/comparison/polyfills-es5.js" nomodule></script>
-<script src="angular/comparison/styles-es2015.js" type="module"></script>
-<script src="angular/comparison/styles-es5.js" nomodule></script>
-<script src="angular/comparison/vendor-es2015.js" type="module"></script>
-<script src="angular/comparison/main-es2015.js" type="module"></script>
-<script src="angular/comparison/vendor-es5.js" nomodule></script>
-<script src="angular/comparison/main-es5.js" nomodule></script>
+<script src="/assets/angular/comparison/runtime-es2015.js" type="module"></script>
+<script src="/assets/angular/comparison/polyfills-es2015.js" type="module"></script>
+<script src="/assets/angular/comparison/runtime-es5.js" nomodule></script>
+<script src="/assets/angular/comparison/polyfills-es5.js" nomodule></script>
+<script src="/assets/angular/comparison/styles-es2015.js" type="module"></script>
+<script src="/assets/angular/comparison/styles-es5.js" nomodule></script>
+<script src="/assets/angular/comparison/vendor-es2015.js" type="module"></script>
+<script src="/assets/angular/comparison/main-es2015.js" type="module"></script>
+<script src="/assets/angular/comparison/vendor-es5.js" nomodule></script>
+<script src="/assets/angular/comparison/main-es5.js" nomodule></script>
 </body>
 </html>

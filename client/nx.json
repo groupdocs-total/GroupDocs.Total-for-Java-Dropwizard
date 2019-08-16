@@ -19,6 +19,12 @@
     },
     "editor": {
       "tags": []
+    },
+    "comparison-e2e": {
+      "tags": []
+    },
+    "comparison": {
+      "tags": []
     }
   }
 }

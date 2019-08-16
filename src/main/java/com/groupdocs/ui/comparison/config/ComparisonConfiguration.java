@@ -23,10 +23,6 @@ public class ComparisonConfiguration extends Configuration {
     @JsonProperty
     private Integer preloadResultPageCount;
 
-    @Valid
-    @JsonProperty
-    private Boolean multiComparing;
-
     public String getFilesDirectory() {
         return filesDirectory;
     }
@@ -51,14 +47,6 @@ public class ComparisonConfiguration extends Configuration {
         this.preloadResultPageCount = preloadResultPageCount;
     }
 
-    public Boolean getMultiComparing() {
-        return multiComparing;
-    }
-
-    public void setMultiComparing(Boolean multiComparing) {
-        this.multiComparing = multiComparing;
-    }
-
     @Override
     public String toString() {
         return super.toString() +
@@ -66,7 +54,6 @@ public class ComparisonConfiguration extends Configuration {
                 "filesDirectory='" + filesDirectory + '\'' +
                 ", resultDirectory='" + resultDirectory + '\'' +
                 ", preloadResultPageCount=" + preloadResultPageCount +
-                ", multiComparing=" + multiComparing +
                 '}';
     }
 }

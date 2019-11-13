@@ -1,5 +1,6 @@
 package com.groupdocs.ui.signature.service;
 
+import com.aspose.words.IncorrectPasswordException;
 import com.groupdocs.signature.domain.DocumentDescription;
 import com.groupdocs.signature.handler.SignatureHandler;
 import com.groupdocs.signature.licensing.License;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import static com.groupdocs.ui.common.util.Utils.getExceptionMessage;
 import static com.groupdocs.ui.signature.service.SignatureHandlerFactory.getFullDataPathStr;
 import static com.groupdocs.ui.signature.util.SignatureType.*;
 import static com.groupdocs.ui.signature.util.directory.PathConstants.DATA_FOLDER;
@@ -128,10 +130,10 @@ public class SignatureServiceImpl implements SignatureService {
      */
     @Override
     public LoadDocumentEntity getDocumentDescription(LoadDocumentRequest loadDocumentRequest) {
+        // get/set parameters
+        String documentGuid = loadDocumentRequest.getGuid();
+        String password = loadDocumentRequest.getPassword();
         try {
-            // get/set parameters
-            String documentGuid = loadDocumentRequest.getGuid();
-            String password = loadDocumentRequest.getPassword();
             // get document info container
             DocumentDescription documentDescription = signatureHandler.getDocumentDescription(documentGuid, password);
             List<PageDescriptionEntity> pagesDescription = new ArrayList<>();
@@ -146,6 +148,8 @@ public class SignatureServiceImpl implements SignatureService {
             loadDocumentEntity.setPages(pagesDescription);
             // return document description
             return loadDocumentEntity;
+        } catch (IncorrectPasswordException ex) {
+            throw new TotalGroupDocsException(getExceptionMessage(password), ex);
         } catch (Exception ex) {
             logger.error("Exception occurred while loading document description", ex);
             throw new TotalGroupDocsException(ex.getMessage(), ex);

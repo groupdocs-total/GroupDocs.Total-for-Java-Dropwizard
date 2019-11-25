@@ -9,6 +9,7 @@ import com.groupdocs.ui.common.entity.web.request.LoadDocumentRequest;
 import com.groupdocs.ui.common.exception.TotalGroupDocsException;
 import com.groupdocs.ui.common.resources.Resources;
 import com.groupdocs.ui.signature.config.SignatureConfiguration;
+import com.groupdocs.ui.signature.config.SignatureConfigurationModel;
 import com.groupdocs.ui.signature.entity.request.*;
 import com.groupdocs.ui.signature.entity.web.SignatureDataEntity;
 import com.groupdocs.ui.signature.entity.web.SignatureFileDescriptionEntity;
@@ -81,6 +82,13 @@ public class SignatureResources extends Resources {
     public Signature getView(){
         // initiate index page
         return new Signature(globalConfiguration, DEFAULT_CHARSET);
+    }
+
+    @GET
+    @Path(value = "/loadConfig")
+    @Produces(APPLICATION_JSON)
+    public SignatureConfigurationModel loadConfig() {
+        return SignatureConfigurationModel.createSignatureConfiguration(globalConfiguration.getSignature(), globalConfiguration.getCommon());
     }
 
     /**

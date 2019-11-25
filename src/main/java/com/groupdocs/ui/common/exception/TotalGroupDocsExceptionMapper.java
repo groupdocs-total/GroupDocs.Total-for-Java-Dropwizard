@@ -9,8 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import static com.groupdocs.ui.common.exception.PasswordExceptions.INCORRECT_PASSWORD;
-import static com.groupdocs.ui.common.exception.PasswordExceptions.PASSWORD_REQUIRED;
+import static com.groupdocs.ui.common.exception.PasswordExceptions.*;
 
 /**
  * Map application's exceptions into responses
@@ -23,7 +22,7 @@ public class TotalGroupDocsExceptionMapper implements ExceptionMapper<TotalGroup
         ExceptionEntity exceptionEntity = new ExceptionEntity();
         String message = exception.getMessage();
         exceptionEntity.setMessage(message);
-        if (PASSWORD_REQUIRED.equals(message) || INCORRECT_PASSWORD.equals(message)) {
+        if (PASSWORD_REQUIRED.equals(message) || INCORRECT_PASSWORD.equals(message) || INVALID_PASSWORD.equals(message)) {
             return Response.status(Response.Status.FORBIDDEN).entity(exceptionEntity).build();
         }
         if (logger.isDebugEnabled()) {

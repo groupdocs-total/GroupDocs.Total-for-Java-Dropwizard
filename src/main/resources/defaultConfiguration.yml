@@ -189,7 +189,7 @@ comparison:
   filesDirectory: DocumentSamples/Comparison
   # FResult files directory path
   # Absolute path to result files directory
-  resultDirectory:
+  resultDirectory: ''
   # Result pages preload
   # How many pages from a result document should be loaded, remaining pages will be loaded on page scrolling
   # Set 0 to load all pages at once
@@ -201,10 +201,10 @@ comparison:
 conversion:
   # Files directory path
   # Absolute or relative path to files directory
-  filesDirectory: DocumentSamples
+  filesDirectory: DocumentSamples/Conversion
   # Result files directory path
   # Absolute path to result files directory
-  resultDirectory:
+  resultDirectory: ''
 
 
 ################################################
@@ -216,9 +216,9 @@ editor:
   filesDirectory: DocumentSamples/Editor
   # Fonts path
   # Absolute path to custom fonts directory
-  fontsDirectory:
+  fontsDirectory: ''
   # Default document
   # Absolute path to default document
-  defaultDocument:
+  defaultDocument: ''
   # Enable / disable new document creation
   createNewFile: true

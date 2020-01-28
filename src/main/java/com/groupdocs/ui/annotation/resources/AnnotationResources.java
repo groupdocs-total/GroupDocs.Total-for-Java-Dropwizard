@@ -14,6 +14,7 @@ import com.groupdocs.annotation.domain.options.FileTreeOptions;
 import com.groupdocs.annotation.domain.options.ImageOptions;
 import com.groupdocs.annotation.handler.AnnotationImageHandler;
 import com.groupdocs.ui.annotation.annotator.AnnotatorFactory;
+import com.groupdocs.ui.annotation.config.AnnotationConfigurationModel;
 import com.groupdocs.ui.annotation.entity.request.AnnotateDocumentRequest;
 import com.groupdocs.ui.annotation.entity.web.AnnotatedDocumentEntity;
 import com.groupdocs.ui.annotation.entity.web.AnnotationDataEntity;
@@ -105,6 +106,13 @@ public class AnnotationResources extends Resources {
         return new Annotation(globalConfiguration, DEFAULT_CHARSET);
     }
 
+    @GET
+    @Path(value = "/loadConfig")
+    @Produces(APPLICATION_JSON)
+    public AnnotationConfigurationModel loadConfig() {
+        return AnnotationConfigurationModel.createAnnotationConfiguration(globalConfiguration.getAnnotation(), globalConfiguration.getCommon());
+    }
+
     /**
      * Get files and directories
      *
@@ -168,7 +176,7 @@ public class AnnotationResources extends Resources {
             String password = loadDocumentRequest.getPassword();
             ImageOptions imageOptions = new ImageOptions();
             // set password for protected document
-            if (!password.isEmpty()) {
+            if (!StringUtils.isEmpty(password)) {
                 imageOptions.setPassword(password);
             }
             // get document info container

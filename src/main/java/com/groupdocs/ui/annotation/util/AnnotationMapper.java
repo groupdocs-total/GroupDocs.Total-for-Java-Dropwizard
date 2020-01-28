@@ -8,6 +8,8 @@ import com.groupdocs.ui.annotation.entity.web.CommentsEntity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Mapper for annotation entities
@@ -30,17 +32,18 @@ public class AnnotationMapper {
      */
     public AnnotationDataEntity[] mapForPage(AnnotationInfo[] annotations, int pageNumber) {
         // initiate annotations data array
-        AnnotationDataEntity[] pageAnnotations = new AnnotationDataEntity[annotations.length];
+        List<AnnotationDataEntity> pageAnnotations = new ArrayList<>();
         // set each annotation data - this functionality used since annotations data returned by the
         // GroupDocs.Annotation library are obfuscated
         for (int n = 0; n < annotations.length; n++) {
             AnnotationInfo annotationInfo = annotations[n];
             if(pageNumber == annotationInfo.getPageNumber() + 1) {
                 AnnotationDataEntity annotation = mapAnnotationDataEntity(annotationInfo);
-                pageAnnotations[n] = annotation;
+                pageAnnotations.add(annotation);
             }
         }
-        return pageAnnotations;
+        AnnotationDataEntity[] ret = new AnnotationDataEntity[pageAnnotations.size()];
+        return pageAnnotations.toArray(ret);
     }
 
     /**

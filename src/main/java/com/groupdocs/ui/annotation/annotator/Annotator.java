@@ -134,10 +134,14 @@ public abstract class Annotator {
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date date;
         try {
-            date = format.parse(comment.getTime());
-        } catch (Exception exc) {
-            format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-            date = format.parse(comment.getTime());
+            date = new Date(Long.parseLong(comment.getTime()));
+        } catch (Exception e) {
+            try {
+                date = format.parse(comment.getTime());
+            } catch (Exception exc) {
+                format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+                date = format.parse(comment.getTime());
+            }
         }
         reply.setRepliedOn(date);
         reply.setUserName(comment.getUserName());

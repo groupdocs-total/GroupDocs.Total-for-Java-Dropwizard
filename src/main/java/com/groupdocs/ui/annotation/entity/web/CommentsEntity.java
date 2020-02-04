@@ -6,9 +6,18 @@ package com.groupdocs.ui.annotation.entity.web;
  * @author Aspose Pty Ltd
  */
 public class CommentsEntity {
+    private Integer id;
     private String time;
     private String text;
     private String userName;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getTime() {
         return time;

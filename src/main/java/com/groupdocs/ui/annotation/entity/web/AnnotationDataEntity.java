@@ -9,15 +9,15 @@ public class AnnotationDataEntity {
     /**
      * Annotation Id
      */
-    private int id;
+    private Integer id;
     /**
      * The number of page in document
      */
-    private int pageNumber;
+    private Integer pageNumber;
     /**
      * The size of font of annotation
      */
-    private double fontSize;
+    private Double fontSize;
     /**
      * Annotation position. Left position.
      */
@@ -61,29 +61,29 @@ public class AnnotationDataEntity {
     /**
      * font color
      */
-    private int fontColor;
+    private Integer fontColor;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getPageNumber() {
+    public Integer getPageNumber() {
         return pageNumber;
     }
 
-    public void setPageNumber(int pageNumber) {
+    public void setPageNumber(Integer pageNumber) {
         this.pageNumber = pageNumber;
     }
 
-    public double getFontSize() {
+    public Double getFontSize() {
         return fontSize;
     }
 
-    public void setFontSize(double fontSize) {
+    public void setFontSize(Double fontSize) {
         this.fontSize = fontSize;
     }
 
@@ -167,11 +167,11 @@ public class AnnotationDataEntity {
         this.imported = imported;
     }
 
-    public int getFontColor() {
+    public Integer getFontColor() {
         return fontColor;
     }
 
-    public void setFontColor(int fontColor) {
+    public void setFontColor(Integer fontColor) {
         this.fontColor = fontColor;
     }
 }

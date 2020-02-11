@@ -48,9 +48,7 @@ public class TextReplacementAnnotator extends AbstractSvgAnnotator {
     public AnnotationInfo annotatePdf() throws ParseException {
         // init possible types of annotations
         AnnotationInfo textReplacementAnnotation = initAnnotationInfo();
-        // we use such calculation since the GroupDocs.Annotation library takes text line position from the bottom of the page
-        double topPosition = pageData.getHeight() - annotationData.getTop();
-        textReplacementAnnotation.setBox(new Rectangle(annotationData.getLeft(), topPosition, annotationData.getWidth(), annotationData.getHeight()));
+        textReplacementAnnotation.setBox(new Rectangle(annotationData.getLeft(), annotationData.getTop(), annotationData.getWidth(), annotationData.getHeight()));
         return textReplacementAnnotation;
     }
 

@@ -37,6 +37,12 @@
     },
     "signature": {
       "tags": []
+    },
+    "annotation": {
+      "tags": []
+    },
+    "annotation-e2e": {
+      "tags": []
     }
   }
 }

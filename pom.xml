@@ -245,15 +245,6 @@
                             <arguments>run build</arguments>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>gulp copy</id>
-                        <goals>
-                            <goal>gulp</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>copy</arguments>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>

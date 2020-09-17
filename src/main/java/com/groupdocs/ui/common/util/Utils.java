@@ -4,7 +4,6 @@ import com.google.common.collect.Ordering;
 import com.groupdocs.ui.common.exception.TotalGroupDocsException;
 import com.groupdocs.ui.common.util.comparator.FileNameComparator;
 import com.groupdocs.ui.common.util.comparator.FileTypeComparator;
-import com.groupdocs.viewer.exception.InvalidPasswordException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -79,9 +78,7 @@ public class Utils {
                 int number = i + 1;
                 String newFileName = FilenameUtils.removeExtension(fileName) + "-Copy(" + number + ")." + FilenameUtils.getExtension(fileName);
                 file = new File(directory + File.separator + newFileName);
-                if (file.exists()) {
-                    continue;
-                } else {
+                if (!file.exists()) {
                     break;
                 }
             }
@@ -105,6 +102,9 @@ public class Utils {
             return new File(imageGuid);
         } else {
             File[] listOfFiles = new File(previewPath).listFiles();
+            if (listOfFiles == null) {
+                throw new RuntimeException("Can't list files of '" + previewPath + "' folder");
+            }
             return createUniqueFile(previewPath, listOfFiles, ext);
         }
     }
@@ -115,9 +115,7 @@ public class Utils {
             String fileName = String.format("%03d", i + 1);
             File file = new File(String.format("%s%s%s.%s", previewPath, File.separator, fileName, ext));
             // check if file with such name already exists
-            if (file.exists()) {
-                continue;
-            } else {
+            if (!file.exists()) {
                 return file;
             }
         }

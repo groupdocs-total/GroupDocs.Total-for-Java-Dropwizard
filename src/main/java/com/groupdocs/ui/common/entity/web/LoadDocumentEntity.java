@@ -1,5 +1,6 @@
 package com.groupdocs.ui.common.entity.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LoadDocumentEntity {
@@ -10,7 +11,7 @@ public class LoadDocumentEntity {
     /**
      * list of pages
      */
-    private List<PageDescriptionEntity> pages;
+    private List<PageDescriptionEntity> pages = new ArrayList<>();
 
     /**
      * Restriction for printing pdf files in viewer

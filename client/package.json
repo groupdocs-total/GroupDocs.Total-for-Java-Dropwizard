@@ -42,7 +42,7 @@
     "@groupdocs.examples.angular/conversion": "^0.6.0",
     "@groupdocs.examples.angular/editor": "^0.6.0",
     "@groupdocs.examples.angular/signature": "^0.6.0",
-    "@groupdocs.examples.angular/viewer": "^0.5.15",
+    "@groupdocs.examples.angular/viewer": "^0.8.15",
     "@nrwl/angular": "^8.12.4",
     "core-js": "^2.6.11",
     "rxjs": "~6.4.0",

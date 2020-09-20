@@ -288,7 +288,7 @@ public class ViewerServiceImpl implements ViewerService {
     private PageDescriptionEntity getPageDescriptionEntity(CustomViewer<?> customViewer, String documentGuid, int pageNumber, String fileCacheSubFolder) throws IOException {
         customViewer.createCache();
 
-        ViewInfo viewInfo = customViewer.getViewer().getViewInfo(ViewInfoOptions.forHtmlView());
+        ViewInfo viewInfo = customViewer.getViewInfo();
         Utils.applyWidthHeightFix(customViewer.getViewer(), viewInfo);
         PageDescriptionEntity page = getPageInfo(viewInfo.getPages().get(pageNumber - 1), fileCacheSubFolder);
         page.setData(getPageContent(pageNumber, documentGuid, mCachePath));
@@ -302,7 +302,7 @@ public class ViewerServiceImpl implements ViewerService {
                 customViewer.createCache();
             }
 
-            ViewInfo viewInfo = customViewer.getViewer().getViewInfo(ViewInfoOptions.forPngView(false)/*.forHtmlView()*/);
+            ViewInfo viewInfo = customViewer.getViewInfo();
             LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
 
             final File file = new File(mCachePath);

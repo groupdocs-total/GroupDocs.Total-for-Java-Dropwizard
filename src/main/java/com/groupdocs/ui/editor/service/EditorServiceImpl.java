@@ -1,16 +1,17 @@
 package com.groupdocs.ui.editor.service;
 
 import com.google.common.collect.Sets;
-import com.groupdocs.editor.EditorHandler;
-import com.groupdocs.editor.InputHtmlDocument;
-import com.groupdocs.editor.OutputHtmlDocument;
-import com.groupdocs.editor.cells.htmltocells.CellFormats;
-import com.groupdocs.editor.cells.htmltocells.CellsSaveOptions;
+
+import com.groupdocs.editor.EditableDocument;
+import com.groupdocs.editor.Editor;
+import com.groupdocs.editor.formats.IDocumentFormat;
+import com.groupdocs.editor.formats.SpreadsheetFormats;
+import com.groupdocs.editor.formats.TextualFormats;
+import com.groupdocs.editor.formats.WordProcessingFormats;
 import com.groupdocs.editor.license.License;
-import com.groupdocs.editor.options.IDocumentSaveOptions;
-import com.groupdocs.editor.options.PdfSaveOptions;
-import com.groupdocs.editor.words.htmltowords.WordFormats;
-import com.groupdocs.editor.words.htmltowords.WordsSaveOptions;
+
+import com.groupdocs.editor.options.*;
+
 import com.groupdocs.ui.common.config.DefaultDirectories;
 import com.groupdocs.ui.common.config.GlobalConfiguration;
 import com.groupdocs.ui.common.entity.web.FileDescriptionEntity;
@@ -36,10 +37,10 @@ public class EditorServiceImpl implements EditorService {
     public static final Set<String> SUPPORTED_FORMATS = Sets.newHashSet("DOCX", "DOC", "DOCM", "DOTX", "ODT", "OTT", "RTF", "TXT", "HTML", "MHTML", "XML");
 
     public static class Format {
-        byte format;
+        IDocumentFormat format;
         String type;
 
-        public Format(byte format, String type) {
+        public Format(IDocumentFormat format, String type) {
             this.format = format;
             this.type = type;
         }
@@ -48,36 +49,37 @@ public class EditorServiceImpl implements EditorService {
     public static final String WORD = "Word";
     public static final String CELL = "Cell";
     public static final String PDF = "pfd";
+    public static final String TXT = "Txt";
 
     public static final Map<String, Format> formats = new HashMap<>();
 
     {
         {
-            formats.put("doc", new Format(WordFormats.Doc, WORD));
-            formats.put("dot", new Format(WordFormats.Dot, WORD));
-            formats.put("docx", new Format(WordFormats.Docx, WORD));
-            formats.put("docm", new Format(WordFormats.Docm, WORD));
-            formats.put("dotx", new Format(WordFormats.Dotx, WORD));
-            formats.put("dotm", new Format(WordFormats.Dotm, WORD));
-            formats.put("flatOpc", new Format(WordFormats.FlatOpc, WORD));
-            formats.put("rtf", new Format(WordFormats.Rtf, WORD));
-            formats.put("odt", new Format(WordFormats.Odt, WORD));
-            formats.put("0tt", new Format(WordFormats.Ott, WORD));
-            formats.put("txt", new Format(WordFormats.Text, WORD));
-            formats.put("html", new Format(WordFormats.Html, WORD));
-            formats.put("mhtml", new Format(WordFormats.Mhtml, WORD));
-            formats.put("wordML", new Format(WordFormats.WordML, WORD));
+            formats.put("doc", new Format(WordProcessingFormats.Doc, WORD));
+            formats.put("dot", new Format(WordProcessingFormats.Dot, WORD));
+            formats.put("docx", new Format(WordProcessingFormats.Docx, WORD));
+            formats.put("docm", new Format(WordProcessingFormats.Docm, WORD));
+            formats.put("dotx", new Format(WordProcessingFormats.Dotx, WORD));
+            formats.put("dotm", new Format(WordProcessingFormats.Dotm, WORD));
+            formats.put("flatOpc", new Format(WordProcessingFormats.FlatOpc, WORD));
+            formats.put("rtf", new Format(WordProcessingFormats.Rtf, WORD));
+            formats.put("odt", new Format(WordProcessingFormats.Odt, WORD));
+            formats.put("0tt", new Format(WordProcessingFormats.Ott, WORD));
+            formats.put("txt", new Format(TextualFormats.Txt, TXT));
+            formats.put("html", new Format(TextualFormats.Html, TXT));
+            //formats.put("mhtml", new Format(WordProcessingFormats.Mhtml, WORD));
+            formats.put("wordML", new Format(WordProcessingFormats.WordML, WORD));
 
-            formats.put("csv", new Format(CellFormats.Csv, CELL));
-            formats.put("ods", new Format(CellFormats.Ods, CELL));
-            formats.put("cellML", new Format(CellFormats.SpreadsheetML, CELL));
-            formats.put("tabDelimited", new Format(CellFormats.TabDelimited, CELL));
-            formats.put("xls", new Format(CellFormats.Xls, CELL));
-            formats.put("xlsb", new Format(CellFormats.Xlsb, CELL));
-            formats.put("xlsm", new Format(CellFormats.Xlsm, CELL));
-            formats.put("xlsx", new Format(CellFormats.Xlsx, CELL));
-            formats.put("xltm", new Format(CellFormats.Xltm, CELL));
-            formats.put("xltx", new Format(CellFormats.Xltx, CELL));
+            //formats.put("csv", new Format(SpreadsheetFormats.Csv, CELL));
+            formats.put("ods", new Format(SpreadsheetFormats.Ods, CELL));
+            formats.put("cellML", new Format(SpreadsheetFormats.SpreadsheetML, CELL));
+           // formats.put("tabDelimited", new Format(SpreadsheetFormats.TabDelimited, CELL));
+            formats.put("xls", new Format(SpreadsheetFormats.Xls, CELL));
+            formats.put("xlsb", new Format(SpreadsheetFormats.Xlsb, CELL));
+            formats.put("xlsm", new Format(SpreadsheetFormats.Xlsm, CELL));
+            formats.put("xlsx", new Format(SpreadsheetFormats.Xlsx, CELL));
+            formats.put("xltm", new Format(SpreadsheetFormats.Xltm, CELL));
+            formats.put("xltx", new Format(SpreadsheetFormats.Xltx, CELL));
         }
     }
 
@@ -141,15 +143,17 @@ public class EditorServiceImpl implements EditorService {
 
     @Override
     public LoadDocumentEntity loadDocument(LoadDocumentRequest loadDocumentRequest) {
-        return loadDocumentEntity(loadDocumentRequest.getGuid());
+        return loadDocumentEntity(loadDocumentRequest.getGuid(),loadDocumentRequest.getPassword());
     }
 
-    private LoadDocumentEntity loadDocumentEntity(String guid) {
+    private LoadDocumentEntity loadDocumentEntity(String guid, String password) {
         LoadDocumentEntity doc = new LoadDocumentEntity();
         try {
-            InputHtmlDocument inputHtmlDocument = EditorHandler.toHtml(new FileInputStream(guid));
+            ILoadOptions options = getLoadOptions(guid, password);
+            Editor editor = new Editor(new FileInputStream(guid), options);
+            EditableDocument editableDocument = editor.edit();
             PageDescriptionEntity page = new PageDescriptionEntity();
-            page.setData(inputHtmlDocument.getEmbeddedHtml());
+            page.setData(editableDocument.getEmbeddedHtml());
             page.setNumber(0);
             List<PageDescriptionEntity> pages = new ArrayList<>();
             pages.add(page);
@@ -174,18 +178,19 @@ public class EditorServiceImpl implements EditorService {
                 editorConfiguration.getFilesDirectory() + File.separator + guid : guid;
 
         try (OutputStream outputStream = new FileOutputStream(filePath)) {
-            OutputHtmlDocument outputDocument = new OutputHtmlDocument(editDocumentRequest.getContent());
-            IDocumentSaveOptions options = getSaveOptions(filePath, editDocumentRequest.getPassword());
-            EditorHandler.toDocument(outputDocument, outputStream, options);
+            Editor editor = new Editor(filePath);
+            EditableDocument outputDocument = EditableDocument.fromMarkup(editDocumentRequest.getContent(), null);
+            ISaveOptions options = getSaveOptions(filePath);
+            editor.save(outputDocument, outputStream, options);
         } catch (Exception ex) {
             logger.error("Exception occurred while creating the file");
             throw new TotalGroupDocsException(ex.getMessage(), ex);
         }
-        return loadDocumentEntity(filePath);
+        return loadDocumentEntity(filePath, editDocumentRequest.getPassword());
     }
 
-    private IDocumentSaveOptions getSaveOptions(String fileName, String password) {
-        IDocumentSaveOptions options;
+    private ISaveOptions getSaveOptions(String fileName) {
+        ISaveOptions options;
         String extension = FilenameUtils.getExtension(fileName);
         if (StringUtils.isEmpty(extension)) {
             logger.error("Not supported doc format");
@@ -194,14 +199,36 @@ public class EditorServiceImpl implements EditorService {
         Format format = formats.get(extension.toLowerCase());
         switch (format.type) {
             case WORD:
-                options = new WordsSaveOptions(format.format);
+                options = new WordProcessingSaveOptions((WordProcessingFormats)format.format);
                 break;
             case CELL:
-                options = new CellsSaveOptions();
-                ((CellsSaveOptions) options).setOutputFormat(format.format);
+                options = new SpreadsheetSaveOptions((SpreadsheetFormats) format.format);
                 break;
             case PDF:
                 options = new PdfSaveOptions();
+                break;
+            default:
+                logger.error("Not supported doc format");
+                throw new IllegalArgumentException("Not supported doc format");
+        }
+
+        return options;
+    }
+
+    private ILoadOptions getLoadOptions(String fileName, String password) {
+        ILoadOptions options;
+        String extension = FilenameUtils.getExtension(fileName);
+        if (StringUtils.isEmpty(extension)) {
+            logger.error("Not supported doc format");
+            throw new IllegalArgumentException("Not supported doc format");
+        }
+        Format format = formats.get(extension.toLowerCase());
+        switch (format.type) {
+            case WORD:
+                options = new WordProcessingLoadOptions();
+                break;
+            case CELL:
+                options = new SpreadsheetLoadOptions();
                 break;
             default:
                 logger.error("Not supported doc format");

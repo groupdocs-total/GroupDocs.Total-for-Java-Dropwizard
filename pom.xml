@@ -117,7 +117,7 @@
         <dependency>
             <groupId>com.groupdocs</groupId>
             <artifactId>groupdocs-editor</artifactId>
-            <version>20.8</version>
+            <version>20.11</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>

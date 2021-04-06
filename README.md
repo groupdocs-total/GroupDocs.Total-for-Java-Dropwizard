@@ -10,7 +10,7 @@
 - Maven 3
 
 
-## All-in-one document manipulation API
+## All-in-one document automation API
 
 **GroupDocs.Total for Java API** is a suite of powerful, flexible and high-performance libraries which allows you to manipulate documents within your desktop solutions and web apps without requiring any other commercial application. GroupDocs.Total allows you to perform all kinds of operations (view, edit, annotate, sign, compare, convert, merge, search, parse, redact, etc) with **PDF, DOCX, PPT, XLS**, and over 90 other document formats.
 

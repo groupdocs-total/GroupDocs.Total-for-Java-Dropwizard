@@ -5,6 +5,8 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/83ca13ac2b000eafba60/maintainability)](https://codeclimate.com/github/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard/maintainability)
 [![GitHub license](https://img.shields.io/github/license/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard.svg)](https://github.com/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard/blob/master/LICENSE)
 
+:warning: **This repository has moved to https://github.com/groupdocs-total/GroupDocs.Total-for-Java/tree/main/Demos/Dropwizard**
+
 ## System Requirements
 - Java 8 (JDK 1.8)
 - Maven 3
